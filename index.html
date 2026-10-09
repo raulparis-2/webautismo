@@ -74,6 +74,19 @@ a{text-decoration:none;color:inherit}button,input,select{font:inherit}.wrap{max-
 @media(max-width:700px){.app-panel{padding:18px 14px;border-radius:16px;margin-bottom:45px}.app-head{display:block}.app-head h2{font-size:24px}.app-badge{margin-top:12px}.app-main{grid-template-columns:1fr}.app-actions{grid-template-columns:1fr 1fr}.app-feature{padding:16px}.legal-strip{display:block}.legal-strip .mini-btn{margin-top:9px}}
 @media(max-width:420px){.app-actions{grid-template-columns:1fr}.app-action{min-height:105px}}
 .directory-empty{grid-column:1/-1;text-align:center;padding:42px 24px;border:1px dashed #c9e0e3;border-radius:22px;background:#f7fbfb;color:#54717a}.directory-empty h3{margin:0 0 8px;color:#245466}.directory-empty p{margin:0}
+
+/* App: imágenes para artículos y novedades */
+.content-list article{position:relative;overflow:hidden}
+#app-articles .content-list article{padding-top:126px;min-height:245px}
+#app-articles .content-list article:before{content:"";position:absolute;left:0;right:0;top:0;height:112px;background-size:cover;background-position:center;background-repeat:no-repeat}
+#app-articles .content-list article:nth-child(1):before{background-image:url('https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=700&q=80')}
+#app-articles .content-list article:nth-child(2):before{background-image:url('https://images.unsplash.com/photo-1506784983877-45594dea4cbe?auto=format&fit=crop&w=700&q=80')}
+#app-articles .content-list article:nth-child(3):before{background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80')}
+.news-list .news-card{display:grid;grid-template-columns:180px 1fr;gap:16px;padding:12px;align-items:start}
+.news-list .news-card img{width:180px;height:150px;object-fit:cover;border-radius:12px;display:block}
+.news-list .news-card h4{margin-top:8px}
+.news-list .news-card .mini-btn{margin-top:10px}
+@media(max-width:600px){.news-list .news-card{grid-template-columns:1fr}.news-list .news-card img{width:100%;height:170px}#app-articles .content-list article{padding-top:126px}}
 </style>
 
 <style id="app-complete-css">
@@ -286,7 +299,7 @@ body{overflow-x:hidden}
 
     <div class="app-actions">
       <button class="app-action" onclick="openAppSection('articles')" type="button"><div class="ai blue"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4"/><path d="M9 11h6M9 15h6"/></svg></div><h4>Artículos semanales</h4><p>Información y experiencias nuevas cada semana.</p></button>
-      <button class="app-action" onclick="openAppSection('articles')" type="button"><div class="ai green"><svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M8 9h8M8 12h6M8 15h8"/></svg></div><h4>Novedades</h4><p>Contenido nuevo y artículos destacados de cada semana.</p></button>
+      <button class="app-action" onclick="openAppSection('news')" type="button"><div class="ai green"><svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M8 9h8M8 12h6M8 15h8"/></svg></div><h4>Novedades</h4><p>Contenido nuevo y artículos destacados de cada semana.</p></button>
       <button class="app-action" onclick="openAppSection('resources')" type="button"><div class="ai yellow"><svg viewBox="0 0 24 24"><path d="M4 5h7v14H4zM13 5h7v14h-7z"/><path d="M11 7c-2-2-4-2-7-2M13 7c2-2 4-2 7-2"/></svg></div><h4>Recursos</h4><p>Guías, materiales y herramientas para el día a día.</p></button>
       <button class="app-action" onclick="openAppSection('legal')" type="button"><div class="ai purple"><svg viewBox="0 0 24 24"><path d="M7 3h8l3 3v15H7z"/><path d="M15 3v4h4"/><path d="M10 13h5M10 17h5"/></svg></div><h4>Legal y autorizaciones</h4><p>Información legal y permisos para publicar contenidos e imágenes.</p></button>
     </div>
@@ -299,6 +312,13 @@ body{overflow-x:hidden}
         <article><span class="tag tblue">Consejos</span><h4>Cómo favorecer la comunicación en casa</h4><p>Ideas sencillas para crear oportunidades de comunicación, respetando el ritmo y la forma de expresarse de cada persona.</p><small>Artículo semanal · 2 de octubre de 2026</small></article>
         <article><span class="tag tgreen">Familia</span><h4>Rutinas que ayudan a anticipar el día</h4><p>Cómo utilizar apoyos visuales, avisos y pequeños cambios para hacer más predecibles las actividades cotidianas.</p><small>Próximo artículo · Cada semana</small></article>
         <article><span class="tag tyellow">Recursos</span><h4>Preparar una visita a un profesional</h4><p>Qué información puede ser útil llevar y qué preguntas puedes preparar antes de una primera cita.</p><small>En preparación</small></article>
+      </div>
+    </div>
+    <div class="app-subpage" id="app-news">
+      <div class="subpage-head"><div><span class="label">NOVEDADES</span><h3>Lo último de Autismo Familiar</h3><p>Actualizaciones y publicaciones recientes para familias y profesionales.</p></div><button onclick="openAppSection('home')" type="button">← Inicio de la App</button></div>
+      <div class="content-list news-list">
+        <article class="news-card"><img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=700&q=80" alt="Familia compartiendo un momento en casa" loading="lazy"><div><span class="tag tblue">Artículo destacado</span><h4>Cómo favorecer la comunicación en casa</h4><p>Ideas sencillas para crear oportunidades de comunicación respetando el ritmo y la forma de expresarse de cada persona.</p><small>Publicado el 2 de octubre de 2026</small><button type="button" class="mini-btn" onclick="openArticle(0)">Leer artículo →</button></div></article>
+        <article class="news-card"><img src="https://images.unsplash.com/photo-1506784983877-45594dea4cbe?auto=format&fit=crop&w=700&q=80" alt="Calendario para organizar las rutinas" loading="lazy"><div><span class="tag tgreen">Próxima publicación</span><h4>Rutinas que ayudan a anticipar el día</h4><p>Apoyos visuales y pequeños avisos que pueden ayudar a preparar las actividades cotidianas.</p><small>Próximo artículo</small></div></article>
       </div>
     </div>
     <div class="app-subpage" id="app-resources">
@@ -448,7 +468,7 @@ document.getElementById('guideModal').addEventListener('click',e=>{if(e.target.i
 function goSection(e,id){if(e)e.preventDefault();const main=document.getElementById('inicio');if(main)main.classList.remove('app-open');history.replaceState(null,'','#'+id);const target=document.getElementById(id);if(target)target.scrollIntoView({behavior:'smooth',block:'start'});}
 function openApp(e){if(e)e.preventDefault();const main=document.getElementById('inicio');if(!main)return;main.classList.add('app-open');openAppSection('home');history.replaceState(null,'','#app');window.scrollTo({top:0,behavior:'smooth'});}
 function closeApp(){const main=document.getElementById('inicio');if(!main)return;main.classList.remove('app-open');history.replaceState(null,'','#inicio');window.scrollTo({top:0,behavior:'smooth'});}
-function openAppSection(section){document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));if(section!=='home'){const el=document.getElementById('app-'+section);if(el)el.classList.add('on');}window.scrollTo({top:0,behavior:'smooth'});}
+function openAppSection(section){const main=document.getElementById('inicio');if(main)main.classList.add('app-open');document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));if(section!=='home'){const el=document.getElementById('app-'+section);if(el)el.classList.add('on');}history.replaceState(null,'','#app'+(section==='home'?'':'-'+section));const panel=document.querySelector('.app-panel');if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});}
 window.addEventListener('hashchange',()=>{if(location.hash==='#app')openApp();});
 </script>
 </body>
