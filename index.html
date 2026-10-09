@@ -483,3 +483,62 @@ window.addEventListener('hashchange',()=>{if(location.hash==='#app')openApp();})
 @media(max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.card:last-child{grid-column:auto}.app-article-card .app-article-photo{height:180px}}
 </style>
+
+
+<style id="article-modal-mobile-fix">
+/* Los artículos largos deben desplazarse dentro de la ventana, también en móvil */
+#articleModal.modal.on{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:12px;
+  -webkit-overflow-scrolling:touch;
+}
+#articleModal .modal-box{
+  width:100%;
+  max-width:720px;
+  max-height:calc(100vh - 24px);
+  max-height:calc(100dvh - 24px);
+  margin:auto 0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:24px;
+}
+#articleModal .modal-close{
+  position:sticky;
+  float:right;
+  top:0;
+  z-index:2;
+  display:block;
+  margin:-8px -8px 4px 12px;
+  border:0;
+  background:#eaf7f8;
+  color:#16485c;
+  border-radius:50%;
+  width:38px;
+  height:38px;
+  font-size:27px;
+  line-height:1;
+  cursor:pointer;
+}
+#articleContent{overflow-wrap:anywhere}
+#articleContent img{max-width:100%;height:auto}
+@media(max-width:600px){
+  #articleModal.modal.on{padding:8px;align-items:flex-start}
+  #articleModal .modal-box{
+    max-height:calc(100vh - 16px);
+    max-height:calc(100dvh - 16px);
+    padding:18px 16px;
+    border-radius:14px;
+    margin:0;
+  }
+  #articleModal #articleTitle{font-size:22px;line-height:1.25}
+  #articleModal #articleContent{font-size:14px!important;line-height:1.65!important}
+  #articleModal #articleContent ul{padding-left:20px}
+  #articleModal .btn{white-space:normal}
+}
+</style>
