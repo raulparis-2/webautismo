@@ -35,6 +35,44 @@ a{text-decoration:none;color:inherit}button,input,select{font:inherit}.wrap{max-
 @media(max-width:900px){.brand-logo{width:200px;height:58px}}
 @media(max-width:600px){.brand-logo{width:190px;height:56px}.brand{min-width:0}}
 .directory-empty{grid-column:1/-1;text-align:center;padding:42px 24px;border:1px dashed #c9e0e3;border-radius:22px;background:#f7fbfb;color:#54717a}.directory-empty h3{margin:0 0 8px;color:#245466}.directory-empty p{margin:0}
+
+/* Ajuste adicional para que los artículos largos se puedan recorrer completos en móviles */
+#articleModal.modal.on{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  height:100dvh;
+  max-height:100dvh;
+  box-sizing:border-box;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:12px 10px calc(24px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling:touch;
+}
+#articleModal .modal-box{
+  flex:0 0 auto;
+  width:100%;
+  max-width:720px;
+  max-height:none;
+  height:auto;
+  min-height:0;
+  margin:0 auto;
+  overflow:visible;
+  box-sizing:border-box;
+}
+#articleModal #articleContent{
+  overflow:visible;
+  padding-bottom:16px;
+}
+@media(max-width:600px){
+  #articleModal.modal.on{padding:8px 8px calc(24px + env(safe-area-inset-bottom))}
+  #articleModal .modal-box{padding:18px 16px 26px}
+}
+
 </style>
 
 
