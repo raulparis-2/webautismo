@@ -579,4 +579,49 @@ window.addEventListener('hashchange',()=>{if(location.hash==='#app')openApp();})
   #articleModal #articleContent ul{padding-left:20px}
   #articleModal .btn{white-space:normal}
 }
+
+/* Modal de artículos más compacto: deja espacio visible arriba y abajo */
+#articleModal.modal.on{
+  position:fixed!important;
+  inset:0!important;
+  height:100vh!important;
+  height:100dvh!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:10vh 12px!important;
+  padding:10dvh 12px!important;
+  overflow:hidden!important;
+}
+#articleModal .modal-box{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:720px!important;
+  height:auto!important;
+  max-height:80vh!important;
+  max-height:80dvh!important;
+  min-height:0!important;
+  margin:0 auto!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+@media(max-width:600px){
+  #articleModal.modal.on{
+    padding:9vh 10px!important;
+    padding:9dvh 10px!important;
+  }
+  #articleModal .modal-box{
+    max-height:82vh!important;
+    max-height:82dvh!important;
+    padding:14px 14px 18px!important;
+    border-radius:14px!important;
+  }
+  #articleModal #articleTitle{font-size:20px!important;line-height:1.2!important}
+  #articleModal #articleContent{font-size:13px!important;line-height:1.5!important}
+  #articleModal .modal-close{width:32px!important;height:32px!important;font-size:23px!important}
+}
+
 </style>
