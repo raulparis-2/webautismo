@@ -324,12 +324,42 @@ body{overflow-x:hidden}
   <button class="app-back" onclick="closeApp()" type="button">← Volver a la página principal</button>
   <div class="app-head">
     <div>
-      <div class="label">TU ESPACIO EN AUTISMO FAMILIAR</div>
-      <h2>App de Autismo Familiar</h2>
-      <p>No es una aplicación aparte: llamamos “App” a este espacio de la propia web, pensado para reunir en un solo lugar el contenido y las herramientas para familias.</p>
+      <div class="label">CONECTA · DESCUBRE · COMPARTE</div>
+      <h2>Profesionales y servicios para familias</h2>
+      <p>Un espacio para que profesionales, asociaciones y personas que ofrecen apoyo puedan presentar sus servicios, recibir valoraciones y conectar con familias.</p>
     </div>
-    <div class="app-badge"><span>●</span> DENTRO DE LA WEB</div>
+    <div class="app-badge"><span>●</span> COMUNIDAD DE APOYO</div>
   </div>
+
+
+  <section class="directory-hub" aria-label="Directorio de profesionales y servicios">
+    <div class="hub-intro">
+      <div><span class="hub-kicker">DIRECTORIO DE CONFIANZA</span><h3>Encuentra a la persona adecuada para tu familia</h3><p>Explora perfiles, conoce qué ofrece cada profesional y consulta sus valoraciones.</p></div>
+      <div class="hub-art" aria-hidden="true"><span>♡</span><i>✦</i><b>+</b></div>
+    </div>
+    <div class="hub-tools">
+      <label class="hub-search"><span>⌕</span><input id="hubSearch" type="search" placeholder="Buscar logopedia, terapia, asociación…" oninput="filterHubProfiles()"></label>
+      <label class="hub-filter"><span>Especialidad</span><select id="hubCategory" onchange="filterHubProfiles()"><option value="">Todas las especialidades</option><option value="logopedia">Logopedia</option><option value="psicologia">Psicología</option><option value="terapia">Terapia ocupacional</option><option value="asociacion">Asociaciones</option></select></label>
+    </div>
+    <div class="hub-section-title"><div><span class="hub-kicker">PERFILES DESTACADOS</span><h3>Personas y servicios que pueden ayudarte</h3></div><span class="hub-demo-note">Perfiles de ejemplo</span></div>
+    <div class="hub-profiles" id="hubProfiles">
+      <article class="hub-profile" data-category="logopedia" data-search="logopedia comunicación lenguaje infantil">
+        <div class="hub-profile-top"><div class="hub-avatar avatar-teal">LM</div><span class="hub-pill">Logopedia</span></div><h4>Laura Martín</h4><p class="hub-role">Logopeda · Comunicación y lenguaje</p><p class="hub-description">Apoyo individualizado para desarrollar la comunicación y adaptar estrategias al día a día familiar.</p><div class="hub-rating"><span>★★★★★</span> <b>4,9</b> <small>(12 valoraciones de ejemplo)</small></div><div class="hub-profile-actions"><button type="button" onclick="showHubProfile('Laura Martín','Logopeda · Comunicación y lenguaje','Apoyo individualizado para desarrollar la comunicación y adaptar estrategias al día a día familiar.','logopedia')">Ver perfil</button><button type="button" class="hub-contact" onclick="showHubContact('Laura Martín')">Contactar</button></div>
+      </article>
+      <article class="hub-profile" data-category="psicologia" data-search="psicología acompañamiento familiar emociones">
+        <div class="hub-profile-top"><div class="hub-avatar avatar-lilac">AR</div><span class="hub-pill lilac">Psicología</span></div><h4>Andrés Rodríguez</h4><p class="hub-role">Psicólogo · Acompañamiento familiar</p><p class="hub-description">Orientación a familias, bienestar emocional y estrategias para afrontar los retos cotidianos.</p><div class="hub-rating"><span>★★★★★</span> <b>4,8</b> <small>(8 valoraciones de ejemplo)</small></div><div class="hub-profile-actions"><button type="button" onclick="showHubProfile('Andrés Rodríguez','Psicólogo · Acompañamiento familiar','Orientación a familias, bienestar emocional y estrategias para afrontar los retos cotidianos.','psicología')">Ver perfil</button><button type="button" class="hub-contact" onclick="showHubContact('Andrés Rodríguez')">Contactar</button></div>
+      </article>
+      <article class="hub-profile" data-category="terapia" data-search="terapia ocupacional autonomía rutinas actividades">
+        <div class="hub-profile-top"><div class="hub-avatar avatar-peach">SC</div><span class="hub-pill peach">Terapia ocupacional</span></div><h4>Sofía Castro</h4><p class="hub-role">Terapeuta ocupacional · Autonomía</p><p class="hub-description">Ideas y acompañamiento para favorecer la autonomía, las rutinas y la participación diaria.</p><div class="hub-rating"><span>★★★★★</span> <b>4,9</b> <small>(6 valoraciones de ejemplo)</small></div><div class="hub-profile-actions"><button type="button" onclick="showHubProfile('Sofía Castro','Terapeuta ocupacional · Autonomía','Ideas y acompañamiento para favorecer la autonomía, las rutinas y la participación diaria.','terapia ocupacional')">Ver perfil</button><button type="button" class="hub-contact" onclick="showHubContact('Sofía Castro')">Contactar</button></div>
+      </article>
+      <article class="hub-profile" data-category="asociacion" data-search="asociación familias apoyo grupos recursos">
+        <div class="hub-profile-top"><div class="hub-avatar avatar-yellow">AF</div><span class="hub-pill yellow">Asociación</span></div><h4>Apoyo en Familia</h4><p class="hub-role">Asociación · Recursos y acompañamiento</p><p class="hub-description">Un punto de encuentro para compartir experiencias, conocer recursos y encontrar apoyo comunitario.</p><div class="hub-rating"><span>★★★★★</span> <b>4,7</b> <small>(15 valoraciones de ejemplo)</small></div><div class="hub-profile-actions"><button type="button" onclick="showHubProfile('Apoyo en Familia','Asociación · Recursos y acompañamiento','Un punto de encuentro para compartir experiencias, conocer recursos y encontrar apoyo comunitario.','asociación')">Ver perfil</button><button type="button" class="hub-contact" onclick="showHubContact('Apoyo en Familia')">Contactar</button></div>
+      </article>
+    </div>
+    <div id="hubNoResults" class="hub-no-results" hidden>No hay perfiles que coincidan. Prueba otra búsqueda.</div>
+    <div class="hub-join"><div class="hub-join-icon">＋</div><div><span class="hub-kicker">¿OFRECES APOYO O SERVICIOS?</span><h3>Da a conocer tu trabajo</h3><p>Prepara tu perfil para mostrar qué haces, a quién ayudas y cómo pueden contactarte las familias.</p></div><button type="button" onclick="showHubJoin()">Quiero aparecer en el directorio <span>→</span></button></div>
+    <div id="hubDialog" class="hub-dialog" role="dialog" aria-modal="true" aria-labelledby="hubDialogTitle" hidden><div class="hub-dialog-card"><button class="hub-dialog-close" type="button" onclick="closeHubDialog()" aria-label="Cerrar">×</button><span class="hub-kicker">AUTISMO FAMILIAR</span><h3 id="hubDialogTitle">Perfil</h3><div id="hubDialogBody"></div><button type="button" class="hub-dialog-main" onclick="closeHubDialog()">Entendido</button></div></div>
+  </section>
 
   <div class="app-main">
     <div class="app-feature">
@@ -533,6 +563,37 @@ function mobileNavigate(e,id){
 }
 
 </script>
+
+<script id="directory-hub-functions">
+function filterHubProfiles(){
+ const q=(document.getElementById('hubSearch')?.value||'').trim().toLowerCase();
+ const cat=document.getElementById('hubCategory')?.value||'';
+ let visible=0;
+ document.querySelectorAll('#hubProfiles .hub-profile').forEach(card=>{
+   const match=(!q||(card.dataset.search+' '+card.innerText).toLowerCase().includes(q))&&(!cat||card.dataset.category===cat);
+   card.hidden=!match;if(match)visible++;
+ });
+ const empty=document.getElementById('hubNoResults');if(empty)empty.hidden=visible>0;
+}
+function showHubDialog(title,body){
+ const d=document.getElementById('hubDialog');if(!d)return;
+ document.getElementById('hubDialogTitle').textContent=title;
+ document.getElementById('hubDialogBody').innerHTML=body;
+ d.hidden=false;document.body.style.overflow='hidden';
+}
+function closeHubDialog(){const d=document.getElementById('hubDialog');if(d)d.hidden=true;document.body.style.overflow=''}
+function showHubProfile(name,role,description,category){
+ showHubDialog(name,'<p><strong>'+role+'</strong></p><p>'+description+'</p><p><strong>Especialidad:</strong> '+category+'</p><p style="font-size:11px;color:#8a9b9f">Este es un perfil de demostración. Los perfiles reales podrán incluir ubicación, horarios, precios orientativos y datos de contacto.</p>');
+}
+function showHubContact(name){
+ showHubDialog('Contactar con '+name,'<p>En una versión con perfiles reales, aquí aparecerán los datos de contacto que la persona haya decidido publicar.</p><p style="font-size:11px;color:#8a9b9f">Este perfil es de ejemplo y no dispone de contacto real.</p>');
+}
+function showHubJoin(){
+ showHubDialog('Quiero aparecer en el directorio','<p>Los perfiles podrán incluir nombre profesional o entidad, especialidad, descripción de servicios, zona de atención, datos de contacto y valoraciones.</p><p>Para publicar perfiles reales será necesario habilitar un formulario de alta y guardar los datos en una base de datos.</p><p style="font-size:11px;color:#8a9b9f">Esta demostración no envía ni guarda solicitudes todavía.</p>');
+}
+document.addEventListener('click',e=>{const d=document.getElementById('hubDialog');if(d&&e.target===d)closeHubDialog()});
+</script>
+
 </body>
 </html>
 <style id="article-photo-fix">
@@ -661,4 +722,35 @@ function mobileNavigate(e,id){
   .mobile-menu a:last-child{border-bottom:0}
   .mobile-menu a:active,.mobile-menu a:hover{background:#eaf7f8;border-radius:8px}
 }
+</style>
+
+
+<style id="visual-directory-hub">
+.directory-hub{margin:24px 0 30px;background:#fff;border:1px solid #e0edef;border-radius:22px;overflow:hidden;box-shadow:0 12px 32px rgba(22,72,92,.05)}
+.hub-intro{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:28px 30px;background:linear-gradient(115deg,#e5f8f5 0%,#edf5ff 55%,#fff4e9 100%)}
+.hub-kicker{font-size:9px;font-weight:900;letter-spacing:1.5px;color:#178c9e}
+.hub-intro h3{font-size:clamp(22px,3vw,30px);line-height:1.18;color:#16485c;max-width:540px;margin:9px 0}
+.hub-intro p{font-size:13px;line-height:1.6;color:#607c85;margin:0;max-width:560px}
+.hub-art{width:94px;height:94px;border-radius:28px;background:#fff9;box-shadow:0 8px 25px #16485c12;display:grid;place-items:center;position:relative;flex-shrink:0;color:#1595a7;font-size:52px;transform:rotate(7deg)}
+.hub-art i,.hub-art b{position:absolute;font-style:normal;font-size:22px;color:#efaa55}.hub-art i{top:8px;right:12px}.hub-art b{bottom:6px;left:13px;color:#83bfae}
+.hub-tools{display:grid;grid-template-columns:1fr 230px;gap:12px;padding:20px 24px 8px}
+.hub-search,.hub-filter{border:1px solid #dce9eb;border-radius:12px;background:#fbfdfd;display:flex;align-items:center;gap:10px;padding:0 13px;min-width:0}
+.hub-search>span{font-size:25px;color:#168da0}.hub-search input,.hub-filter select{border:0;outline:none;background:transparent;width:100%;min-width:0;height:45px;color:#285b68;font:inherit;font-size:12px}
+.hub-filter{display:block;padding:6px 12px}.hub-filter span{display:block;font-size:9px;color:#7b9298;font-weight:800}.hub-filter select{height:25px;font-size:11px}
+.hub-section-title{display:flex;align-items:end;justify-content:space-between;gap:10px;padding:22px 24px 14px}.hub-section-title h3{margin:5px 0 0;color:#16485c;font-size:19px}.hub-demo-note{font-size:10px;color:#85979c}
+.hub-profiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:0 24px 24px}
+.hub-profile{border:1px solid #e1ecee;border-radius:17px;padding:18px;background:#fff;transition:transform .18s,box-shadow .18s;min-width:0}.hub-profile:hover{transform:translateY(-2px);box-shadow:0 9px 24px #16485c12}
+.hub-profile-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.hub-avatar{width:49px;height:49px;border-radius:16px;display:grid;place-items:center;font-size:14px;font-weight:900;color:#155569}.avatar-teal{background:#d9f4ee}.avatar-lilac{background:#eee5ff;color:#5f4b89}.avatar-peach{background:#ffe8d9;color:#965d3e}.avatar-yellow{background:#fff2c7;color:#856a1b}
+.hub-pill{border-radius:999px;background:#e2f6f3;color:#188778;padding:7px 10px;font-size:9px;font-weight:800}.hub-pill.lilac{background:#f0eaff;color:#745ca5}.hub-pill.peach{background:#fff0e4;color:#a46640}.hub-pill.yellow{background:#fff5d5;color:#8b711d}
+.hub-profile h4{margin:0 0 4px;font-size:17px;color:#194d5c}.hub-role{font-size:11px;font-weight:800;color:#557680;margin:0 0 10px}.hub-description{font-size:12px;line-height:1.55;color:#74888e;min-height:56px;margin:0 0 12px}
+.hub-rating{font-size:11px;color:#526e77;display:flex;align-items:center;flex-wrap:wrap;gap:5px}.hub-rating>span{color:#e9ad42;letter-spacing:1px}.hub-rating small{font-size:9px;color:#8a9b9f}
+.hub-profile-actions{display:flex;gap:8px;margin-top:14px}.hub-profile-actions button{border:1px solid #dbe9eb;border-radius:9px;padding:10px 13px;background:#fff;color:#245867;font-size:11px;font-weight:800;cursor:pointer}.hub-profile-actions .hub-contact{background:#164f61;color:white;border-color:#164f61}
+.hub-no-results{padding:18px 24px;color:#66818a;font-size:12px}
+.hub-join{margin:0 24px 24px;border-radius:16px;background:#f1f8ff;border:1px solid #dce9f8;padding:20px;display:flex;align-items:center;gap:15px}
+.hub-join-icon{width:44px;height:44px;border-radius:14px;background:#d9eafa;color:#316b9c;font-size:27px;display:grid;place-items:center;flex-shrink:0}
+.hub-join>div:nth-child(2){flex:1;min-width:0}.hub-join h3{margin:4px 0;color:#1a4d69;font-size:17px}.hub-join p{margin:0;color:#718994;font-size:11px;line-height:1.5}
+.hub-join>button,.hub-dialog-main{border:0;border-radius:10px;padding:12px 15px;background:#176078;color:#fff;font-size:11px;font-weight:900;cursor:pointer;flex-shrink:0}
+.hub-dialog[hidden]{display:none!important}.hub-dialog{position:fixed;inset:0;z-index:10000;background:#102e38a8;display:flex;align-items:center;justify-content:center;padding:18px}.hub-dialog-card{position:relative;background:#fff;border-radius:18px;padding:25px;max-width:440px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px #102e3840}.hub-dialog-card h3{font-size:23px;color:#16485c;margin:10px 0}.hub-dialog-card p{font-size:13px;line-height:1.6;color:#607a83}.hub-dialog-close{position:absolute;right:14px;top:10px;border:0;background:#edf7f7;border-radius:50%;width:32px;height:32px;font-size:22px;color:#245867;cursor:pointer}
+@media(max-width:600px){.hub-intro{padding:21px 18px}.hub-art{width:62px;height:62px;border-radius:20px;font-size:34px}.hub-art i{font-size:15px}.hub-art b{font-size:15px}.hub-intro h3{font-size:22px}.hub-intro p{font-size:11px}.hub-tools{grid-template-columns:1fr;padding:15px 14px 4px}.hub-section-title{padding:19px 14px 12px;align-items:start}.hub-section-title h3{font-size:16px}.hub-demo-note{font-size:9px;text-align:right}.hub-profiles{grid-template-columns:1fr;padding:0 14px 16px;gap:10px}.hub-profile{padding:15px}.hub-description{min-height:0}.hub-join{margin:0 14px 16px;padding:15px;flex-wrap:wrap;gap:11px}.hub-join>div:nth-child(2){width:calc(100% - 58px)}.hub-join>button{width:100%}.hub-profile-actions button{flex:1}}
 </style>
