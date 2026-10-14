@@ -444,6 +444,58 @@ body{overflow-x:hidden}
   </div>
 </section>
 
+
+<!-- SECCIÓN DE INFORMACIÓN SEMANAL: editar aquí el vídeo y el artículo de cada semana -->
+<section class="section af-weekly" id="informacion-semanal">
+  <div class="section-title"><div><div class="label">ACTUALIZACIÓN SEMANAL</div><h2>Información para acompañarte</h2></div><p>Un vídeo y un artículo nuevo cada semana.</p></div>
+  <div class="af-week-grid">
+    <article class="af-week-card af-week-video">
+      <div class="af-week-icon">▶</div><div class="label">VÍDEO DE LA SEMANA</div>
+      <h3>Un espacio para aprender y compartir</h3>
+      <p>En este espacio se publicará el vídeo semanal seleccionado para las familias.</p>
+      <span class="af-week-placeholder">Vídeo pendiente de añadir</span>
+    </article>
+    <article class="af-week-card">
+      <div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div>
+      <h3>Consejos y recursos para el día a día</h3>
+      <p>Artículos prácticos, información útil y experiencias para acompañar a personas autistas y sus familias.</p>
+      <span class="af-week-placeholder">Artículo pendiente de añadir</span>
+    </article>
+  </div>
+</section>
+
+<!-- CONTENIDO DE ASOCIACIONES Y SUBVENCIONES: se puede actualizar manualmente en este bloque -->
+<section class="section af-manual-directory" id="asociaciones-subvenciones">
+  <div class="section-title"><div><div class="label">RECURSOS DE TU ZONA</div><h2>Asociaciones y subvenciones</h2></div><p>Información organizada manualmente para que las familias encuentren recursos útiles sin depender de un buscador externo.</p></div>
+  <div class="af-manual-tabs" role="tablist" aria-label="Tipo de recurso">
+    <button class="af-manual-tab active" type="button" data-af-tab="associations">Asociaciones</button>
+    <button class="af-manual-tab" type="button" data-af-tab="grants">Subvenciones y ayudas</button>
+  </div>
+  <div class="af-manual-search"><label for="afManualSearch">Filtrar por nombre, provincia o tema</label><input id="afManualSearch" type="search" placeholder="Ej. A Coruña, apoyo familiar, dependencia…"></div>
+  <div id="afManualItems" class="af-manual-grid"></div>
+  <p id="afManualEmpty" class="af-manual-empty">Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.</p>
+  <p class="af-manual-note">La información se añade y revisa manualmente; comprueba siempre los plazos, requisitos y datos de contacto con la entidad u organismo responsable.</p>
+</section>
+<style>
+.af-weekly,.af-manual-directory{scroll-margin-top:90px}.af-week-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.af-week-card{background:#fff;border:1px solid #e4eaf0;border-radius:18px;padding:26px;min-height:220px;box-shadow:0 8px 24px #163b4d08}.af-week-video{background:linear-gradient(135deg,#eef6f8,#f7f3ff)}.af-week-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#dcecf0;color:#245a6b;font-size:22px;margin-bottom:18px}.af-week-card h3{font-size:21px;color:#16485c;margin:10px 0}.af-week-card p{color:#607782;line-height:1.7;font-size:14px}.af-week-placeholder{display:inline-block;margin-top:8px;border-radius:8px;background:#f0f2f5;color:#687482;padding:8px 10px;font-size:12px}.af-manual-tabs{display:flex;gap:10px;margin:22px 0 16px;flex-wrap:wrap}.af-manual-tab{padding:11px 16px;border:1px solid #d9e3ea;border-radius:10px;background:#fff;color:#385665;font:inherit;cursor:pointer;font-weight:700}.af-manual-tab.active{background:#16485c;color:white;border-color:#16485c}.af-manual-search{display:grid;gap:7px;max-width:520px;margin:0 0 20px;font-size:13px;font-weight:700;color:#385665}.af-manual-search input{border:1px solid #d9e3ea;border-radius:10px;padding:12px 14px;font:inherit;background:#fff}.af-manual-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.af-manual-card{background:#fff;border:1px solid #e3eaf0;border-radius:15px;padding:20px}.af-manual-card h3{margin:0 0 8px;color:#16485c;font-size:18px}.af-manual-card p{font-size:14px;line-height:1.65;color:#607782}.af-manual-meta{font-size:12px;color:#527e8e;font-weight:700;margin-bottom:10px}.af-manual-card a{color:#28677a;font-weight:700;overflow-wrap:anywhere}.af-manual-empty{padding:28px;background:#fff;border:1px dashed #cbd8df;border-radius:14px;text-align:center;color:#6c7d86}.af-manual-note{font-size:12px;color:#7a8990;line-height:1.6;margin-top:20px}@media(max-width:700px){.af-week-grid,.af-manual-grid{grid-template-columns:1fr}.af-week-card{padding:21px}}
+</style>
+<script>
+(function(){
+ const data={associations:[],grants:[]};
+ let active='associations';
+ const list=document.getElementById('afManualItems'),empty=document.getElementById('afManualEmpty'),search=document.getElementById('afManualSearch');
+ function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+ function draw(){
+  const q=search.value.trim().toLowerCase();
+  const items=data[active].filter(x=>[x.title,x.place,x.description,x.topic].join(' ').toLowerCase().includes(q));
+  list.innerHTML=items.map(x=>'<article class="af-manual-card"><div class="af-manual-meta">'+esc(x.place||x.topic||'Recurso')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.description)+'</p>'+(x.url?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">Consultar información oficial ↗</a>':'')+'</article>').join('');
+  list.hidden=!items.length;empty.hidden=items.length>0;empty.textContent=q?'No hay recursos que coincidan con la búsqueda.':'Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.';
+ }
+ document.querySelectorAll('[data-af-tab]').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.afTab;document.querySelectorAll('[data-af-tab]').forEach(x=>x.classList.toggle('active',x===b));search.value='';draw();}));
+ search.addEventListener('input',draw);draw();
+})();
+</script>
+
 <section class="section" id="recursos"><div class="section-title"><div><div class="label">PARA EL DÍA A DÍA</div><h2>Recursos para familias</h2></div></div>
 <div class="resources"><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M8 4v13a3 3 0 0 0 3 3"/></svg></div><h3>Guías y documentos</h3><p>Materiales claros para entender y acompañar diferentes situaciones.</p><a href="#" onclick="info('Guías y documentos')">Ver recursos →</a></div><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M9 3h6v5h4v6h-4v5H9v-5H5V8h4z"/></svg></div><h3>Actividades</h3><p>Ideas adaptables para comunicación, autonomía y juego.</p><a href="#" onclick="info('Actividades')">Explorar →</a></div><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></div><h3>Servicios cercanos</h3><p>Encuentra profesionales y apoyo en tu zona.</p><a href="#profesionales">Buscar cerca →</a></div><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg></div><h3>Preguntas frecuentes</h3><p>Respuestas sencillas a dudas habituales de familias.</p><a href="#" onclick="info('Preguntas frecuentes')">Consultar →</a></div></div></section>
 
