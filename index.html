@@ -471,7 +471,7 @@ body{overflow-x:hidden}
     <button class="af-manual-tab active" type="button" data-af-tab="associations">Asociaciones</button>
     <button class="af-manual-tab" type="button" data-af-tab="grants">Subvenciones y ayudas</button>
   </div>
-  <div class="af-manual-search"><label for="afManualSearch">Filtrar por nombre, provincia o tema</label><input id="afManualSearch" type="search" placeholder="Ej. A Coruña, apoyo familiar, dependencia…"></div>
+  <div class="af-manual-search"><label for="afManualSearch">Filtrar por nombre, provincia o tema</label><input id="afManualSearch" type="search" placeholder="Ej. A Coruña, apoyo familiar, dependencia…"><label id="afGrantProvinceWrap" hidden for="afGrantProvince">Provincia</label><select id="afGrantProvince" hidden aria-label="Filtrar subvenciones por provincia"><option value="">Todas las provincias</option></select></div>
   <div id="afManualItems" class="af-manual-grid"></div>
   <p id="afManualEmpty" class="af-manual-empty">Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.</p>
   <p class="af-manual-note">La información se añade y revisa manualmente; comprueba siempre los plazos, requisitos y datos de contacto con la entidad u organismo responsable.</p>
@@ -670,8 +670,8 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
  const items=document.getElementById('afManualItems'),empty=document.getElementById('afManualEmpty'),search=document.getElementById('afManualSearch');
  if(items&&empty&&search){
   let active='associations';
-  function drawManual(){const arr=data[active]||[],q=search.value.trim().toLowerCase();const shown=arr.filter(x=>[x.title,x.place,x.description,x.topic,x.deadline,x.contact].join(' ').toLowerCase().includes(q));items.innerHTML=shown.map(x=>'<article class="af-manual-card"><div class="af-manual-meta">'+esc(x.place||x.topic||'Recurso')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.description)+'</p>'+(x.deadline?'<p><strong>Plazo:</strong> '+esc(x.deadline)+'</p>':'')+(x.contact?'<p><strong>Contacto:</strong> '+esc(x.contact)+'</p>':'')+(x.url?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">Consultar fuente oficial ↗</a>':'')+'</article>').join('');items.hidden=!shown.length;empty.hidden=shown.length>0;empty.textContent=q?'No hay recursos que coincidan con la búsqueda.':'Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.'}
-  document.querySelectorAll('[data-af-tab]').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.afTab;search.value='';drawManual()}));search.addEventListener('input',drawManual);drawManual();
+  function drawManual(){const arr=data[active]||[],provinceSelect=document.getElementById('afGrantProvince'),provinceWrap=document.getElementById('afGrantProvinceWrap');if(provinceSelect&&provinceWrap){provinceWrap.hidden=active!=='grants';provinceSelect.hidden=active!=='grants';if(active==='grants'){const provinces=[...new Set((data.grants||[]).map(x=>x.province||x.place).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));const previous=provinceSelect.value;provinceSelect.innerHTML='<option value="">Todas las provincias</option>'+provinces.map(p=>'<option value="'+esc(p)+'">'+esc(p)+'</option>').join('');if(provinces.includes(previous))provinceSelect.value=previous;}}const q=search.value.trim().toLowerCase(),province=active==='grants'?(provinceSelect?.value||''):'';const shown=arr.filter(x=>[x.title,x.name,x.place,x.province,x.description,x.summary,x.topic,x.deadline,x.contact,x.category].join(' ').toLowerCase().includes(q)&&(!province||(x.province||x.place||'')===province));items.innerHTML=shown.map(x=>'<article class="af-manual-card"><div class="af-manual-meta">'+esc(x.province||x.place||x.topic||'Recurso')+'</div><h3>'+esc(x.title||x.name)+'</h3><p>'+esc(x.description||x.summary)+'</p>'+(x.date||x.deadline?'<p><strong>Plazo / vigencia:</strong> '+esc(x.date||x.deadline)+'</p>':'')+(x.contact?'<p><strong>Contacto:</strong> '+esc(x.contact)+'</p>':'')+(x.url?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">Consultar fuente oficial ↗</a>':'')+'</article>').join('');items.hidden=!shown.length;empty.hidden=shown.length>0;empty.textContent=q||province?'No hay recursos que coincidan con los filtros.':'Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.'}
+  document.querySelectorAll('[data-af-tab]').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.afTab;search.value='';drawManual()}));search.addEventListener('input',drawManual);document.getElementById('afGrantProvince')?.addEventListener('change',drawManual);drawManual();
  }
 })();
 </script>
@@ -685,7 +685,7 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
   const pros=Array.isArray(data.professionals)?data.professionals:[];
   const safeLink=v=>{try{const u=new URL(v);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return ''}};
   const initials=n=>String(n||'AF').trim().split(/\\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
-  const categoryOf=p=>String(p.role||p.category||'Profesional').toLowerCase();
+  const categoryOf=p=>{const c=String(p.role||p.category||'').toLowerCase();if(c.includes('logo'))return 'logopedia';if(c.includes('psico'))return 'psicologia';if(c.includes('terap'))return 'terapia';if(c.includes('asoci'))return 'asociacion';return c||'profesional'};
   profileHost.innerHTML=pros.length?pros.map((p,i)=>{
    const name=p.name||p.title||'Profesional';
    const role=p.role||p.category||'Profesional de apoyo';
