@@ -646,6 +646,36 @@ function showHubJoin(){
 document.addEventListener('click',e=>{const d=document.getElementById('hubDialog');if(d&&e.target===d)closeHubDialog()});
 </script>
 
+
+<script>
+(async function(){
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ let data;
+ try{const res=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error('content');data=await res.json()}catch(e){return}
+ const weeklyArticle=(data.articles||[]).find(x=>x.weekly);
+ const weeklyVideo=(data.videos||[]).find(x=>x.weekly)||(data.videos||[])[0];
+ const weekly=document.querySelector('#informacion-semanal');
+ if(weekly){
+  const cards=weekly.querySelectorAll('.af-week-card');
+  if(cards[0])cards[0].innerHTML='<div class="af-week-icon">▶</div><div class="label">VÍDEO DE LA SEMANA</div>'+(weeklyVideo?'<h3>'+esc(weeklyVideo.title)+'</h3><p>'+esc(weeklyVideo.summary)+'</p><a class="af-week-placeholder" href="'+esc(weeklyVideo.url)+'" target="_blank" rel="noopener noreferrer">Ver vídeo ↗</a>':'<h3>Vídeo de la semana</h3><p>Aquí aparecerá el vídeo semanal seleccionado para las familias.</p><span class="af-week-placeholder">Vídeo pendiente de añadir</span>');
+  if(cards[1])cards[1].innerHTML='<div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div>'+(weeklyArticle?'<h3>'+esc(weeklyArticle.title)+'</h3><p>'+esc(weeklyArticle.summary)+'</p><button type="button" class="af-week-placeholder" id="afOpenWeeklyArticle">Leer artículo →</button>':'<h3>Artículo de la semana</h3><p>Publicaremos aquí el artículo semanal para las familias.</p><span class="af-week-placeholder">Artículo pendiente de añadir</span>');
+  const b=document.getElementById('afOpenWeeklyArticle');if(b)b.onclick=()=>showArticle(weeklyArticle);
+ }
+ function showArticle(a){if(!a)return;document.getElementById('articleTitle').textContent=a.title;document.getElementById('articleContent').innerHTML=a.body||'<p>'+esc(a.summary)+'</p>';const m=document.getElementById('articleModal');m.style.display='flex';m.classList.add('on');document.body.style.overflow='hidden'}
+ window.openArticle=function(i){const a=(data.articles||[])[i];showArticle(a)};
+ const articleGrid=document.querySelector('#articulos .article-grid');
+ if(articleGrid){const articles=data.articles||[];articleGrid.innerHTML=articles.map((a,i)=>'<article class="article" role="button" tabindex="0" data-content-article="'+i+'"><div class="pic '+(['','two','three','four'][i%4])+'"></div><span class="tag tblue">'+esc(a.category||'Artículo')+'</span><h3>'+esc(a.title)+'</h3><p>'+esc(a.summary)+'</p><small>Leer artículo completo →</small></article>').join('');articleGrid.querySelectorAll('[data-content-article]').forEach(el=>{const open=()=>showArticle(articles[Number(el.dataset.contentArticle)]);el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}})}
+ const guideGrid=document.querySelector('.guide-grid');
+ if(guideGrid){guideGrid.innerHTML=(data.guides||[]).map((g,i)=>'<button class="guide" type="button" data-content-guide="'+i+'"><div class="guide-icon" style="background:'+['#dff4f8','#e4f6df','#fff4c8','#eee2f8','#daf3f1'][i%5]+'"><span style="font-size:22px">▤</span></div><h4>'+esc(g.title)+'</h4><p>'+esc(g.summary)+'</p><span class="read">Abrir guía →</span></button>').join('');guideGrid.querySelectorAll('[data-content-guide]').forEach(el=>el.onclick=()=>{const g=(data.guides||[])[Number(el.dataset.contentGuide)];let m=document.getElementById('afGuideContentModal');if(!m){m=document.createElement('div');m.id='afGuideContentModal';m.className='modal';m.style.cssText='display:none;position:fixed;inset:0;z-index:99999;background:#102f3dcc;align-items:center;justify-content:center;padding:18px;overflow:auto';m.innerHTML='<div style="background:white;border-radius:18px;padding:28px;max-width:700px;width:100%;max-height:90vh;overflow:auto;position:relative"><button type="button" id="afGuideClose" style="float:right;border:0;border-radius:50%;font-size:24px;width:36px;height:36px;cursor:pointer">×</button><div class="label">GUÍA PRÁCTICA</div><h2 id="afGuideTitle"></h2><div id="afGuideBody" style="line-height:1.8;color:#526d76"></div></div>';document.body.appendChild(m);m.querySelector('#afGuideClose').onclick=()=>{m.style.display='none';document.body.style.overflow=''};m.onclick=e=>{if(e.target===m){m.style.display='none';document.body.style.overflow=''}}}m.querySelector('#afGuideTitle').textContent=g.title;m.querySelector('#afGuideBody').innerHTML=g.body||'<p>'+esc(g.summary)+'</p>';m.style.display='flex';document.body.style.overflow='hidden'})}
+ const items=document.getElementById('afManualItems'),empty=document.getElementById('afManualEmpty'),search=document.getElementById('afManualSearch');
+ if(items&&empty&&search){
+  let active='associations';
+  function drawManual(){const arr=data[active]||[],q=search.value.trim().toLowerCase();const shown=arr.filter(x=>[x.title,x.place,x.description,x.topic,x.deadline,x.contact].join(' ').toLowerCase().includes(q));items.innerHTML=shown.map(x=>'<article class="af-manual-card"><div class="af-manual-meta">'+esc(x.place||x.topic||'Recurso')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.description)+'</p>'+(x.deadline?'<p><strong>Plazo:</strong> '+esc(x.deadline)+'</p>':'')+(x.contact?'<p><strong>Contacto:</strong> '+esc(x.contact)+'</p>':'')+(x.url?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">Consultar fuente oficial ↗</a>':'')+'</article>').join('');items.hidden=!shown.length;empty.hidden=shown.length>0;empty.textContent=q?'No hay recursos que coincidan con la búsqueda.':'Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.'}
+  document.querySelectorAll('[data-af-tab]').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.afTab;search.value='';drawManual()}));search.addEventListener('input',drawManual);drawManual();
+ }
+})();
+</script>
+
 </body>
 </html>
 <style id="article-photo-fix">
