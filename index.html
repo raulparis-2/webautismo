@@ -680,6 +680,33 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
 (async function(){
  const url='content.json?v='+Date.now();let data;
  try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)return;data=await res.json()}catch(e){return}
+ const profileHost=document.getElementById('hubProfiles');
+ if(profileHost){
+  const pros=Array.isArray(data.professionals)?data.professionals:[];
+  const safeLink=v=>{try{const u=new URL(v);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return ''}};
+  const initials=n=>String(n||'AF').trim().split(/\\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
+  const categoryOf=p=>String(p.role||p.category||'Profesional').toLowerCase();
+  profileHost.innerHTML=pros.length?pros.map((p,i)=>{
+   const name=p.name||p.title||'Profesional';
+   const role=p.role||p.category||'Profesional de apoyo';
+   const place=p.place||p.province||'Ubicación no indicada';
+   const desc=p.description||p.summary||'Consulta el perfil para conocer sus servicios.';
+   const rating=p.rating!==''&&p.rating!=null?Number(p.rating):null;
+   const reviews=p.reviews!==''&&p.reviews!=null?Number(p.reviews):null;
+   const stars=rating===null?'Sin valoraciones':'★'.repeat(Math.max(0,Math.min(5,Math.round(rating))))+'☆'.repeat(5-Math.max(0,Math.min(5,Math.round(rating))));
+   const cat=categoryOf(p);
+   return '<article class="hub-profile" data-category="'+esc(cat)+'" data-search="'+esc([name,role,place,desc].join(' ')).toLowerCase()+'"><div class="hub-profile-top"><div class="hub-avatar avatar-teal">'+esc(initials(name))+'</div><span class="hub-pill">'+esc(role)+'</span></div><h4>'+esc(name)+'</h4><p class="hub-role">'+esc(place)+(p.price?' · '+esc(p.price):'')+'</p><p class="hub-description">'+esc(desc)+'</p><div class="hub-rating"><span>'+esc(stars)+'</span>'+(rating!==null?'<b>'+rating.toFixed(1)+'</b>':'')+' <small>'+(reviews!==null?'('+reviews+' reseñas)':'')+'</small></div><div class="hub-profile-actions"><button type="button" data-prof-view="'+i+'">Ver perfil</button>'+(safeLink(p.url)?'<a class="hub-contact" style="display:inline-flex;align-items:center;text-decoration:none;border-radius:9px;padding:10px 13px;background:#164f61;color:white;font-size:11px;font-weight:800" href="'+esc(safeLink(p.url))+'" target="_blank" rel="noopener noreferrer">Web / contacto ↗</a>':p.contact?'<button type="button" class="hub-contact" data-prof-contact="'+i+'">Contactar</button>':'')+'</div></article>';
+  }).join(''):'<div class="hub-no-results" style="grid-column:1/-1;background:#f7fbfb;border:1px dashed #c9e0e3;border-radius:14px;padding:24px;text-align:center"><strong>Próximamente, profesionales verificados</strong><p>Aquí aparecerán los perfiles que publique el equipo de Autismo Familiar.</p></div>';
+  profileHost.querySelectorAll('[data-prof-view]').forEach(b=>b.onclick=()=>{
+   const p=pros[Number(b.dataset.profView)];if(!p)return;
+   const name=p.name||p.title||'Profesional',role=p.role||p.category||'Profesional de apoyo';
+   const details='<p><strong>'+esc(role)+'</strong></p><p>'+esc(p.description||p.summary||'')+'</p><p><strong>Zona:</strong> '+esc(p.place||p.province||'No indicada')+'</p>'+(p.price?'<p><strong>Precio:</strong> '+esc(p.price)+'</p>':'')+(p.contact?'<p><strong>Contacto:</strong> '+esc(p.contact)+'</p>':'')+(safeLink(p.url)?'<p><a href="'+esc(safeLink(p.url))+'" target="_blank" rel="noopener noreferrer">Abrir web o perfil profesional ↗</a></p>':'')+(p.rating!==''&&p.rating!=null?'<p><strong>Valoración:</strong> '+esc(p.rating)+'/5 ('+esc(p.reviews||0)+' reseñas)</p>':'');
+   showHubDialog(name,details||'<p>Información del perfil próximamente.</p>');
+  });
+  profileHost.querySelectorAll('[data-prof-contact]').forEach(b=>b.onclick=()=>{const p=pros[Number(b.dataset.profContact)];if(p&&p.contact)showHubDialog('Contactar con '+esc(p.name||p.title||'profesional'),'<p>'+esc(p.contact)+'</p>')});
+  filterHubProfiles();
+ }
+
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const safeUrl=s=>{try{const u=new URL(s);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return ''}};
  const cards=(items,type)=>items.map(x=>'<article class="af-manual-card"><div class="af-manual-meta">'+esc(x.place||x.province||x.category||x.date||'Recurso')+'</div><h3>'+esc(x.title||x.name)+'</h3><p>'+esc(x.summary||x.description)+'</p>'+(x.date?'<p><b>Vigencia:</b> '+esc(x.date)+'</p>':'')+(safeUrl(x.url)?'<a href="'+esc(safeUrl(x.url))+'" target="_blank" rel="noopener noreferrer">Consultar información ↗</a>':'')+'</article>').join('');
