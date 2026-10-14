@@ -1,0 +1,71 @@
+{
+  "associations": [],
+  "grants": [],
+  "videos": [],
+  "articles": [
+    {
+      "id": "art-1",
+      "title": "Cómo favorecer la comunicación en casa",
+      "category": "Consejos",
+      "summary": "Ideas sencillas para crear momentos de comunicación respetuosos.",
+      "body": "<p>Cada persona tiene su propia forma y ritmo de comunicarse. La comunicación no se limita al habla: también puede incluir gestos, imágenes, escritura o dispositivos de apoyo.</p><h3>Ideas para el día a día</h3><ul><li>Deja tiempo suficiente para responder.</li><li>Usa apoyos visuales si ayudan a comprender.</li><li>Respeta la forma de comunicarse de cada persona.</li></ul>",
+      "weekly": true
+    },
+    {
+      "id": "art-2",
+      "title": "La importancia de las rutinas en el día a día",
+      "category": "Familia",
+      "summary": "Claves para anticipar cambios y construir rutinas.",
+      "body": "<p>Las rutinas pueden hacer que las actividades sean más previsibles. Deben adaptarse a las necesidades y preferencias de cada persona.</p><h3>Ideas prácticas</h3><ul><li>Divide las tareas en pasos pequeños.</li><li>Anticipa los cambios cuando sea posible.</li><li>Usa horarios visuales si resultan útiles.</li></ul>",
+      "weekly": false
+    },
+    {
+      "id": "art-3",
+      "title": "Recursos prácticos para la vida diaria",
+      "category": "Recursos",
+      "summary": "Materiales y herramientas que pueden facilitar las actividades cotidianas.",
+      "body": "<p>Los apoyos útiles son aquellos que se adaptan a cada persona y se revisan cuando dejan de funcionar.</p>",
+      "weekly": false
+    },
+    {
+      "id": "art-4",
+      "title": "Cuidar al cuidador también es importante",
+      "category": "Cuidadores",
+      "summary": "Ideas para reconocer tus límites, descansar y pedir apoyo.",
+      "body": "<p>El bienestar de quienes cuidan también importa. Pedir ayuda, repartir tareas y buscar espacios de descanso puede marcar una diferencia.</p>",
+      "weekly": false
+    }
+  ],
+  "guides": [
+    {
+      "id": "guia-1",
+      "title": "Comunicación y lenguaje",
+      "summary": "Ideas para facilitar la comunicación respetando la forma de expresarse de cada persona.",
+      "body": "<p>La comunicación puede ser verbal, gestual, visual, escrita o apoyada por herramientas específicas. Lo importante es respetar la forma de comunicarse de cada persona.</p><ul><li>Usa frases claras y deja tiempo para responder.</li><li>Apoya las instrucciones con imágenes o gestos si ayuda.</li><li>Valora cualquier forma de comunicación funcional.</li></ul>"
+    },
+    {
+      "id": "guia-2",
+      "title": "Rutinas y anticipación",
+      "summary": "Cómo preparar cambios, organizar el día y reducir la incertidumbre.",
+      "body": "<p>Anticipar lo que va a ocurrir puede hacer que los cambios sean más comprensibles.</p><ul><li>Divide el día en pasos pequeños.</li><li>Avisa de los cambios con tiempo.</li><li>Explica qué cambia y qué se mantiene.</li></ul>"
+    },
+    {
+      "id": "guia-3",
+      "title": "Momentos de desregulación",
+      "summary": "Qué hacer antes, durante y después para priorizar seguridad y calma.",
+      "body": "<p>Durante una situación de desregulación, prioriza la seguridad, reduce estímulos cuando sea posible y evita exigir explicaciones en ese momento.</p>"
+    },
+    {
+      "id": "guia-4",
+      "title": "Escuela y aprendizaje",
+      "summary": "Preguntas útiles para hablar con el centro y organizar apoyos.",
+      "body": "<p>Compartir qué apoyos funcionan y acordar objetivos concretos puede facilitar la coordinación con el centro educativo.</p>"
+    },
+    {
+      "id": "guia-5",
+      "title": "Autonomía y vida diaria",
+      "summary": "Acompañar habilidades cotidianas respetando los tiempos individuales.",
+      "body": "<p>Ofrece apoyos ajustados, divide las tareas en pasos y deja que la persona participe tanto como desee y pueda.</p>"
+    }
+  ]
+}
