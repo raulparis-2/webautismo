@@ -644,6 +644,7 @@ function showHubContact(name){
  showHubDialog('Contactar con '+name,'<p>En una versión con perfiles reales, aquí aparecerán los datos de contacto que la persona haya decidido publicar.</p><p style="font-size:11px;color:#8a9b9f">Este perfil es de ejemplo y no dispone de contacto real.</p>');
 }
 function showHubJoin(){
+ if(window.firebaseHubOpenProfile){window.firebaseHubOpenProfile();return;}
  const body='<p>Accede a tu cuenta profesional o crea una gratis para publicar tu anuncio. Cada cuenta puede tener un único perfil y podrás editarlo desde cualquier dispositivo.</p>'+
  '<form id="hubAuthForm" style="display:grid;gap:12px;text-align:left">'+
  '<label style="display:grid;gap:5px;font-weight:700">Correo electrónico<input name="email" type="email" autocomplete="email" required maxlength="180" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
@@ -741,7 +742,7 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
 <script type="module" id="firebase-professional-directory">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 // Pega aquí la configuración web de tu proyecto Firebase (Configuración del proyecto > Tus aplicaciones).
 const firebaseConfig = {
@@ -778,7 +779,7 @@ function profileForm(profile={}){
  '<label style="display:grid;gap:5px;font-weight:700">Enlace a foto o logotipo (opcional)<input name="photo" type="url" maxlength="500" value="'+escHub(profile.photo||'')+'" placeholder="https://…" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<label style="display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500"><input name="consent" type="checkbox" required style="margin-top:4px" '+(profile.consent?'checked':'')+'>Confirmo que tengo derecho a publicar estos datos y autorizo que mi perfil sea visible públicamente. No incluiré datos personales ni médicos de usuarios.</label>'+
  '<button type="submit" style="border:0;border-radius:10px;padding:13px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Publicar / guardar anuncio</button>'+
- '<button type="button" data-hub-action="logout" style="border:1px solid #ccdadd;border-radius:10px;padding:11px;background:white;cursor:pointer">Cerrar sesión</button><p id="hubProfileStatus" role="status" aria-live="polite" style="font-size:13px;margin:0"></p>'+
+ '<button type="button" data-hub-action="delete-profile" style="border:1px solid #b42318;border-radius:10px;padding:11px;background:white;color:#b42318;cursor:pointer">Eliminar mi anuncio</button><button type="button" data-hub-action="logout" style="border:1px solid #ccdadd;border-radius:10px;padding:11px;background:white;cursor:pointer">Cerrar sesión</button><p id="hubProfileStatus" role="status" aria-live="polite" style="font-size:13px;margin:0"></p>'+
  '<p style="font-size:11px;color:#7b8b90;margin:0">El perfil será público en cuanto se guarde. Solo puedes tener un anuncio por cuenta; editarás siempre esta misma ficha.</p></form>';
  showHubDialog(profile.name?'Editar mi anuncio':'Crear mi anuncio',body);
 }
@@ -845,8 +846,16 @@ document.addEventListener("submit",async ev=>{
  }
 });
 document.addEventListener("click",async ev=>{
- const b=ev.target.closest("[data-hub-action='logout']");if(!b)return;
- try{await signOut(auth);showHubJoin();}catch(e){setStatus("hubProfileStatus",authError(e));}
+ const b=ev.target.closest("[data-hub-action]");if(!b)return;
+ if(b.dataset.hubAction==="delete-profile"){
+  if(!currentUser||!confirm("¿Seguro que quieres eliminar tu anuncio del directorio? Esta acción no se puede deshacer."))return;
+  try{await deleteDoc(doc(db,"profiles",currentUser.uid));document.getElementById("hub-user-"+currentUser.uid)?.remove();showHubDialog("Anuncio eliminado","<p>Tu anuncio ya no aparece en el directorio. Puedes volver a publicar uno desde tu cuenta.</p>");}
+  catch(e){setStatus("hubProfileStatus",authError(e));}
+  return;
+ }
+ if(b.dataset.hubAction==="logout"){
+  try{await signOut(auth);showHubJoin();}catch(e){setStatus("hubProfileStatus",authError(e));}
+ }
 });
 </script>
 </body>
