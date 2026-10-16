@@ -644,7 +644,8 @@ function showHubContact(name){
  showHubDialog('Contactar con '+name,'<p>En una versión con perfiles reales, aquí aparecerán los datos de contacto que la persona haya decidido publicar.</p><p style="font-size:11px;color:#8a9b9f">Este perfil es de ejemplo y no dispone de contacto real.</p>');
 }
 function showHubJoin(){
- if(window.firebaseHubOpenProfile){window.firebaseHubOpenProfile();return;}
+ // Si ya hay una sesión iniciada, abrir la ficha del profesional. Si no, mostrar el formulario de acceso.
+ if(window.firebaseHubIsLoggedIn && window.firebaseHubIsLoggedIn() && window.firebaseHubOpenProfile){window.firebaseHubOpenProfile();return;}
  const body='<p>Accede a tu cuenta profesional o crea una gratis para publicar tu anuncio. Cada cuenta puede tener un único perfil y podrás editarlo desde cualquier dispositivo.</p>'+
  '<form id="hubAuthForm" style="display:grid;gap:12px;text-align:left">'+
  '<label style="display:grid;gap:5px;font-weight:700">Correo electrónico<input name="email" type="email" autocomplete="email" required maxlength="180" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
@@ -756,6 +757,7 @@ const firebaseConfig = {
 };
 const ready = firebaseConfig.apiKey !== "PEGA_AQUI_TU_API_KEY" && firebaseConfig.projectId !== "PEGA_AQUI_TU_PROJECT_ID";
 let auth=null, db=null, currentUser=null;
+window.firebaseHubIsLoggedIn = () => Boolean(currentUser);
 const escHub = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const setStatus = (id,msg) => { const el=document.getElementById(id); if(el)el.textContent=msg; };
 function authError(e){
