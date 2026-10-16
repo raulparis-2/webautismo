@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Los perfiles publicados son visibles para todos los visitantes.
+    match /profiles/{profileId} {
+      allow read: if true;
+
+      // Cada persona solo puede escribir en el documento cuyo ID es su UID.
+      // Esto impide que una cuenta cree varios anuncios con distintos IDs.
+      allow create: if request.auth != null
+        && request.auth.uid == profileId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 120
+        && request.resource.data.specialty is string
+        && request.resource.data.location is string
+        && request.resource.data.location.size() > 0
+        && request.resource.data.location.size() <= 160
+        && request.resource.data.description is string
+        && request.resource.data.description.size() > 0
+        && request.resource.data.description.size() <= 1600
+        && request.resource.data.contactEmail is string
+        && request.resource.data.contactEmail.size() <= 180
+        && request.resource.data.contact is string
+        && request.resource.data.contact.size() <= 200
+        && request.resource.data.photo is string
+        && request.resource.data.photo.size() <= 500
+        && request.resource.data.consent == true;
+
+      allow update: if request.auth != null
+        && request.auth.uid == profileId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 120
+        && request.resource.data.specialty is string
+        && request.resource.data.location is string
+        && request.resource.data.location.size() > 0
+        && request.resource.data.location.size() <= 160
+        && request.resource.data.description is string
+        && request.resource.data.description.size() > 0
+        && request.resource.data.description.size() <= 1600
+        && request.resource.data.contactEmail is string
+        && request.resource.data.contactEmail.size() <= 180
+        && request.resource.data.contact is string
+        && request.resource.data.contact.size() <= 200
+        && request.resource.data.photo is string
+        && request.resource.data.photo.size() <= 500
+        && request.resource.data.consent == true;
+
+      allow delete: if request.auth != null && request.auth.uid == profileId;
+    }
+  }
+}
