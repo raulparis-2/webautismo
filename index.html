@@ -644,7 +644,38 @@ function showHubContact(name){
  showHubDialog('Contactar con '+name,'<p>En una versión con perfiles reales, aquí aparecerán los datos de contacto que la persona haya decidido publicar.</p><p style="font-size:11px;color:#8a9b9f">Este perfil es de ejemplo y no dispone de contacto real.</p>');
 }
 function showHubJoin(){
- showHubDialog('Quiero aparecer en el directorio','<p>Los perfiles podrán incluir nombre profesional o entidad, especialidad, descripción de servicios, zona de atención, datos de contacto y valoraciones.</p><p>Para publicar perfiles reales será necesario habilitar un formulario de alta y guardar los datos en una base de datos.</p><p style="font-size:11px;color:#8a9b9f">Esta demostración no envía ni guarda solicitudes todavía.</p>');
+ const body='<p>¿Eres profesional, asociación o entidad y quieres dar a conocer tu trabajo? Rellena esta solicitud. Revisaremos los datos antes de publicar el perfil; el envío no implica publicación automática.</p>'+
+ '<form id="hubJoinForm" style="display:grid;gap:12px;text-align:left">'+
+ '<label style="display:grid;gap:5px;font-weight:700">Nombre profesional o entidad<input name="name" required maxlength="120" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Especialidad o tipo de servicio<input name="specialty" required maxlength="140" placeholder="Ej. logopedia, terapia ocupacional, asociación" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Zona de atención<input name="location" required maxlength="160" placeholder="Localidad, provincia o atención online" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Descripción de servicios<textarea name="description" required maxlength="1600" rows="4" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></textarea></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Correo de contacto<input name="email" type="email" required maxlength="180" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Teléfono o web (opcional)<input name="contact" maxlength="200" placeholder="Teléfono o https://…" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Enlace a una foto o logotipo (opcional)<input name="photo" type="url" placeholder="https://…" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500"><input name="consent" type="checkbox" required style="margin-top:4px">Confirmo que puedo facilitar estos datos y autorizo que se utilicen para valorar mi solicitud de inclusión en el directorio. He evitado incluir datos personales o médicos de usuarios.</label>'+
+ '<button type="submit" id="hubJoinSubmit" style="border:0;border-radius:10px;padding:13px 16px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Enviar solicitud</button>'+
+ '<p id="hubJoinStatus" role="status" aria-live="polite" style="font-size:13px;margin:0;color:#526970"></p>'+
+ '<p style="font-size:11px;color:#7b8b90;margin:0">La solicitud se enviará por correo a rsulparis@gmail.com mediante un servicio externo de formularios. No se publicará nada automáticamente.</p></form>';
+ showHubDialog('Quiero aparecer en el directorio',body);
+ const form=document.getElementById('hubJoinForm');
+ if(form)form.addEventListener('submit',async function(ev){
+  ev.preventDefault();
+  const btn=document.getElementById('hubJoinSubmit'),status=document.getElementById('hubJoinStatus');
+  btn.disabled=true;btn.textContent='Enviando…';status.textContent='Enviando solicitud…';
+  const fd=new FormData(form);
+  const payload={_subject:'Solicitud para aparecer en el directorio — Autismo Familiar',_template:'table',_captcha:'true',name:fd.get('name'),specialty:fd.get('specialty'),location:fd.get('location'),description:fd.get('description'),email:fd.get('email'),contact:fd.get('contact')||'No indicado',photo:fd.get('photo')||'No indicada',consent:'Aceptado'};
+  try{
+   const res=await fetch('https://formsubmit.co/ajax/rsulparis@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)});
+   const result=await res.json();
+   if(!res.ok||result.success===false)throw new Error(result.message||'No se pudo enviar la solicitud.');
+   status.textContent='Solicitud enviada. Gracias; revisaremos la información antes de publicar el perfil.';
+   form.reset();btn.textContent='Solicitud enviada';
+  }catch(err){
+   status.textContent='No se pudo enviar. Comprueba la conexión o vuelve a intentarlo más tarde. Si es el primer envío, revisa el correo de activación de FormSubmit.';
+   btn.disabled=false;btn.textContent='Intentar de nuevo';
+  }
+ });
 }
 document.addEventListener('click',e=>{const d=document.getElementById('hubDialog');if(d&&e.target===d)closeHubDialog()});
 </script>
