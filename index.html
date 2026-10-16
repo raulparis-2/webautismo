@@ -644,39 +644,16 @@ function showHubContact(name){
  showHubDialog('Contactar con '+name,'<p>En una versión con perfiles reales, aquí aparecerán los datos de contacto que la persona haya decidido publicar.</p><p style="font-size:11px;color:#8a9b9f">Este perfil es de ejemplo y no dispone de contacto real.</p>');
 }
 function showHubJoin(){
- const body='<p>¿Eres profesional, asociación o entidad y quieres dar a conocer tu trabajo? Rellena esta solicitud. Revisaremos los datos antes de publicar el perfil; el envío no implica publicación automática.</p>'+
- '<form id="hubJoinForm" style="display:grid;gap:12px;text-align:left">'+
- '<label style="display:grid;gap:5px;font-weight:700">Nombre profesional o entidad<input name="name" required maxlength="120" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Especialidad o tipo de servicio<input name="specialty" required maxlength="140" placeholder="Ej. logopedia, terapia ocupacional, asociación" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Zona de atención<input name="location" required maxlength="160" placeholder="Localidad, provincia o atención online" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Descripción de servicios<textarea name="description" required maxlength="1600" rows="4" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></textarea></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Correo de contacto<input name="email" type="email" required maxlength="180" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Teléfono o web (opcional)<input name="contact" maxlength="200" placeholder="Teléfono o https://…" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Enlace a una foto o logotipo (opcional)<input name="photo" type="url" placeholder="https://…" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500"><input name="consent" type="checkbox" required style="margin-top:4px">Confirmo que puedo facilitar estos datos y autorizo que se utilicen para valorar mi solicitud de inclusión en el directorio. He evitado incluir datos personales o médicos de usuarios.</label>'+
- '<button type="submit" id="hubJoinSubmit" style="border:0;border-radius:10px;padding:13px 16px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Enviar solicitud</button>'+
- '<p id="hubJoinStatus" role="status" aria-live="polite" style="font-size:13px;margin:0;color:#526970"></p>'+
- '<p style="font-size:11px;color:#7b8b90;margin:0">La solicitud se enviará por correo a rsulparis@gmail.com mediante un servicio externo de formularios. No se publicará nada automáticamente.</p></form>';
- showHubDialog('Quiero aparecer en el directorio',body);
- const form=document.getElementById('hubJoinForm');
- if(form)form.addEventListener('submit',async function(ev){
-  ev.preventDefault();
-  const btn=document.getElementById('hubJoinSubmit'),status=document.getElementById('hubJoinStatus');
-  btn.disabled=true;btn.textContent='Enviando…';status.textContent='Enviando solicitud…';
-  const fd=new FormData(form);
-  const payload={_subject:'Solicitud para aparecer en el directorio — Autismo Familiar',_template:'table',_captcha:'true',name:fd.get('name'),specialty:fd.get('specialty'),location:fd.get('location'),description:fd.get('description'),email:fd.get('email'),contact:fd.get('contact')||'No indicado',photo:fd.get('photo')||'No indicada',consent:'Aceptado'};
-  try{
-   const res=await fetch('https://formsubmit.co/ajax/rsulparis@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)});
-   const result=await res.json();
-   if(!res.ok||result.success===false)throw new Error(result.message||'No se pudo enviar la solicitud.');
-   status.textContent='Solicitud enviada. Gracias; revisaremos la información antes de publicar el perfil.';
-   form.reset();btn.textContent='Solicitud enviada';
-  }catch(err){
-   status.textContent='No se pudo enviar. Comprueba la conexión o vuelve a intentarlo más tarde. Si es el primer envío, revisa el correo de activación de FormSubmit.';
-   btn.disabled=false;btn.textContent='Intentar de nuevo';
-  }
- });
+ const body='<p>Accede a tu cuenta profesional o crea una gratis para publicar tu anuncio. Cada cuenta puede tener un único perfil y podrás editarlo desde cualquier dispositivo.</p>'+
+ '<form id="hubAuthForm" style="display:grid;gap:12px;text-align:left">'+
+ '<label style="display:grid;gap:5px;font-weight:700">Correo electrónico<input name="email" type="email" autocomplete="email" required maxlength="180" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Contraseña<input name="password" type="password" autocomplete="current-password" minlength="6" required style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<div style="display:flex;gap:8px;flex-wrap:wrap"><button data-hub-action="login" type="submit" style="border:0;border-radius:10px;padding:12px 16px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Iniciar sesión</button><button data-hub-action="register" type="submit" style="border:1px solid #164f61;border-radius:10px;padding:12px 16px;background:#fff;color:#164f61;font-weight:800;cursor:pointer">Crear cuenta</button></div>'+
+ '<p id="hubAuthStatus" role="status" aria-live="polite" style="font-size:13px;margin:0;color:#526970"></p>'+
+ '<p style="font-size:11px;color:#7b8b90;margin:0">Una cuenta puede publicar un solo anuncio. No publiques información médica ni datos personales de las familias.</p></form>';
+ showHubDialog('Cuenta profesional',body);
 }
+
 document.addEventListener('click',e=>{const d=document.getElementById('hubDialog');if(d&&e.target===d)closeHubDialog()});
 </script>
 
@@ -760,6 +737,117 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
  const guideGrid=document.querySelector('.guide-grid');
  if(guideGrid&&Array.isArray(data.guides)){guideGrid.innerHTML=data.guides.map((g,i)=>'<button class="guide" type="button" data-af-guide="'+i+'"><div class="guide-icon" style="background:#dff4f8">▤</div><h4>'+esc(g.title)+'</h4><p>'+esc(g.summary||'')+'</p><span class="read">Abrir guía →</span></button>').join('');guideGrid.addEventListener('click',e=>{const b=e.target.closest('[data-af-guide]');if(!b)return;const g=data.guides[Number(b.dataset.afGuide)],modal=document.getElementById('guideModal');if(!modal)return;document.getElementById('guideKicker').textContent='GUÍA PRÁCTICA';document.getElementById('guideTitle').textContent=g.title||'Guía';document.getElementById('guideLead').textContent=g.summary||'';document.getElementById('guideBody').innerHTML=g.body||('<p>'+esc(g.summary||'')+'</p>');modal.classList.add('on');document.body.style.overflow='hidden'})}
 })();
+</script>
+<script type="module" id="firebase-professional-directory">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+// Pega aquí la configuración web de tu proyecto Firebase (Configuración del proyecto > Tus aplicaciones).
+const firebaseConfig = {
+  apiKey: "PEGA_AQUI_TU_API_KEY",
+  authDomain: "PEGA_AQUI_TU_PROYECTO.firebaseapp.com",
+  projectId: "PEGA_AQUI_TU_PROJECT_ID",
+  storageBucket: "PEGA_AQUI_TU_PROYECTO.appspot.com",
+  messagingSenderId: "PEGA_AQUI_TU_SENDER_ID",
+  appId: "PEGA_AQUI_TU_APP_ID"
+};
+const ready = firebaseConfig.apiKey !== "PEGA_AQUI_TU_API_KEY" && firebaseConfig.projectId !== "PEGA_AQUI_TU_PROJECT_ID";
+let auth=null, db=null, currentUser=null;
+const escHub = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const setStatus = (id,msg) => { const el=document.getElementById(id); if(el)el.textContent=msg; };
+function authError(e){
+ const code=e?.code||"";
+ if(code.includes("email-already-in-use"))return "Ese correo ya tiene una cuenta. Inicia sesión.";
+ if(code.includes("weak-password"))return "La contraseña debe tener al menos 6 caracteres.";
+ if(code.includes("invalid-credential")||code.includes("wrong-password")||code.includes("user-not-found"))return "Correo o contraseña incorrectos.";
+ if(code.includes("operation-not-allowed"))return "Activa el método de acceso Correo/contraseña en Firebase Authentication.";
+ if(code.includes("permission-denied"))return "Faltan las reglas de seguridad de Firestore o no están publicadas.";
+ return "No se pudo completar la operación. Revisa la configuración de Firebase y vuelve a intentarlo.";
+}
+function showAuthMessage(msg){showHubDialog("Cuenta profesional",'<p>'+escHub(msg)+'</p><p>La web necesita que el propietario configure Firebase una sola vez para activar las cuentas.</p>');}
+function profileForm(profile={}){
+ const body='<p>Completa tu ficha. Al guardarla, se publicará directamente en el directorio. Tu cuenta solo puede tener un anuncio; puedes volver para editarlo.</p>'+
+ '<form id="hubProfileForm" style="display:grid;gap:11px;text-align:left">'+
+ '<label style="display:grid;gap:5px;font-weight:700">Nombre profesional o entidad *<input name="name" required maxlength="120" value="'+escHub(profile.name||'')+'" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Especialidad *<select name="specialty" required style="padding:10px;border:1px solid #ccdadd;border-radius:8px"><option value="">Selecciona</option>'+[['logopedia','Logopedia'],['psicologia','Psicología'],['terapia','Terapia ocupacional'],['asociacion','Asociación'],['educacion','Educación / apoyo educativo'],['otro','Otro servicio']].map(([v,l])=>'<option value="'+v+'" '+(profile.specialty===v?'selected':'')+'>'+l+'</option>').join('')+'</select></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Zona de atención *<input name="location" required maxlength="160" value="'+escHub(profile.location||'')+'" placeholder="Localidad, provincia o atención online" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Descripción de servicios *<textarea name="description" required maxlength="1600" rows="4" style="padding:10px;border:1px solid #ccdadd;border-radius:8px">'+escHub(profile.description||'')+'</textarea></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Correo de contacto público *<input name="contactEmail" type="email" required maxlength="180" value="'+escHub(profile.contactEmail||currentUser.email||'')+'" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Teléfono o web (opcional)<input name="contact" maxlength="200" value="'+escHub(profile.contact||'')+'" placeholder="Teléfono o https://…" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Enlace a foto o logotipo (opcional)<input name="photo" type="url" maxlength="500" value="'+escHub(profile.photo||'')+'" placeholder="https://…" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500"><input name="consent" type="checkbox" required style="margin-top:4px" '+(profile.consent?'checked':'')+'>Confirmo que tengo derecho a publicar estos datos y autorizo que mi perfil sea visible públicamente. No incluiré datos personales ni médicos de usuarios.</label>'+
+ '<button type="submit" style="border:0;border-radius:10px;padding:13px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Publicar / guardar anuncio</button>'+
+ '<button type="button" data-hub-action="logout" style="border:1px solid #ccdadd;border-radius:10px;padding:11px;background:white;cursor:pointer">Cerrar sesión</button><p id="hubProfileStatus" role="status" aria-live="polite" style="font-size:13px;margin:0"></p>'+
+ '<p style="font-size:11px;color:#7b8b90;margin:0">El perfil será público en cuanto se guarde. Solo puedes tener un anuncio por cuenta; editarás siempre esta misma ficha.</p></form>';
+ showHubDialog(profile.name?'Editar mi anuncio':'Crear mi anuncio',body);
+}
+window.firebaseHubOpenProfile = async function(){
+ if(!ready){showAuthMessage("El formulario de cuentas está preparado, pero aún falta configurar las claves del proyecto Firebase.");return;}
+ if(!currentUser){showHubJoin();return;}
+ try{const snap=await getDoc(doc(db,"profiles",currentUser.uid));profileForm(snap.exists()?snap.data():{});}
+ catch(e){showAuthMessage(authError(e));}
+};
+function addProfileCard(p){
+ const host=document.getElementById("hubProfiles");if(!host)return;
+ let card=document.getElementById("hub-user-"+p.uid);
+ if(!card){card=document.createElement("article");card.className="hub-profile";card.id="hub-user-"+p.uid;host.prepend(card);}
+ const catLabels={logopedia:"Logopedia",psicologia:"Psicología",terapia:"Terapia ocupacional",asociacion:"Asociación",educacion:"Educación / apoyo educativo",otro:"Otro servicio"};
+ const label=catLabels[p.specialty]||"Profesional";
+ const initials=(p.name||"AF").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
+ card.dataset.category=p.specialty||"otro";card.dataset.search=[p.name,p.specialty,p.location,p.description].join(" ").toLowerCase();
+ const photo=p.photo&&/^https?:\/\//i.test(p.photo)?'<img src="'+escHub(p.photo)+'" alt="" style="width:54px;height:54px;object-fit:cover;border-radius:50%">':'<div class="hub-avatar avatar-teal">'+escHub(initials)+'</div>';
+ card.innerHTML='<div class="hub-profile-top">'+photo+'<span class="hub-pill">'+escHub(label)+'</span></div><h4>'+escHub(p.name)+'</h4><p class="hub-role">'+escHub(p.location)+'</p><p class="hub-description">'+escHub(p.description)+'</p><div class="hub-profile-actions"><button type="button" data-profile-action="view">Ver perfil</button><button type="button" class="hub-contact" data-profile-action="contact">Contactar</button></div>';
+ card.querySelector('[data-profile-action="view"]').addEventListener("click",()=>showHubDialog(p.name,'<p><strong>'+escHub(label)+'</strong></p><p>'+escHub(p.description)+'</p><p><strong>Zona:</strong> '+escHub(p.location)+'</p><p><strong>Contacto:</strong> '+escHub(p.contactEmail)+'</p>'+(p.contact?'<p><strong>Teléfono o web:</strong> '+escHub(p.contact)+'</p>':'')+(p.photo?'<p><a href="'+escHub(p.photo)+'" target="_blank" rel="noopener noreferrer">Ver imagen</a></p>':'')));
+ card.querySelector('[data-profile-action="contact"]').addEventListener("click",()=>showHubDialog("Contactar con "+p.name,'<p>Correo: <a href="mailto:'+escHub(p.contactEmail)+'">'+escHub(p.contactEmail)+'</a></p>'+(p.contact?'<p>Teléfono o web: '+escHub(p.contact)+'</p>':'')));
+}
+async function loadPublicProfiles(){
+ if(!ready||!db)return;
+ try{const snaps=await getDocs(collection(db,"profiles"));snaps.forEach(s=>addProfileCard({...s.data(),uid:s.id}));}
+ catch(e){console.warn("No se pudieron cargar los perfiles publicados:",e);}
+}
+if(ready){
+ try{
+  const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
+  auth=getAuth(app);db=getFirestore(app);
+  onAuthStateChanged(auth,user=>{currentUser=user;});
+  await loadPublicProfiles();
+ }catch(e){console.error("Firebase no está configurado:",e);}
+}
+document.addEventListener("submit",async ev=>{
+ if(ev.target.id==="hubAuthForm"){
+  ev.preventDefault();
+  if(!ready){setStatus("hubAuthStatus","Falta configurar Firebase en index.html y activar Authentication/Correo y contraseña.");return;}
+  const form=ev.target,fd=new FormData(form),email=String(fd.get("email")||"").trim(),password=String(fd.get("password")||"");
+  const submitter=ev.submitter,action=submitter?.dataset?.hubAction||"login";
+  setStatus("hubAuthStatus","Un momento…");
+  try{
+   if(action==="register")await createUserWithEmailAndPassword(auth,email,password);
+   else await signInWithEmailAndPassword(auth,email,password);
+   currentUser=auth.currentUser;
+   const snap=await getDoc(doc(db,"profiles",currentUser.uid));
+   profileForm(snap.exists()?snap.data():{});
+  }catch(e){setStatus("hubAuthStatus",authError(e));}
+ }
+ if(ev.target.id==="hubProfileForm"){
+  ev.preventDefault();
+  const form=ev.target;if(!ready||!currentUser){setStatus("hubProfileStatus","Inicia sesión para guardar el anuncio.");return;}
+  const fd=new FormData(form),status=document.getElementById("hubProfileStatus");
+  if(status)status.textContent="Publicando…";
+  const p={uid:currentUser.uid,name:String(fd.get("name")||"").trim(),specialty:String(fd.get("specialty")||""),location:String(fd.get("location")||"").trim(),description:String(fd.get("description")||"").trim(),contactEmail:String(fd.get("contactEmail")||"").trim(),contact:String(fd.get("contact")||"").trim(),photo:String(fd.get("photo")||"").trim(),consent:fd.get("consent")==="on",updatedAt:serverTimestamp()};
+  try{
+   const ref=doc(db,"profiles",currentUser.uid);const snap=await getDoc(ref);
+   if(!snap.exists()){p.createdAt=serverTimestamp();}
+   await setDoc(ref,p,{merge:true});
+   addProfileCard({...p,uid:currentUser.uid});
+   if(status)status.textContent="Anuncio publicado. Ya aparece en el directorio y puedes editarlo cuando quieras.";
+  }catch(e){if(status)status.textContent=authError(e);}
+ }
+});
+document.addEventListener("click",async ev=>{
+ const b=ev.target.closest("[data-hub-action='logout']");if(!b)return;
+ try{await signOut(auth);showHubJoin();}catch(e){setStatus("hubProfileStatus",authError(e));}
+});
 </script>
 </body>
 </html>
