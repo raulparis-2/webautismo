@@ -400,10 +400,9 @@ body{overflow-x:hidden}
     </div>
 
     <div class="app-actions">
-      <button class="app-action" onclick="openAppSection('articles')" type="button"><div class="ai blue"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4"/><path d="M9 11h6M9 15h6"/></svg></div><h4>Artículos semanales</h4><p>Información y experiencias nuevas cada semana.</p></button>
-      
+      <button class="app-action" onclick="openAppSection('articles')" type="button"><div class="ai blue"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4"/><path d="M9 11h6M9 15h6"/></svg></div><h4>Artículo</h4><p>Información y experiencias nuevas cada semana.</p></button>
+      <button class="app-action" onclick="openAppSection('news')" type="button"><div class="ai green"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 12h8M8 15h5"/></svg></div><h4>Novedades</h4><p>Actualizaciones y publicaciones recientes.</p></button>
       <button class="app-action" onclick="openAppSection('resources')" type="button"><div class="ai yellow"><svg viewBox="0 0 24 24"><path d="M4 5h7v14H4zM13 5h7v14h-7z"/><path d="M11 7c-2-2-4-2-7-2M13 7c2-2 4-2 7-2"/></svg></div><h4>Recursos</h4><p>Guías, materiales y herramientas para el día a día.</p></button>
-      
     </div>
   </div>
 
@@ -447,7 +446,7 @@ body{overflow-x:hidden}
   </div>
 
 </section>
-<section class="section" id="articulos"><div class="section-title"><div><div class="label">INFORMACIÓN QUE ACOMPAÑA</div><h2>Últimos artículos</h2></div><a class="label" href="#">Ver todos los artículos →</a></div>
+<section class="section" id="articulos"><div class="section-title"><div><div class="label">INFORMACIÓN QUE ACOMPAÑA</div><h2>Últimos artículos</h2></div><a class="label" href="#app-articles" onclick="event.preventDefault();openAppSection('articles')">Ver todos los artículos →</a></div>
 <div class="article-grid">
 <article class="article" role="button" tabindex="0" onclick="openArticle(0)" onkeydown="if(event.key==='Enter')openArticle(0)"><div class="pic"></div><span class="tag tblue">Consejos</span><h3>Cómo favorecer la comunicación en casa</h3><p>Ideas sencillas para crear momentos de comunicación respetuosos.</p><small>Leer artículo completo →</small></article>
 <article class="article" role="button" tabindex="0" onclick="openArticle(1)" onkeydown="if(event.key==='Enter')openArticle(1)"><div class="pic two"></div><span class="tag tpurple">Familia</span><h3>La importancia de las rutinas en el día a día</h3><p>Claves para anticipar cambios y construir rutinas.</p><small>Leer artículo completo →</small></article>
@@ -639,7 +638,7 @@ document.getElementById('guideModal').addEventListener('click',e=>{if(e.target.i
 function goSection(e,id){if(e)e.preventDefault();const main=document.getElementById('inicio');if(main)main.classList.remove('app-open');history.replaceState(null,'','#'+id);const target=document.getElementById(id);if(target)target.scrollIntoView({behavior:'smooth',block:'start'});}
 function openApp(e){if(e)e.preventDefault();const main=document.getElementById('inicio');if(!main)return;main.classList.add('app-open');document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));history.replaceState(null,'','#app');const panel=document.querySelector('.app-panel');if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});}
 function closeApp(){const main=document.getElementById('inicio');if(!main)return;main.classList.remove('app-open');history.replaceState(null,'','#inicio');window.scrollTo({top:0,behavior:'smooth'});}
-function openAppSection(section){const main=document.getElementById('inicio');if(main)main.classList.add('app-open');document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));if(section!=='home'){const el=document.getElementById('app-'+section);if(el)el.classList.add('on');}history.replaceState(null,'','#app'+(section==='home'?'':'-'+section));requestAnimationFrame(()=>{const panel=document.querySelector('.app-panel');if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});});}
+function openAppSection(section){const main=document.getElementById('inicio');const panel=document.querySelector('.app-panel');if(!main||!panel)return;main.classList.add('app-open');document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));if(section!=='home'){const target=document.getElementById('app-'+section);if(!target){main.classList.remove('app-open');return;}target.classList.add('on');}history.replaceState(null,'','#app'+(section==='home'?'':'-'+section));requestAnimationFrame(()=>{panel.scrollIntoView({behavior:'smooth',block:'start'});});}
 window.addEventListener('hashchange',()=>{if(location.hash==='#app')openApp();});
 
 function toggleMobileMenu(){
