@@ -12,13 +12,18 @@
   "grants": [
     {
       "id": "demo-grant-1",
-      "isDemo": true,
-      "title": "EJEMPLO — Ayuda o subvención (borrar)",
+      "title": "EJEMPLO",
       "province": "Ámbito de ejemplo",
-      "category": "Convocatoria de ejemplo",
-      "summary": "Ficha de prueba para revisar el filtro por provincia. No es una convocatoria real.",
+      "category": "Ámbito de ejemplo",
+      "summary": "Ejemplo",
       "date": "Plazo de ejemplo",
-      "url": ""
+      "url": "",
+      "name": "EJEMPLO",
+      "place": "Ámbito de ejemplo",
+      "description": "Ejemplo",
+      "image": "uploads/image-1792230954811-images.jpg",
+      "video": "",
+      "body": ""
     }
   ],
   "videos": [
