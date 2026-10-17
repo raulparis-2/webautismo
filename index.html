@@ -401,7 +401,7 @@ body{overflow-x:hidden}
 
     <div class="app-actions">
       <button class="app-action" onclick="openAppSection('articles')" type="button"><div class="ai blue"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4"/><path d="M9 11h6M9 15h6"/></svg></div><h4>Artículos</h4><p>Información y experiencias nuevas cada semana.</p></button>
-      <button class="app-action" onclick="openAppSection('resources')" type="button"><div class="ai yellow"><svg viewBox="0 0 24 24"><path d="M4 5h7v14H4zM13 5h7v14h-7z"/><path d="M11 7c-2-2-4-2-7-2M13 7c2-2 4-2 7-2"/></svg></div><h4>Recursos</h4><p>Guías, materiales y herramientas para el día a día.</p></button>
+      <button class="app-action" onclick="openFamilyGuides()" type="button"><div class="ai yellow"><svg viewBox="0 0 24 24"><path d="M4 5h7v14H4zM13 5h7v14h-7z"/><path d="M11 7c-2-2-4-2-7-2M13 7c2-2 4-2 7-2"/></svg></div><h4>Recursos</h4><p>Guías, materiales y herramientas para el día a día.</p></button>
     </div>
   </div>
 
@@ -637,7 +637,8 @@ document.getElementById('guideModal').addEventListener('click',e=>{if(e.target.i
 function goSection(e,id){if(e)e.preventDefault();const main=document.getElementById('inicio');if(main)main.classList.remove('app-open');history.replaceState(null,'','#'+id);const target=document.getElementById(id);if(target)target.scrollIntoView({behavior:'smooth',block:'start'});}
 function openApp(e){if(e)e.preventDefault();const main=document.getElementById('inicio');if(!main)return;main.classList.add('app-open');document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));history.replaceState(null,'','#app');const panel=document.querySelector('.app-panel');if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});}
 function closeApp(){const main=document.getElementById('inicio');if(!main)return;main.classList.remove('app-open');history.replaceState(null,'','#inicio');window.scrollTo({top:0,behavior:'smooth'});}
-function openAppSection(section){const main=document.getElementById('inicio');const panel=document.querySelector('.app-panel');if(!main||!panel)return;main.classList.add('app-open');document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));if(section!=='home'){const target=document.getElementById('app-'+section);if(!target){main.classList.remove('app-open');return;}target.classList.add('on');}history.replaceState(null,'','#app'+(section==='home'?'':'-'+section));requestAnimationFrame(()=>{panel.scrollIntoView({behavior:'smooth',block:'start'});});}
+function openAppSection(section){const main=document.getElementById('inicio');const panel=document.querySelector('.app-panel');if(!main||!panel)return;main.classList.add('app-open');document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));let target=panel;if(section!=='home'){target=document.getElementById('app-'+section);if(!target){main.classList.remove('app-open');return;}target.classList.add('on');}history.replaceState(null,'','#app'+(section==='home'?'':'-'+section));requestAnimationFrame(()=>{target.scrollIntoView({behavior:'smooth',block:'start'});});}
+function openFamilyGuides(){const main=document.getElementById('inicio');const guides=document.querySelector('.app-guides');if(!main||!guides)return;main.classList.add('app-open');document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));history.replaceState(null,'','#app-guides');requestAnimationFrame(()=>{guides.scrollIntoView({behavior:'smooth',block:'start'});});}
 window.addEventListener('hashchange',()=>{if(location.hash==='#app')openApp();});
 
 function toggleMobileMenu(){
