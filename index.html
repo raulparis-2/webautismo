@@ -333,32 +333,19 @@ body{overflow-x:hidden}
   </div>
 
 
-  <section class="directory-hub" aria-label="Directorio de profesionales y servicios">
+  <section class="directory-hub" aria-label="Anuncios de familias que buscan cuidadores">
     <div class="hub-intro">
-      <div><span class="hub-kicker">DIRECTORIO DE CONFIANZA</span><h3>Encuentra a la persona adecuada para tu familia</h3><p>Explora perfiles, conoce qué ofrece cada profesional y consulta sus valoraciones.</p></div>
+      <div><span class="hub-kicker">ANUNCIOS DE CUIDADOS</span><h3>Encuentra familias que necesitan una persona cuidadora</h3><p>Publica o consulta anuncios para encontrar cuidadores y cuidadoras de niños, jóvenes o personas adultas con autismo. Contacta directamente con la familia para acordar los detalles.</p></div>
       <div class="hub-art" aria-hidden="true"><span>♡</span><i>✦</i><b>+</b></div>
     </div>
     <div class="hub-tools">
-      <label class="hub-search"><span>⌕</span><input id="hubSearch" type="search" placeholder="Buscar logopedia, terapia, asociación…" oninput="filterHubProfiles()"></label>
-      <label class="hub-filter"><span>Especialidad</span><select id="hubCategory" onchange="filterHubProfiles()"><option value="">Todas las especialidades</option><option value="logopedia">Logopedia</option><option value="psicologia">Psicología</option><option value="terapia">Terapia ocupacional</option><option value="asociacion">Asociaciones</option></select></label>
+      <label class="hub-search"><span>⌕</span><input id="hubSearch" type="search" placeholder="Buscar por localidad, horario o tipo de cuidado…" oninput="filterHubProfiles()"></label>
+      <label class="hub-filter"><span>Tipo de cuidado</span><select id="hubCategory" onchange="filterHubProfiles()"><option value="">Todos los anuncios</option><option value="infancia">Cuidado de niños/as</option><option value="adultos">Cuidado de personas adultas</option><option value="ocasional">Apoyo ocasional</option><option value="otro">Otro tipo de apoyo</option></select></label>
     </div>
-    <div class="hub-section-title"><div><span class="hub-kicker">PERFILES DESTACADOS</span><h3>Personas y servicios que pueden ayudarte</h3></div><span class="hub-demo-note">Perfiles de ejemplo</span></div>
-    <div class="hub-profiles" id="hubProfiles">
-      <article class="hub-profile" data-category="logopedia" data-search="logopedia comunicación lenguaje infantil">
-        <div class="hub-profile-top"><div class="hub-avatar avatar-teal">LM</div><span class="hub-pill">Logopedia</span></div><h4>Laura Martín</h4><p class="hub-role">Logopeda · Comunicación y lenguaje</p><p class="hub-description">Apoyo individualizado para desarrollar la comunicación y adaptar estrategias al día a día familiar.</p><div class="hub-rating"><span>★★★★★</span> <b>4,9</b> <small>(12 valoraciones de ejemplo)</small></div><div class="hub-profile-actions"><button type="button" onclick="showHubProfile('Laura Martín','Logopeda · Comunicación y lenguaje','Apoyo individualizado para desarrollar la comunicación y adaptar estrategias al día a día familiar.','logopedia')">Ver perfil</button><button type="button" class="hub-contact" onclick="showHubContact('Laura Martín')">Contactar</button></div>
-      </article>
-      <article class="hub-profile" data-category="psicologia" data-search="psicología acompañamiento familiar emociones">
-        <div class="hub-profile-top"><div class="hub-avatar avatar-lilac">AR</div><span class="hub-pill lilac">Psicología</span></div><h4>Andrés Rodríguez</h4><p class="hub-role">Psicólogo · Acompañamiento familiar</p><p class="hub-description">Orientación a familias, bienestar emocional y estrategias para afrontar los retos cotidianos.</p><div class="hub-rating"><span>★★★★★</span> <b>4,8</b> <small>(8 valoraciones de ejemplo)</small></div><div class="hub-profile-actions"><button type="button" onclick="showHubProfile('Andrés Rodríguez','Psicólogo · Acompañamiento familiar','Orientación a familias, bienestar emocional y estrategias para afrontar los retos cotidianos.','psicología')">Ver perfil</button><button type="button" class="hub-contact" onclick="showHubContact('Andrés Rodríguez')">Contactar</button></div>
-      </article>
-      <article class="hub-profile" data-category="terapia" data-search="terapia ocupacional autonomía rutinas actividades">
-        <div class="hub-profile-top"><div class="hub-avatar avatar-peach">SC</div><span class="hub-pill peach">Terapia ocupacional</span></div><h4>Sofía Castro</h4><p class="hub-role">Terapeuta ocupacional · Autonomía</p><p class="hub-description">Ideas y acompañamiento para favorecer la autonomía, las rutinas y la participación diaria.</p><div class="hub-rating"><span>★★★★★</span> <b>4,9</b> <small>(6 valoraciones de ejemplo)</small></div><div class="hub-profile-actions"><button type="button" onclick="showHubProfile('Sofía Castro','Terapeuta ocupacional · Autonomía','Ideas y acompañamiento para favorecer la autonomía, las rutinas y la participación diaria.','terapia ocupacional')">Ver perfil</button><button type="button" class="hub-contact" onclick="showHubContact('Sofía Castro')">Contactar</button></div>
-      </article>
-      <article class="hub-profile" data-category="asociacion" data-search="asociación familias apoyo grupos recursos">
-        <div class="hub-profile-top"><div class="hub-avatar avatar-yellow">AF</div><span class="hub-pill yellow">Asociación</span></div><h4>Apoyo en Familia</h4><p class="hub-role">Asociación · Recursos y acompañamiento</p><p class="hub-description">Un punto de encuentro para compartir experiencias, conocer recursos y encontrar apoyo comunitario.</p><div class="hub-rating"><span>★★★★★</span> <b>4,7</b> <small>(15 valoraciones de ejemplo)</small></div><div class="hub-profile-actions"><button type="button" onclick="showHubProfile('Apoyo en Familia','Asociación · Recursos y acompañamiento','Un punto de encuentro para compartir experiencias, conocer recursos y encontrar apoyo comunitario.','asociación')">Ver perfil</button><button type="button" class="hub-contact" onclick="showHubContact('Apoyo en Familia')">Contactar</button></div>
-      </article>
-    </div>
+    <div class="hub-section-title"><div><span class="hub-kicker">ANUNCIOS PUBLICADOS</span><h3>Familias que buscan cuidadores/as</h3></div><span class="hub-demo-note">Contacta directamente con quien publica</span></div>
+    <div class="hub-profiles" id="hubProfiles"><div class="hub-no-results" style="grid-column:1/-1">Cargando anuncios publicados…</div></div>
     <div id="hubNoResults" class="hub-no-results" hidden>No hay perfiles que coincidan. Prueba otra búsqueda.</div>
-    <div class="hub-join"><div class="hub-join-icon">＋</div><div><span class="hub-kicker">¿OFRECES APOYO O SERVICIOS?</span><h3>Da a conocer tu trabajo</h3><p>Prepara tu perfil para mostrar qué haces, a quién ayudas y cómo pueden contactarte las familias.</p></div><button type="button" onclick="showHubJoin()">Quiero aparecer en el directorio <span>→</span></button></div>
+    <div class="hub-join"><div class="hub-join-icon">＋</div><div><span class="hub-kicker">¿TU FAMILIA NECESITA APOYO?</span><h3>Publica un anuncio para encontrar cuidador/a</h3><p>Explica qué tipo de cuidado necesitas, en qué zona y en qué horario. No publiques datos médicos ni fotografías identificables de menores.</p></div><button type="button" onclick="showHubJoin()">Quiero publicar mi anuncio <span>→</span></button></div>
     <div id="hubDialog" class="hub-dialog" role="dialog" aria-modal="true" aria-labelledby="hubDialogTitle" hidden><div class="hub-dialog-card"><button class="hub-dialog-close" type="button" onclick="closeHubDialog()" aria-label="Cerrar">×</button><span class="hub-kicker">AUTISMO FAMILIAR</span><h3 id="hubDialogTitle">Perfil</h3><div id="hubDialogBody"></div><button type="button" class="hub-dialog-main" onclick="closeHubDialog()">Entendido</button></div></div>
   </section>
 
@@ -646,14 +633,14 @@ function showHubContact(name){
 function showHubJoin(){
  // Si ya hay una sesión iniciada, abrir la ficha del profesional. Si no, mostrar el formulario de acceso.
  if(window.firebaseHubIsLoggedIn && window.firebaseHubIsLoggedIn() && window.firebaseHubOpenProfile){window.firebaseHubOpenProfile();return;}
- const body='<p>Accede a tu cuenta profesional o crea una gratis para publicar tu anuncio. Cada cuenta puede tener un único perfil y podrás editarlo desde cualquier dispositivo.</p>'+
+ const body='<p>Accede o crea una cuenta gratuita para publicar un anuncio y encontrar una persona cuidadora para tu hijo/a o familiar con autismo. Cada cuenta puede tener un anuncio, que podrás editar desde cualquier dispositivo.</p>'+
  '<form id="hubAuthForm" style="display:grid;gap:12px;text-align:left">'+
  '<label style="display:grid;gap:5px;font-weight:700">Correo electrónico<input name="email" type="email" autocomplete="email" required maxlength="180" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<label style="display:grid;gap:5px;font-weight:700">Contraseña<input name="password" type="password" autocomplete="current-password" minlength="6" required style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<div style="display:flex;gap:8px;flex-wrap:wrap"><button data-hub-action="login" type="submit" style="border:0;border-radius:10px;padding:12px 16px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Iniciar sesión</button><button data-hub-action="register" type="submit" style="border:1px solid #164f61;border-radius:10px;padding:12px 16px;background:#fff;color:#164f61;font-weight:800;cursor:pointer">Crear cuenta</button></div>'+
  '<p id="hubAuthStatus" role="status" aria-live="polite" style="font-size:13px;margin:0;color:#526970"></p>'+
  '<p style="font-size:11px;color:#7b8b90;margin:0">Una cuenta puede publicar un solo anuncio. No publiques información médica ni datos personales de las familias.</p></form>';
- showHubDialog('Cuenta profesional',body);
+ showHubDialog('Publicar un anuncio para encontrar cuidador/a',body);
 }
 
 document.addEventListener('click',e=>{const d=document.getElementById('hubDialog');if(d&&e.target===d)closeHubDialog()});
@@ -695,29 +682,8 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
  try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)return;data=await res.json()}catch(e){return}
  const profileHost=document.getElementById('hubProfiles');
  if(profileHost){
-  const pros=Array.isArray(data.professionals)?data.professionals.filter(p=>!p.isDemo):[];
-  const safeLink=v=>{try{if(/^uploads\/[a-z0-9._-]+$/i.test(String(v||'')))return String(v);const u=new URL(v);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return /^uploads\/[a-z0-9._-]+$/i.test(String(v||''))?String(v):''}};
-  const initials=n=>String(n||'AF').trim().split(/\\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
-  const categoryOf=p=>{const c=String(p.role||p.category||'').toLowerCase();if(c.includes('logo'))return 'logopedia';if(c.includes('psico'))return 'psicologia';if(c.includes('terap'))return 'terapia';if(c.includes('asoci'))return 'asociacion';return c||'profesional'};
-  profileHost.innerHTML=pros.length?pros.map((p,i)=>{
-   const name=p.name||p.title||'Profesional';
-   const role=p.role||p.category||'Profesional de apoyo';
-   const place=p.place||p.province||'Ubicación no indicada';
-   const desc=p.description||p.summary||'Consulta el perfil para conocer sus servicios.';
-   const rating=p.rating!==''&&p.rating!=null?Number(p.rating):null;
-   const reviews=p.reviews!==''&&p.reviews!=null?Number(p.reviews):null;
-   const stars=rating===null?'Sin valoraciones':'★'.repeat(Math.max(0,Math.min(5,Math.round(rating))))+'☆'.repeat(5-Math.max(0,Math.min(5,Math.round(rating))));
-   const cat=categoryOf(p);
-   return '<article class="hub-profile" data-category="'+esc(cat)+'" data-search="'+esc([name,role,place,desc].join(' ')).toLowerCase()+'"><div class="hub-profile-top">'+(safeLink(p.image)?'<img class="hub-avatar" style="object-fit:cover" src="'+esc(safeLink(p.image))+'" alt="Foto de '+esc(name)+'">':'<div class="hub-avatar avatar-teal">'+esc(initials(name))+'</div>')+'<span class="hub-pill">'+esc(role)+'</span></div><h4>'+esc(name)+'</h4><p class="hub-role">'+esc(place)+(p.price?' · '+esc(p.price):'')+'</p><p class="hub-description">'+esc(desc)+'</p><div class="hub-rating"><span>'+esc(stars)+'</span>'+(rating!==null?'<b>'+rating.toFixed(1)+'</b>':'')+' <small>'+(reviews!==null?'('+reviews+' reseñas)':'')+'</small></div><div class="hub-profile-actions"><button type="button" data-prof-view="'+i+'">Ver perfil</button>'+(safeLink(p.url)?'<a class="hub-contact" style="display:inline-flex;align-items:center;text-decoration:none;border-radius:9px;padding:10px 13px;background:#164f61;color:white;font-size:11px;font-weight:800" href="'+esc(safeLink(p.url))+'" target="_blank" rel="noopener noreferrer">Web / contacto ↗</a>':p.contact?'<button type="button" class="hub-contact" data-prof-contact="'+i+'">Contactar</button>':'')+'</div></article>';
-  }).join(''):'<div class="hub-no-results" style="grid-column:1/-1;background:#f7fbfb;border:1px dashed #c9e0e3;border-radius:14px;padding:24px;text-align:center"><strong>Próximamente, profesionales verificados</strong><p>Aquí aparecerán los perfiles que publique el equipo de Autismo Familiar.</p></div>';
-  profileHost.querySelectorAll('[data-prof-view]').forEach(b=>b.onclick=()=>{
-   const p=pros[Number(b.dataset.profView)];if(!p)return;
-   const name=p.name||p.title||'Profesional',role=p.role||p.category||'Profesional de apoyo';
-   const details='<p><strong>'+esc(role)+'</strong></p><p>'+esc(p.description||p.summary||'')+'</p><p><strong>Zona:</strong> '+esc(p.place||p.province||'No indicada')+'</p>'+(p.price?'<p><strong>Precio:</strong> '+esc(p.price)+'</p>':'')+(p.contact?'<p><strong>Contacto:</strong> '+esc(p.contact)+'</p>':'')+(safeLink(p.url)?'<p><a href="'+esc(safeLink(p.url))+'" target="_blank" rel="noopener noreferrer">Abrir web o perfil profesional ↗</a></p>':'')+(p.rating!==''&&p.rating!=null?'<p><strong>Valoración:</strong> '+esc(p.rating)+'/5 ('+esc(p.reviews||0)+' reseñas)</p>':'');
-   showHubDialog(name,details||'<p>Información del perfil próximamente.</p>');
-  });
-  profileHost.querySelectorAll('[data-prof-contact]').forEach(b=>b.onclick=()=>{const p=pros[Number(b.dataset.profContact)];if(p&&p.contact)showHubDialog('Contactar con '+esc(p.name||p.title||'profesional'),'<p>'+esc(p.contact)+'</p>')});
-  filterHubProfiles();
+  // Los anuncios de familias se cargan desde Firebase; se ignora el antiguo catálogo de profesionales.
+
  }
 
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -771,20 +737,42 @@ function authError(e){
 }
 function showAuthMessage(msg){showHubDialog("Cuenta profesional",'<p>'+escHub(msg)+'</p><p>La web necesita que el propietario configure Firebase una sola vez para activar las cuentas.</p>');}
 function profileForm(profile={}){
- const body='<p>Completa tu ficha. Al guardarla, se publicará directamente en el directorio. Tu cuenta solo puede tener un anuncio; puedes volver para editarlo.</p>'+
+ const hasPhoto=profile.photo&&(String(profile.photo).startsWith('http')||String(profile.photo).startsWith('data:image/'));
+ const body='<p>Cuenta qué ayuda necesita tu familia para que una persona cuidadora pueda contactar contigo. El anuncio se publica directamente y podrás editarlo o eliminarlo cuando quieras.</p>'+
  '<form id="hubProfileForm" style="display:grid;gap:11px;text-align:left">'+
- '<label style="display:grid;gap:5px;font-weight:700">Nombre profesional o entidad *<input name="name" required maxlength="120" value="'+escHub(profile.name||'')+'" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Especialidad *<select name="specialty" required style="padding:10px;border:1px solid #ccdadd;border-radius:8px"><option value="">Selecciona</option>'+[['logopedia','Logopedia'],['psicologia','Psicología'],['terapia','Terapia ocupacional'],['asociacion','Asociación'],['educacion','Educación / apoyo educativo'],['otro','Otro servicio']].map(([v,l])=>'<option value="'+v+'" '+(profile.specialty===v?'selected':'')+'>'+l+'</option>').join('')+'</select></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Zona de atención *<input name="location" required maxlength="160" value="'+escHub(profile.location||'')+'" placeholder="Localidad, provincia o atención online" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Descripción de servicios *<textarea name="description" required maxlength="1600" rows="4" style="padding:10px;border:1px solid #ccdadd;border-radius:8px">'+escHub(profile.description||'')+'</textarea></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Correo de contacto público *<input name="contactEmail" type="email" required maxlength="180" value="'+escHub(profile.contactEmail||currentUser.email||'')+'" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Teléfono o web (opcional)<input name="contact" maxlength="200" value="'+escHub(profile.contact||'')+'" placeholder="Teléfono o https://…" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">Enlace a foto o logotipo (opcional)<input name="photo" type="url" maxlength="500" value="'+escHub(profile.photo||'')+'" placeholder="https://…" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500"><input name="consent" type="checkbox" required style="margin-top:4px" '+(profile.consent?'checked':'')+'>Confirmo que tengo derecho a publicar estos datos y autorizo que mi perfil sea visible públicamente. No incluiré datos personales ni médicos de usuarios.</label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Título del anuncio *<input name="name" required maxlength="120" value="'+escHub(profile.name||'')+'" placeholder="Ej. Familia busca cuidadora por las tardes" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">¿A quién hay que cuidar? *<select name="specialty" required style="padding:10px;border:1px solid #ccdadd;border-radius:8px"><option value="">Selecciona</option>'+[['infancia','Niño/a o adolescente'],['adultos','Persona adulta'],['ocasional','Apoyo ocasional o respiro familiar'],['otro','Otro tipo de cuidado']].map(([v,l])=>'<option value="'+v+'" '+(profile.specialty===v?'selected':'')+'>'+l+'</option>').join('')+'</select></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Localidad o zona *<input name="location" required maxlength="160" value="'+escHub(profile.location||'')+'" placeholder="Ej. Santiago de Compostela y alrededores" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">¿Qué tipo de ayuda y horario necesitas? *<textarea name="description" required maxlength="1600" rows="4" placeholder="Describe las tareas de cuidado, días y horarios aproximados. Evita incluir información médica o datos identificativos de menores." style="padding:10px;border:1px solid #ccdadd;border-radius:8px">'+escHub(profile.description||'')+'</textarea></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Correo de contacto *<input name="contactEmail" type="email" required maxlength="180" value="'+escHub(profile.contactEmail||currentUser.email||'')+'" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<label style="display:grid;gap:5px;font-weight:700">Teléfono de contacto (opcional)<input name="contact" maxlength="200" value="'+escHub(profile.contact||'')+'" placeholder="Teléfono para que contacten contigo" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
+ '<input name="photo" type="hidden" value="'+escHub(profile.photo||'')+'"><label style="display:grid;gap:5px;font-weight:700">Foto opcional (desde tu ordenador)<input id="hubPhotoFile" type="file" accept="image/*" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label><p style="font-size:11px;color:#7b8b90;margin:0">Puedes subir una imagen desde tu ordenador. Por privacidad, evita fotos identificables de niños/as y no incluyas información médica.</p><img id="hubPhotoPreview" alt="Vista previa de la imagen" style="display:'+(hasPhoto?'block':'none')+';max-width:150px;max-height:130px;object-fit:cover;border-radius:10px" src="'+(hasPhoto?escHub(profile.photo):'')+'">'+
+ '<label style="display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500"><input name="consent" type="checkbox" required style="margin-top:4px" '+(profile.consent?'checked':'')+'>Confirmo que tengo derecho a publicar estos datos y autorizo que el anuncio sea visible públicamente. No incluiré datos personales ni médicos de usuarios.</label>'+
  '<button type="submit" style="border:0;border-radius:10px;padding:13px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Publicar / guardar anuncio</button>'+
  '<button type="button" data-hub-action="delete-profile" style="border:1px solid #b42318;border-radius:10px;padding:11px;background:white;color:#b42318;cursor:pointer">Eliminar mi anuncio</button><button type="button" data-hub-action="logout" style="border:1px solid #ccdadd;border-radius:10px;padding:11px;background:white;cursor:pointer">Cerrar sesión</button><p id="hubProfileStatus" role="status" aria-live="polite" style="font-size:13px;margin:0"></p>'+
- '<p style="font-size:11px;color:#7b8b90;margin:0">El perfil será público en cuanto se guarde. Solo puedes tener un anuncio por cuenta; editarás siempre esta misma ficha.</p></form>';
+ '<p style="font-size:11px;color:#7b8b90;margin:0">El anuncio será público en cuanto se guarde. Solo puedes tener uno por cuenta. Usa un nombre de anuncio, no el nombre completo de un menor.</p></form>';
  showHubDialog(profile.name?'Editar mi anuncio':'Crear mi anuncio',body);
+ const file=document.getElementById('hubPhotoFile');
+ if(file)file.addEventListener('change',async()=>{
+  const f=file.files&&file.files[0];if(!f)return;
+  const status=document.getElementById('hubProfileStatus');
+  if(!f.type.startsWith('image/')){if(status)status.textContent='Selecciona un archivo de imagen.';file.value='';return;}
+  if(f.size>12*1024*1024){if(status)status.textContent='La imagen original debe pesar menos de 12 MB.';file.value='';return;}
+  try{
+   if(status)status.textContent='Preparando imagen…';
+   const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(new Error('No se pudo leer la imagen.'));reader.readAsDataURL(f)});
+   const img=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('El archivo no parece una imagen válida.'));image.src=dataUrl});
+   const scale=Math.min(1,900/Math.max(img.width,img.height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*scale));canvas.height=Math.max(1,Math.round(img.height*scale));
+   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);
+   let quality=.78,compressed=canvas.toDataURL('image/jpeg',quality);
+   while(compressed.length>380000&&quality>.38){quality-=.08;compressed=canvas.toDataURL('image/jpeg',quality);}
+   if(compressed.length>440000){canvas.width=Math.round(canvas.width*.75);canvas.height=Math.round(canvas.height*.75);ctx.drawImage(img,0,0,canvas.width,canvas.height);compressed=canvas.toDataURL('image/jpeg',.42);}
+   if(compressed.length>450000)throw new Error('La imagen sigue siendo demasiado grande. Prueba con otra imagen más pequeña.');
+   const hidden=document.querySelector('#hubProfileForm input[name="photo"]');if(hidden)hidden.value=compressed;
+   const preview=document.getElementById('hubPhotoPreview');if(preview){preview.src=compressed;preview.style.display='block';}
+   if(status)status.textContent='Imagen lista. Se guardará al publicar el anuncio.';
+  }catch(err){if(status)status.textContent=err.message||'No se pudo preparar la imagen.';}
+ });
 }
 window.firebaseHubOpenProfile = async function(){
  if(!ready){showAuthMessage("El formulario de cuentas está preparado, pero aún falta configurar las claves del proyecto Firebase.");return;}
@@ -796,14 +784,14 @@ function addProfileCard(p){
  const host=document.getElementById("hubProfiles");if(!host)return;
  let card=document.getElementById("hub-user-"+p.uid);
  if(!card){card=document.createElement("article");card.className="hub-profile";card.id="hub-user-"+p.uid;host.prepend(card);}
- const catLabels={logopedia:"Logopedia",psicologia:"Psicología",terapia:"Terapia ocupacional",asociacion:"Asociación",educacion:"Educación / apoyo educativo",otro:"Otro servicio"};
+ const catLabels={infancia:"Busca cuidador/a para menor",adultos:"Busca cuidador/a para persona adulta",ocasional:"Apoyo ocasional",otro:"Otro tipo de cuidado"};
  const label=catLabels[p.specialty]||"Profesional";
  const initials=(p.name||"AF").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
  card.dataset.category=p.specialty||"otro";card.dataset.search=[p.name,p.specialty,p.location,p.description].join(" ").toLowerCase();
- const photo=p.photo&&/^https?:\/\//i.test(p.photo)?'<img src="'+escHub(p.photo)+'" alt="" style="width:54px;height:54px;object-fit:cover;border-radius:50%">':'<div class="hub-avatar avatar-teal">'+escHub(initials)+'</div>';
- card.innerHTML='<div class="hub-profile-top">'+photo+'<span class="hub-pill">'+escHub(label)+'</span></div><h4>'+escHub(p.name)+'</h4><p class="hub-role">'+escHub(p.location)+'</p><p class="hub-description">'+escHub(p.description)+'</p><div class="hub-profile-actions"><button type="button" data-profile-action="view">Ver perfil</button><button type="button" class="hub-contact" data-profile-action="contact">Contactar</button></div>';
+ const photo=p.photo&&(p.photo.startsWith("http")||p.photo.startsWith("data:image/"))?'<img src="'+escHub(p.photo)+'" alt="" style="width:54px;height:54px;object-fit:cover;border-radius:50%">':'<div class="hub-avatar avatar-teal">'+escHub(initials)+'</div>';
+ card.innerHTML='<div class="hub-profile-top">'+photo+'<span class="hub-pill">'+escHub(label)+'</span></div><h4>'+escHub(p.name)+'</h4><p class="hub-role">'+escHub(p.location)+'</p><p class="hub-description">'+escHub(p.description)+'</p><div class="hub-profile-actions"><button type="button" data-profile-action="view">Ver anuncio</button><button type="button" class="hub-contact" data-profile-action="contact">Contactar familia</button></div>';
  card.querySelector('[data-profile-action="view"]').addEventListener("click",()=>showHubDialog(p.name,'<p><strong>'+escHub(label)+'</strong></p><p>'+escHub(p.description)+'</p><p><strong>Zona:</strong> '+escHub(p.location)+'</p><p><strong>Contacto:</strong> '+escHub(p.contactEmail)+'</p>'+(p.contact?'<p><strong>Teléfono o web:</strong> '+escHub(p.contact)+'</p>':'')+(p.photo?'<p><a href="'+escHub(p.photo)+'" target="_blank" rel="noopener noreferrer">Ver imagen</a></p>':'')));
- card.querySelector('[data-profile-action="contact"]').addEventListener("click",()=>showHubDialog("Contactar con "+p.name,'<p>Correo: <a href="mailto:'+escHub(p.contactEmail)+'">'+escHub(p.contactEmail)+'</a></p>'+(p.contact?'<p>Teléfono o web: '+escHub(p.contact)+'</p>':'')));
+ card.querySelector('[data-profile-action="contact"]').addEventListener("click",()=>showHubDialog("Contactar con la familia",'<p>Correo: <a href="mailto:'+escHub(p.contactEmail)+'">'+escHub(p.contactEmail)+'</a></p>'+(p.contact?'<p>Teléfono o web: '+escHub(p.contact)+'</p>':'')));
 }
 async function loadPublicProfiles(){
  if(!ready||!db)return;
