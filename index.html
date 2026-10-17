@@ -340,7 +340,7 @@ body{overflow-x:hidden}
     </div>
     <div class="hub-tools">
       <label class="hub-search"><span>⌕</span><input id="hubSearch" type="search" placeholder="Buscar por localidad, horario o tipo de cuidado…" oninput="filterHubProfiles()"></label>
-      <label class="hub-filter"><span>Tipo de cuidado</span><select id="hubCategory" onchange="filterHubProfiles()"><option value="">Todos los anuncios</option><option value="infancia">Cuidado de niños/as</option><option value="adultos">Cuidado de personas adultas</option><option value="ocasional">Apoyo ocasional</option><option value="otro">Otro tipo de apoyo</option></select></label>
+      <label class="hub-filter"><span>Filtrar por zona</span><select id="hubCategory" onchange="filterHubProfiles()"><option value="">Todas las zonas</option></select></label>
     </div>
     <div class="hub-section-title"><div><span class="hub-kicker">ANUNCIOS PUBLICADOS</span><h3>Familias que buscan cuidadores/as</h3></div><span class="hub-demo-note">Contacta directamente con quien publica</span></div>
     <div class="hub-profiles" id="hubProfiles"><div class="hub-no-results" style="grid-column:1/-1">Cargando anuncios publicados…</div></div>
@@ -607,12 +607,20 @@ function mobileNavigate(e,id){
 </script>
 
 <script id="directory-hub-functions">
+function refreshHubZones(){
+ const select=document.getElementById('hubCategory');if(!select)return;
+ const previous=select.value;
+ const zones=[...new Set([...document.querySelectorAll('#hubProfiles .hub-profile')].map(card=>(card.querySelector('.hub-role')?.textContent||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+ select.innerHTML='<option value="">Todas las zonas</option>';
+ zones.forEach(zone=>{const option=document.createElement('option');option.value=zone.toLocaleLowerCase('es');option.textContent=zone;select.appendChild(option);});
+ if(zones.some(zone=>zone.toLocaleLowerCase('es')===previous))select.value=previous;
+}
 function filterHubProfiles(){
  const q=(document.getElementById('hubSearch')?.value||'').trim().toLowerCase();
- const cat=document.getElementById('hubCategory')?.value||'';
+ const zone=document.getElementById('hubCategory')?.value||'';
  let visible=0;
  document.querySelectorAll('#hubProfiles .hub-profile').forEach(card=>{
-   const match=(!q||(card.dataset.search+' '+card.innerText).toLowerCase().includes(q))&&(!cat||card.dataset.category===cat);
+   const match=(!q||(card.dataset.search+' '+card.innerText).toLowerCase().includes(q))&&(!zone||card.dataset.zone===zone);
    card.hidden=!match;if(match)visible++;
  });
  const empty=document.getElementById('hubNoResults');if(empty)empty.hidden=visible>0;
@@ -741,7 +749,6 @@ function profileForm(profile={}){
  const body='<p>Cuenta qué ayuda necesita tu familia para que una persona cuidadora pueda contactar contigo. El anuncio se publica directamente y podrás editarlo o eliminarlo cuando quieras.</p>'+
  '<form id="hubProfileForm" style="display:grid;gap:11px;text-align:left">'+
  '<label style="display:grid;gap:5px;font-weight:700">Título del anuncio *<input name="name" required maxlength="120" value="'+escHub(profile.name||'')+'" placeholder="Ej. Familia busca cuidadora por las tardes" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
- '<label style="display:grid;gap:5px;font-weight:700">¿A quién hay que cuidar? *<select name="specialty" required style="padding:10px;border:1px solid #ccdadd;border-radius:8px"><option value="">Selecciona</option>'+[['infancia','Niño/a o adolescente'],['adultos','Persona adulta'],['ocasional','Apoyo ocasional o respiro familiar'],['otro','Otro tipo de cuidado']].map(([v,l])=>'<option value="'+v+'" '+(profile.specialty===v?'selected':'')+'>'+l+'</option>').join('')+'</select></label>'+
  '<label style="display:grid;gap:5px;font-weight:700">Localidad o zona *<input name="location" required maxlength="160" value="'+escHub(profile.location||'')+'" placeholder="Ej. Santiago de Compostela y alrededores" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<label style="display:grid;gap:5px;font-weight:700">¿Qué tipo de ayuda y horario necesitas? *<textarea name="description" required maxlength="1600" rows="4" placeholder="Describe las tareas de cuidado, días y horarios aproximados. Evita incluir información médica o datos identificativos de menores." style="padding:10px;border:1px solid #ccdadd;border-radius:8px">'+escHub(profile.description||'')+'</textarea></label>'+
  '<label style="display:grid;gap:5px;font-weight:700">Correo de contacto *<input name="contactEmail" type="email" required maxlength="180" value="'+escHub(profile.contactEmail||currentUser.email||'')+'" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
@@ -784,18 +791,18 @@ function addProfileCard(p){
  const host=document.getElementById("hubProfiles");if(!host)return;
  let card=document.getElementById("hub-user-"+p.uid);
  if(!card){card=document.createElement("article");card.className="hub-profile";card.id="hub-user-"+p.uid;host.prepend(card);}
- const catLabels={infancia:"Busca cuidador/a para menor",adultos:"Busca cuidador/a para persona adulta",ocasional:"Apoyo ocasional",otro:"Otro tipo de cuidado"};
- const label=catLabels[p.specialty]||"Anuncio de cuidados";
+ const label="Anuncio de cuidados";
  const initials=(p.name||"AF").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
- card.dataset.category=p.specialty||"otro";card.dataset.search=[p.name,p.specialty,p.location,p.description].join(" ").toLowerCase();
+ card.dataset.zone=(p.location||"").trim().toLocaleLowerCase("es");card.dataset.search=[p.name,p.location,p.description].join(" ").toLowerCase();
  const photo=p.photo&&(p.photo.startsWith("http")||p.photo.startsWith("data:image/"))?'<img src="'+escHub(p.photo)+'" alt="" style="width:54px;height:54px;object-fit:cover;border-radius:50%">':'<div class="hub-avatar avatar-teal">'+escHub(initials)+'</div>';
  card.innerHTML='<div class="hub-profile-top">'+photo+'<span class="hub-pill">'+escHub(label)+'</span></div><h4>'+escHub(p.name)+'</h4><p class="hub-role">'+escHub(p.location)+'</p><p class="hub-description">'+escHub(p.description)+'</p><div class="hub-profile-actions"><button type="button" data-profile-action="view">Ver anuncio</button><button type="button" class="hub-contact" data-profile-action="contact">Contactar familia</button></div>';
  card.querySelector('[data-profile-action="view"]').addEventListener("click",()=>showHubDialog(p.name,'<p><strong>'+escHub(label)+'</strong></p><p>'+escHub(p.description)+'</p><p><strong>Zona:</strong> '+escHub(p.location)+'</p><p><strong>Contacto:</strong> '+escHub(p.contactEmail)+'</p>'+(p.contact?'<p><strong>Teléfono o web:</strong> '+escHub(p.contact)+'</p>':'')+(p.photo?'<p><img src="'+escHub(p.photo)+'" alt="" style="max-width:100%;max-height:240px;object-fit:contain;border-radius:10px"></p>':'')));
  card.querySelector('[data-profile-action="contact"]').addEventListener("click",()=>showHubDialog("Contactar con la familia",'<p>Correo: <a href="mailto:'+escHub(p.contactEmail)+'">'+escHub(p.contactEmail)+'</a></p>'+(p.contact?'<p>Teléfono o web: '+escHub(p.contact)+'</p>':'')));
-}
+ refreshHubZones();
+ filterHubProfiles();}
 async function loadPublicProfiles(){
  if(!ready||!db)return;
- try{const host=document.getElementById("hubProfiles");if(host)host.innerHTML="";const snaps=await getDocs(collection(db,"profiles"));snaps.forEach(s=>addProfileCard({...s.data(),uid:s.id}));}
+ try{const host=document.getElementById("hubProfiles");if(host)host.innerHTML="";const snaps=await getDocs(collection(db,"profiles"));snaps.forEach(s=>addProfileCard({...s.data(),uid:s.id}));refreshHubZones();filterHubProfiles();}
  catch(e){console.warn("No se pudieron cargar los perfiles publicados:",e);}
 }
 if(ready){
@@ -826,7 +833,7 @@ document.addEventListener("submit",async ev=>{
   const form=ev.target;if(!ready||!currentUser){setStatus("hubProfileStatus","Inicia sesión para guardar el anuncio.");return;}
   const fd=new FormData(form),status=document.getElementById("hubProfileStatus");
   if(status)status.textContent="Publicando…";
-  const p={uid:currentUser.uid,name:String(fd.get("name")||"").trim(),specialty:String(fd.get("specialty")||""),location:String(fd.get("location")||"").trim(),description:String(fd.get("description")||"").trim(),contactEmail:String(fd.get("contactEmail")||"").trim(),contact:String(fd.get("contact")||"").trim(),photo:String(fd.get("photo")||"").trim(),consent:fd.get("consent")==="on",updatedAt:serverTimestamp()};
+  const p={uid:currentUser.uid,name:String(fd.get("name")||"").trim(),specialty:"general",location:String(fd.get("location")||"").trim(),description:String(fd.get("description")||"").trim(),contactEmail:String(fd.get("contactEmail")||"").trim(),contact:String(fd.get("contact")||"").trim(),photo:String(fd.get("photo")||"").trim(),consent:fd.get("consent")==="on",updatedAt:serverTimestamp()};
   try{
    const ref=doc(db,"profiles",currentUser.uid);const snap=await getDoc(ref);
    if(!snap.exists()){p.createdAt=serverTimestamp();}
