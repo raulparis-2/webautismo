@@ -25,7 +25,7 @@ service cloud.firestore {
         && request.resource.data.contact is string
         && request.resource.data.contact.size() <= 200
         && request.resource.data.photo is string
-        && request.resource.data.photo.size() <= 500
+        && request.resource.data.photo.size() <= 450000
         && request.resource.data.consent == true;
 
       allow update: if request.auth != null
@@ -46,7 +46,7 @@ service cloud.firestore {
         && request.resource.data.contact is string
         && request.resource.data.contact.size() <= 200
         && request.resource.data.photo is string
-        && request.resource.data.photo.size() <= 500
+        && request.resource.data.photo.size() <= 450000
         && request.resource.data.consent == true;
 
       allow delete: if request.auth != null && request.auth.uid == profileId;
