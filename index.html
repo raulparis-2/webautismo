@@ -735,7 +735,7 @@ function authError(e){
  if(code.includes("permission-denied"))return "Faltan las reglas de seguridad de Firestore o no están publicadas.";
  return "No se pudo completar la operación. Revisa la configuración de Firebase y vuelve a intentarlo.";
 }
-function showAuthMessage(msg){showHubDialog("Cuenta profesional",'<p>'+escHub(msg)+'</p><p>La web necesita que el propietario configure Firebase una sola vez para activar las cuentas.</p>');}
+function showAuthMessage(msg){showHubDialog("Publicar un anuncio",'<p>'+escHub(msg)+'</p><p>La web necesita que el propietario configure Firebase una sola vez para activar las cuentas.</p>');}
 function profileForm(profile={}){
  const hasPhoto=profile.photo&&(String(profile.photo).startsWith('http')||String(profile.photo).startsWith('data:image/'));
  const body='<p>Cuenta qué ayuda necesita tu familia para que una persona cuidadora pueda contactar contigo. El anuncio se publica directamente y podrás editarlo o eliminarlo cuando quieras.</p>'+
@@ -785,17 +785,17 @@ function addProfileCard(p){
  let card=document.getElementById("hub-user-"+p.uid);
  if(!card){card=document.createElement("article");card.className="hub-profile";card.id="hub-user-"+p.uid;host.prepend(card);}
  const catLabels={infancia:"Busca cuidador/a para menor",adultos:"Busca cuidador/a para persona adulta",ocasional:"Apoyo ocasional",otro:"Otro tipo de cuidado"};
- const label=catLabels[p.specialty]||"Profesional";
+ const label=catLabels[p.specialty]||"Anuncio de cuidados";
  const initials=(p.name||"AF").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
  card.dataset.category=p.specialty||"otro";card.dataset.search=[p.name,p.specialty,p.location,p.description].join(" ").toLowerCase();
  const photo=p.photo&&(p.photo.startsWith("http")||p.photo.startsWith("data:image/"))?'<img src="'+escHub(p.photo)+'" alt="" style="width:54px;height:54px;object-fit:cover;border-radius:50%">':'<div class="hub-avatar avatar-teal">'+escHub(initials)+'</div>';
  card.innerHTML='<div class="hub-profile-top">'+photo+'<span class="hub-pill">'+escHub(label)+'</span></div><h4>'+escHub(p.name)+'</h4><p class="hub-role">'+escHub(p.location)+'</p><p class="hub-description">'+escHub(p.description)+'</p><div class="hub-profile-actions"><button type="button" data-profile-action="view">Ver anuncio</button><button type="button" class="hub-contact" data-profile-action="contact">Contactar familia</button></div>';
- card.querySelector('[data-profile-action="view"]').addEventListener("click",()=>showHubDialog(p.name,'<p><strong>'+escHub(label)+'</strong></p><p>'+escHub(p.description)+'</p><p><strong>Zona:</strong> '+escHub(p.location)+'</p><p><strong>Contacto:</strong> '+escHub(p.contactEmail)+'</p>'+(p.contact?'<p><strong>Teléfono o web:</strong> '+escHub(p.contact)+'</p>':'')+(p.photo?'<p><a href="'+escHub(p.photo)+'" target="_blank" rel="noopener noreferrer">Ver imagen</a></p>':'')));
+ card.querySelector('[data-profile-action="view"]').addEventListener("click",()=>showHubDialog(p.name,'<p><strong>'+escHub(label)+'</strong></p><p>'+escHub(p.description)+'</p><p><strong>Zona:</strong> '+escHub(p.location)+'</p><p><strong>Contacto:</strong> '+escHub(p.contactEmail)+'</p>'+(p.contact?'<p><strong>Teléfono o web:</strong> '+escHub(p.contact)+'</p>':'')+(p.photo?'<p><img src="'+escHub(p.photo)+'" alt="" style="max-width:100%;max-height:240px;object-fit:contain;border-radius:10px"></p>':'')));
  card.querySelector('[data-profile-action="contact"]').addEventListener("click",()=>showHubDialog("Contactar con la familia",'<p>Correo: <a href="mailto:'+escHub(p.contactEmail)+'">'+escHub(p.contactEmail)+'</a></p>'+(p.contact?'<p>Teléfono o web: '+escHub(p.contact)+'</p>':'')));
 }
 async function loadPublicProfiles(){
  if(!ready||!db)return;
- try{const snaps=await getDocs(collection(db,"profiles"));snaps.forEach(s=>addProfileCard({...s.data(),uid:s.id}));}
+ try{const host=document.getElementById("hubProfiles");if(host)host.innerHTML="";const snaps=await getDocs(collection(db,"profiles"));snaps.forEach(s=>addProfileCard({...s.data(),uid:s.id}));}
  catch(e){console.warn("No se pudieron cargar los perfiles publicados:",e);}
 }
 if(ready){
