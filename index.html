@@ -938,6 +938,38 @@ document.addEventListener('click',function(event){
  document.getElementById('afAssociationMapWrap')?.scrollIntoView({behavior:'smooth',block:'center'});
 });
 </script>
+
+<style id="af-analytics-consent-css">
+#afAnalyticsConsent{position:fixed;z-index:100000;left:16px;right:16px;bottom:16px;max-width:760px;margin:0 auto;background:#fff;border:1px solid #d5e6e8;border-radius:15px;box-shadow:0 12px 40px #123d4a2b;padding:16px 18px;display:none;gap:14px;align-items:center}
+#afAnalyticsConsent p{margin:0;color:#526d76;font-size:12px;line-height:1.5;flex:1}#afAnalyticsConsent strong{color:#16485c}
+#afAnalyticsConsent .af-consent-actions{display:flex;gap:8px;flex-wrap:wrap}
+#afAnalyticsConsent button{border:0;border-radius:8px;padding:10px 12px;font-weight:900;font-size:11px;cursor:pointer}
+#afConsentAccept{background:#17647a;color:#fff}#afConsentReject{background:#edf5f6;color:#315865}
+@media(max-width:600px){#afAnalyticsConsent{left:9px;right:9px;align-items:flex-start;flex-direction:column;padding:14px}#afAnalyticsConsent .af-consent-actions{width:100%}#afAnalyticsConsent button{flex:1}}
+</style>
+<div id="afAnalyticsConsent" role="dialog" aria-live="polite" aria-label="Preferencias de analítica">
+  <p><strong>¿Nos ayudas a mejorar Autismo Familiar?</strong><br>Si aceptas, mediremos las visitas y el tiempo de interacción para saber qué contenidos ayudan más. Puedes rechazarlo sin perder ninguna función.</p>
+  <div class="af-consent-actions"><button id="afConsentAccept" type="button">Aceptar analítica</button><button id="afConsentReject" type="button">Rechazar</button></div>
+</div>
+<script id="af-analytics-consent">
+(function(){
+ const id='G-H6JQ7FX2FQ',key='af-analytics-consent-v1';
+ function start(){
+  if(window.__afAnalyticsStarted)return;window.__afAnalyticsStarted=true;
+  const s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+id;document.head.appendChild(s);
+  window.dataLayer=window.dataLayer||[];window.gtag=function(){window.dataLayer.push(arguments)};
+  window.gtag('js',new Date());window.gtag('config',id,{anonymize_ip:true});
+  let last=performance.now(),elapsed=0;
+  document.addEventListener('visibilitychange',function(){const now=performance.now();if(document.hidden){elapsed+=Math.max(0,now-last)}last=now});
+  window.addEventListener('pagehide',function(){if(!document.hidden)elapsed+=Math.max(0,performance.now()-last);window.gtag('event','page_engagement_seconds',{engagement_time_msec:Math.round(elapsed)})});
+ }
+ let choice='';try{choice=localStorage.getItem(key)||''}catch(e){}
+ const banner=document.getElementById('afAnalyticsConsent');
+ if(choice==='accepted')start();else if(choice!=='rejected'&&banner)banner.style.display='flex';
+ document.getElementById('afConsentAccept')?.addEventListener('click',function(){try{localStorage.setItem(key,'accepted')}catch(e){}if(banner)banner.style.display='none';start()});
+ document.getElementById('afConsentReject')?.addEventListener('click',function(){try{localStorage.setItem(key,'rejected')}catch(e){}if(banner)banner.style.display='none'});
+})();
+</script>
 </body>
 </html>
 <style id="article-photo-fix">
