@@ -1,12 +1,44 @@
 {
   "associations": [
     {
-      "id": "demo-assoc-1",
-      "isDemo": true,
-      "title": "EJEMPLO — Asociación de apoyo (borrar)",
-      "place": "Provincia de ejemplo",
-      "description": "Contenido de demostración para probar el panel. Sustituir por información verificada antes de publicar.",
-      "url": ""
+      "id": "assoc-autismo-galicia",
+      "title": "Federación Autismo Galicia",
+      "place": "Rúa do Home Santo, 74, Santiago de Compostela, A Coruña",
+      "description": "Federación de entidades gallegas de autismo. Ofrece información, orientación y apoyo para encontrar recursos y entidades de la red.",
+      "contact": "981 589 365 · info@autismogalicia.org",
+      "url": "https://www.autismogalicia.org/"
+    },
+    {
+      "id": "assoc-aspanaes",
+      "title": "ASPANAES",
+      "place": "Camiño da Igrexa, 40, A Coruña",
+      "description": "Asociación que ofrece apoyos especializados a personas con autismo y sus familias, con servicios de orientación y atención en distintas localidades.",
+      "contact": "981 130 044 · administracion@aspanaes.org",
+      "url": "https://www.aspanaes.org/"
+    },
+    {
+      "id": "assoc-asperga",
+      "title": "ASPERGA",
+      "place": "Avenida de Oza, 240, A Coruña",
+      "description": "Asociación gallega centrada en personas dentro del espectro autista y sus familias, con información y servicios de apoyo.",
+      "contact": "881 917 318 · 633 283 164 · asperga@asperga.org",
+      "url": "https://www.asperga.org/"
+    },
+    {
+      "id": "assoc-apacaf",
+      "title": "APACAF",
+      "place": "Rúa Placer, 5, 3.º B, Vigo, Pontevedra",
+      "description": "Asociación que apoya a personas con autismo y a sus familias mediante recursos y servicios especializados.",
+      "contact": "986 226 647 · info@apacaf.org",
+      "url": "https://www.apacaf.org/"
+    },
+    {
+      "id": "assoc-menela",
+      "title": "Fundación Menela",
+      "place": "Camiño da Veiguiña, 17, Vigo, Pontevedra",
+      "description": "Entidad gallega que desarrolla recursos educativos y apoyos para personas con autismo y sus familias.",
+      "contact": "Consulta el contacto actualizado en su web oficial.",
+      "url": "https://menela.gal/"
     }
   ],
   "grants": [
