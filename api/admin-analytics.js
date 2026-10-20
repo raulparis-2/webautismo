@@ -93,6 +93,7 @@ module.exports = async function handler(req, res) {
       report(token, {
         dateRanges,
         dimensions: [{ name: 'date' }],
+        metricAggregations: ['TOTAL'],
         metrics: [
           { name: 'sessions' },
           { name: 'totalUsers' },
