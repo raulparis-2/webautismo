@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Autismo Familiar — Juntos en cada paso</title>
 <link rel="canonical" href="https://autismofamiliar.com/">
-<meta name="description" content="Autismo Familiar es un canal de comunicación bidireccional entre familias y profesionales. Encuentra artículos, asociaciones, ayudas y recursos.">
+<meta name="description" content="Autismo familiar es un canal de comunicación bidireccional entre familias y profesionales.">
 <meta property="og:title" content="Autismo Familiar — Juntos en cada paso">
-<meta property="og:description" content="Un canal de comunicación bidireccional entre familias y profesionales.">
+<meta property="og:description" content="Autismo familiar es un canal de comunicación bidireccional entre familias y profesionales.">
 <meta property="og:url" content="https://autismofamiliar.com/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,6 +78,15 @@ a{text-decoration:none;color:inherit}button,input,select{font:inherit}.wrap{max-
   #articleModal .modal-box{padding:18px 16px 26px}
 }
 
+
+/* Portada: mensaje de apoyo y llamada a profesionales */
+.hero-reassurance{display:flex;align-items:center;gap:12px;margin:16px 0 18px;padding:12px 16px;border-left:4px solid #1599aa;border-radius:0 13px 13px 0;background:linear-gradient(100deg,#fff 0%,#dff5f3 100%);box-shadow:0 7px 20px #16485c12;max-width:360px}
+.hero-reassurance-mark{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:14px;background:#1599aa;color:white;font-size:27px}
+.hero-reassurance strong{display:block;color:#16485c;font-size:20px;line-height:1.1}
+.hero-reassurance span:not(.hero-reassurance-mark){display:block;margin-top:4px;color:#5c7880;font-size:10px;line-height:1.4}
+.professional-join-cta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.professional-join-cta .btn{box-shadow:0 7px 16px #1299ae25}
+@media(max-width:600px){.hero-reassurance{max-width:100%;margin:14px 0 17px}.hero-reassurance strong{font-size:18px}}
 </style>
 
 
@@ -352,7 +361,7 @@ body{overflow-x:hidden}
 
 <main id="inicio" class="wrap">
 <section class="hero">
-<div class="hero-copy"><div class="eyebrow">UN ESPACIO PARA TODA LA FAMILIA</div><h1>Juntos en<br><span>cada paso</span></h1><p>Autismo Familiar es un canal de comunicación bidireccional entre familias y profesionales. Un espacio de información, apoyo y recursos para cada etapa.</p><span class="script">No estás solo.</span><div class="buttons"><a class="btn primary" href="#profesionales" onclick="goSection(event,'profesionales')">Buscar profesionales →</a><a class="btn secondary" href="#recursos" onclick="goSection(event,'recursos')">Ver recursos</a></div></div>
+<div class="hero-copy"><div class="eyebrow">UN ESPACIO PARA TODA LA FAMILIA</div><h1>Juntos en<br><span>cada paso</span></h1><p>Autismo familiar es un canal de comunicación bidireccional entre familias y profesionales.</p><div class="hero-reassurance"><span class="hero-reassurance-mark">♡</span><div><strong>No estás solo.</strong><span>Estamos aquí para conectar, orientar y acompañar.</span></div></div><div class="buttons"><a class="btn primary" href="#profesionales" onclick="goSection(event,'profesionales')">Buscar profesionales →</a><a class="btn secondary" href="#recursos" onclick="goSection(event,'recursos')">Ver recursos</a></div></div>
 <div class="hero-photo" style="display:flex;align-items:center;justify-content:center;background:#e7f0ec"><img src="/uploads/portada-autismo-familiar.jpeg" alt="Tres jóvenes compartiendo un momento juntos en un parque" loading="eager" fetchpriority="high" style="display:block;width:100%;height:100%;object-fit:contain;object-position:center center"></div>
 </section>
 
@@ -467,8 +476,8 @@ body{overflow-x:hidden}
   <div class="af-manual-search"><label for="afManualSearch">Filtrar por nombre, provincia o tema</label><input id="afManualSearch" type="search" placeholder="Ej. A Coruña, apoyo familiar, dependencia…"><label id="afGrantProvinceWrap" hidden for="afGrantProvince">Provincia</label><select id="afGrantProvince" hidden aria-label="Filtrar subvenciones por provincia"><option value="">Todas las provincias</option></select></div>
   <div id="afManualItems" class="af-manual-grid"></div>
   <div id="afAssociationMapWrap" class="af-map-wrap">
-    <div class="af-map-heading"><div><div class="label">DIRECTORIO LOCALIZABLE</div><h3>Encuentra la asociación en el mapa</h3><p>Selecciona «Ver en el mapa» en una asociación para localizarla.</p></div><a id="afOpenMap" href="https://maps.google.com/maps?q=España" target="_blank" rel="noopener noreferrer">Abrir mapa ↗</a></div>
-    <iframe id="afAssociationMap" title="Mapa de asociaciones de Autismo Familiar" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=España&z=5&output=embed"></iframe>
+    <div class="af-map-heading"><div><div class="label">DIRECTORIO LOCALIZABLE</div><h3>Asociaciones en el mapa</h3><p>Las asociaciones con una dirección en el panel aparecerán aquí. Al añadir una nueva, publícala para actualizar el mapa.</p></div><a id="afOpenMap" href="https://www.google.com/maps/search/asociaciones+autismo+España" target="_blank" rel="noopener noreferrer">Abrir en Google Maps ↗</a></div>
+    <div id="afAssociationMap" role="region" aria-label="Mapa de asociaciones" style="width:100%;height:360px;border-radius:11px;background:#edf5f5"></div><p id="afMapStatus" class="af-manual-note">Cargando ubicaciones de asociaciones…</p>
   </div>
   <p id="afManualEmpty" class="af-manual-empty">Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.</p>
   <p class="af-manual-note">La información se añade y revisa manualmente; comprueba siempre los plazos, requisitos y datos de contacto con la entidad u organismo responsable.</p>
@@ -479,7 +488,7 @@ body{overflow-x:hidden}
     <span class="label">UN ESPACIO TAMBIÉN PARA TI</span>
     <h2 style="font-size:25px;margin:6px 0 8px">¿Eres profesional? Únete a nosotros.</h2>
     <p style="font-size:13px;line-height:1.6;margin:0 0 14px;color:#58757d;max-width:760px">Tu experiencia puede marcar la diferencia en la vida de una familia. Únete a Autismo Familiar, da visibilidad a tus servicios y conecta con personas que buscan apoyo y acompañamiento de confianza.</p>
-    <a class="btn primary" href="mailto:autismofamiliar@autismofamiliar.com?subject=Quiero%20unirme%20a%20Autismo%20Familiar">Quiero formar parte →</a>
+    <div class="professional-join-cta"><a class="btn primary" href="mailto:autismofamiliar@autismofamiliar.com?subject=Quiero%20unirme%20a%20Autismo%20Familiar">✦ Únete a nosotros</a><span style="font-size:11px;color:#58757d">Haz visible tu trabajo y conecta con familias que necesitan apoyo.</span></div>
   </div>
   <div class="directory-cover" id="directoryCover">
     <div class="cover-copy"><span class="cover-icon">⌕</span><div><strong>Busca un centro o profesional</strong><p>Indica qué necesitas y dónde. Te llevaremos directamente a los resultados.</p></div></div>
@@ -935,17 +944,17 @@ document.addEventListener("click",async ev=>{
 </style>
 
 <script id="af-map-interaction">
-document.addEventListener('click',function(event){
- const button=event.target.closest('[data-af-map-query]');
- if(!button)return;
- const query=button.getAttribute('data-af-map-query')||'España';
- const url='https://maps.google.com/maps?q='+encodeURIComponent(query);
- const frame=document.getElementById('afAssociationMap');
- const link=document.getElementById('afOpenMap');
- if(frame)frame.src=url+'&z=13&output=embed';
- if(link)link.href=url;
- document.getElementById('afAssociationMapWrap')?.scrollIntoView({behavior:'smooth',block:'center'});
-});
+(function(){
+ const mapEl=document.getElementById('afAssociationMap');if(!mapEl)return;
+ const status=document.getElementById('afMapStatus');let map,markers=[];
+ function loadLeaflet(){return new Promise((resolve,reject)=>{if(window.L){resolve();return}const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(css);const js=document.createElement('script');js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';js.onload=resolve;js.onerror=reject;document.head.appendChild(js)})}
+ function escMap(v){return String(v||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+ async function init(){try{const response=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('No se pudo leer content.json');const data=await response.json();const associations=(data.associations||[]).filter(a=>!a.isDemo&&(a.place||a.address));await loadLeaflet();map=L.map(mapEl).setView([40.2,-3.7],5);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(map);const bounds=[];let count=0;
+ for(const a of associations){const address=a.address||a.place;try{const res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(address+', España'),{headers:{'Accept-Language':'es'}});const places=await res.json();if(!places.length)continue;const p=places[0],lat=Number(p.lat),lon=Number(p.lon);if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;const marker=L.marker([lat,lon]).addTo(map);marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':''));bounds.push([lat,lon]);count++;await new Promise(r=>setTimeout(r,1000));}catch(e){console.warn('No se pudo ubicar asociación',address,e)}}
+ if(bounds.length)map.fitBounds(bounds,{padding:[24,24],maxZoom:12});if(status)status.textContent=count?count+' asociación(es) ubicadas en el mapa. Para añadir más, introduce su dirección en el panel y publica los cambios.':'No se han podido localizar direcciones todavía. Añade la dirección completa en el panel de edición.';
+ }catch(e){if(status)status.textContent='No se pudo cargar el mapa ahora mismo. Puedes consultar las direcciones desde las fichas de asociaciones.';console.warn(e)}}
+ init();document.addEventListener('click',function(event){const button=event.target.closest('[data-af-map-query]');if(!button)return;const query=button.getAttribute('data-af-map-query')||'';const link=document.getElementById('afOpenMap');if(link)link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(query);document.getElementById('afAssociationMapWrap')?.scrollIntoView({behavior:'smooth',block:'center'});if(map){const markersOnMap=map._layers;for(const key in markersOnMap){const layer=markersOnMap[key];if(layer instanceof L.Marker&&layer.getPopup()?.getContent()?.includes(escMap(query.split(',')[0])))layer.openPopup()}}});
+})();
 </script>
 
 <style id="af-analytics-consent-css">
