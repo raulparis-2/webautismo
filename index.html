@@ -953,7 +953,38 @@ document.addEventListener("click",async ev=>{
  function loadLeaflet(){return new Promise((resolve,reject)=>{if(window.L){resolve();return}const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(css);const js=document.createElement('script');js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';js.onload=resolve;js.onerror=reject;document.head.appendChild(js)})}
  function escMap(v){return String(v||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
  async function init(){try{const response=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('No se pudo leer content.json');const data=await response.json();const associations=(data.associations||[]).filter(a=>!a.isDemo&&(a.place||a.address));await loadLeaflet();map=L.map(mapEl).setView([40.2,-3.7],5);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(map);const bounds=[];let count=0;
- for(const a of associations){const address=a.address||a.place;try{let lat=Number(a.latitude),lon=Number(a.longitude);if(!Number.isFinite(lat)||!Number.isFinite(lon)){const res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=es&q='+encodeURIComponent(address+', España'),{headers:{'Accept-Language':'es'}});if(!res.ok)throw Error('Servicio de geocodificación no disponible');const places=await res.json();if(!places.length)continue;lat=Number(places[0].lat);lon=Number(places[0].lon)}if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;const marker=L.marker([lat,lon]).addTo(map);marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':''));bounds.push([lat,lon]);count++;if(!(Number.isFinite(Number(a.latitude))&&Number.isFinite(Number(a.longitude))))await new Promise(r=>setTimeout(r,1100));}catch(e){console.warn('No se pudo ubicar asociación',address,e)}}
+ for(const a of associations){
+  const address=String(a.address||a.place||'').trim();
+  try{
+   let lat=Number(a.latitude),lon=Number(a.longitude);
+   const savedAddress=String(a.geocodedAddress||'').trim();
+   const coordsMatch=savedAddress&&savedAddress.toLocaleLowerCase('es')===address.toLocaleLowerCase('es')&&Number.isFinite(lat)&&Number.isFinite(lon);
+   if(!coordsMatch){
+    const queries=[address,address+', España',(a.title||a.name)?(a.title||a.name)+', '+address:''].filter(Boolean);
+    let found=null;
+    for(const query of [...new Set(queries)]){
+     const res=await fetch('https://photon.komoot.io/api/?limit=8&lang=es&q='+encodeURIComponent(query),{headers:{'Accept':'application/json'}});
+     if(!res.ok)continue;
+     const result=await res.json();
+     const features=result.features||[];
+     const spanish=features.filter(f=>!f.properties.countrycode||String(f.properties.countrycode).toLowerCase()==='es');
+     const candidates=spanish.length?spanish:features;
+     if(candidates.length){
+      const exact=candidates.find(f=>['house','street','locality','district','city','municipality'].includes(String(f.properties.type||'').toLowerCase()))||candidates[0];
+      const coords=exact.geometry&&exact.geometry.coordinates;
+      if(coords&&Number.isFinite(Number(coords[0]))&&Number.isFinite(Number(coords[1]))){found={lat:Number(coords[1]),lon:Number(coords[0])};break}
+     }
+    }
+    if(!found)throw Error('No se encontró la dirección');
+    lat=found.lat;lon=found.lon;
+    await new Promise(r=>setTimeout(r,350));
+   }
+   if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
+   const marker=L.marker([lat,lon]).addTo(map);
+   marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':''));
+   bounds.push([lat,lon]);count++;
+  }catch(e){console.warn('No se pudo ubicar asociación por su dirección',address,e)}
+ }
  if(bounds.length)map.fitBounds(bounds,{padding:[24,24],maxZoom:12});if(status)status.textContent=count?count+' asociación(es) ubicadas en el mapa. Para añadir más, introduce su dirección en el panel y publica los cambios.':'No se han podido localizar direcciones todavía. Añade la dirección completa en el panel de edición.';
  }catch(e){if(status)status.textContent='No se pudo cargar el mapa ahora mismo. Puedes consultar las direcciones desde las fichas de asociaciones.';console.warn(e)}}
  init();document.addEventListener('click',function(event){const button=event.target.closest('[data-af-map-query]');if(!button)return;const query=button.getAttribute('data-af-map-query')||'';const link=document.getElementById('afOpenMap');if(link)link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(query);document.getElementById('afAssociationMapWrap')?.scrollIntoView({behavior:'smooth',block:'center'});if(map){const markersOnMap=map._layers;for(const key in markersOnMap){const layer=markersOnMap[key];if(layer instanceof L.Marker&&layer.getPopup()?.getContent()?.includes(escMap(query.split(',')[0])))layer.openPopup()}}});
