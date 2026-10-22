@@ -961,7 +961,7 @@ document.addEventListener("click",async ev=>{
    const coordsMatch=savedAddress&&savedAddress.toLocaleLowerCase('es')===address.toLocaleLowerCase('es')&&Number.isFinite(lat)&&Number.isFinite(lon);
    if(!coordsMatch){
     const title=String(a.title||a.name||'').trim();
-    const queries=[title?title+', '+address:'',address,address+', España',title?title+', España:''].filter(Boolean);
+    const queries=[title?title+', '+address:'',address,address+', España',title?title+', España':''].filter(Boolean);
     let found=null;
     for(const query of [...new Set(queries)]){
      try{
