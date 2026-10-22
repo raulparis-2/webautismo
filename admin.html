@@ -25,19 +25,34 @@ $('refreshAnalytics').onclick=loadAnalytics;$('analyticsPeriod').onchange=loadAn
 
 $('tabs').onclick=e=>{const b=e.target.closest('[data-type]');if(b)switchType(b.dataset.type)};
 async function geocodeAssociation(address,title){
- const queries=[address,address+', España',title?title+', '+address:''].filter(Boolean);
+ const queries=[title?title+', '+address:'',address,address+', España',title?title+', España':''].filter(Boolean);
  for(const query of [...new Set(queries)]){
-  const response=await fetch('https://photon.komoot.io/api/?limit=8&lang=es&q='+encodeURIComponent(query),{headers:{'Accept':'application/json'}});
-  if(!response.ok)continue;
-  const result=await response.json();
-  const features=result.features||[];
-  const spanish=features.filter(f=>!f.properties.countrycode||String(f.properties.countrycode).toLowerCase()==='es');
-  const candidates=spanish.length?spanish:features;
-  if(candidates.length){
-   const exact=candidates.find(f=>['house','street','locality','district','city','municipality'].includes(String(f.properties.type||'').toLowerCase()))||candidates[0];
-   const coords=exact.geometry&&exact.geometry.coordinates;
-   if(coords&&Number.isFinite(Number(coords[0]))&&Number.isFinite(Number(coords[1])))return {latitude:Number(coords[1]),longitude:Number(coords[0]),label:exact.properties.name||exact.properties.street||address};
-  }
+  try{
+   const response=await fetch('https://photon.komoot.io/api/?limit=8&lang=es&countrycode=ES&q='+encodeURIComponent(query),{headers:{'Accept':'application/json'}});
+   if(!response.ok)continue;
+   const result=await response.json();
+   const features=result.features||[];
+   const candidates=features.filter(f=>!f.properties.countrycode||String(f.properties.countrycode).toLowerCase()==='es');
+   if(candidates.length){
+    const exact=candidates.find(f=>title&&String(f.properties.name||'').toLocaleLowerCase('es').includes(title.toLocaleLowerCase('es')))||
+      candidates.find(f=>['house','street'].includes(String(f.properties.type||'').toLowerCase()))||candidates[0];
+    const coords=exact.geometry&&exact.geometry.coordinates;
+    if(coords&&Number.isFinite(Number(coords[0]))&&Number.isFinite(Number(coords[1])))return {latitude:Number(coords[1]),longitude:Number(coords[0]),label:exact.properties.name||exact.properties.street||address};
+   }
+  }catch(e){console.warn('Photon no disponible para',query,e)}
+ }
+ // Segundo proveedor: Nominatim, útil para direcciones o establecimientos que Photon no devuelve.
+ for(const query of [address,title?title+', '+address:'',address+', España'].filter(Boolean)){
+  try{
+   const response=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=es&q='+encodeURIComponent(query),{headers:{'Accept-Language':'es'}});
+   if(!response.ok)continue;
+   const results=await response.json();
+   if(!results.length)continue;
+   const exact=results.find(x=>title&&String(x.name||'').toLocaleLowerCase('es').includes(title.toLocaleLowerCase('es')))||
+      results.find(x=>/restaurant|cafe|fast_food|amenity|house|building/i.test(String(x.type||'')+' '+String(x.class||'')))||results[0];
+   const lat=Number(exact.lat),lon=Number(exact.lon);
+   if(Number.isFinite(lat)&&Number.isFinite(lon))return {latitude:lat,longitude:lon,label:exact.name||exact.display_name||address};
+  }catch(e){console.warn('Nominatim no disponible para',query,e)}
  }
  return null;
 }
