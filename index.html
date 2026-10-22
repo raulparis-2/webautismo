@@ -960,22 +960,39 @@ document.addEventListener("click",async ev=>{
    const savedAddress=String(a.geocodedAddress||'').trim();
    const coordsMatch=savedAddress&&savedAddress.toLocaleLowerCase('es')===address.toLocaleLowerCase('es')&&Number.isFinite(lat)&&Number.isFinite(lon);
    if(!coordsMatch){
-    const queries=[address,address+', España',(a.title||a.name)?(a.title||a.name)+', '+address:''].filter(Boolean);
+    const title=String(a.title||a.name||'').trim();
+    const queries=[title?title+', '+address:'',address,address+', España',title?title+', España:''].filter(Boolean);
     let found=null;
     for(const query of [...new Set(queries)]){
-     const res=await fetch('https://photon.komoot.io/api/?limit=8&lang=es&q='+encodeURIComponent(query),{headers:{'Accept':'application/json'}});
-     if(!res.ok)continue;
-     const result=await res.json();
-     const features=result.features||[];
-     const spanish=features.filter(f=>!f.properties.countrycode||String(f.properties.countrycode).toLowerCase()==='es');
-     const candidates=spanish.length?spanish:features;
-     if(candidates.length){
-      const exact=candidates.find(f=>['house','street','locality','district','city','municipality'].includes(String(f.properties.type||'').toLowerCase()))||candidates[0];
-      const coords=exact.geometry&&exact.geometry.coordinates;
-      if(coords&&Number.isFinite(Number(coords[0]))&&Number.isFinite(Number(coords[1]))){found={lat:Number(coords[1]),lon:Number(coords[0])};break}
+     try{
+      const res=await fetch('https://photon.komoot.io/api/?limit=8&lang=es&countrycode=ES&q='+encodeURIComponent(query),{headers:{'Accept':'application/json'}});
+      if(!res.ok)continue;
+      const result=await res.json();
+      const features=result.features||[];
+      const candidates=features.filter(f=>!f.properties.countrycode||String(f.properties.countrycode).toLowerCase()==='es');
+      if(candidates.length){
+       const exact=candidates.find(f=>title&&String(f.properties.name||'').toLocaleLowerCase('es').includes(title.toLocaleLowerCase('es')))||
+        candidates.find(f=>['house','street'].includes(String(f.properties.type||'').toLowerCase()))||candidates[0];
+       const coords=exact.geometry&&exact.geometry.coordinates;
+       if(coords&&Number.isFinite(Number(coords[0]))&&Number.isFinite(Number(coords[1]))){found={lat:Number(coords[1]),lon:Number(coords[0])};break}
+      }
+     }catch(err){console.warn('Photon no disponible',query,err)}
+    }
+    if(!found){
+     for(const query of [address,title?title+', '+address:'',address+', España'].filter(Boolean)){
+      try{
+       const res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=es&q='+encodeURIComponent(query),{headers:{'Accept-Language':'es'}});
+       if(!res.ok)continue;
+       const results=await res.json();
+       if(!results.length)continue;
+       const exact=results.find(x=>title&&String(x.name||'').toLocaleLowerCase('es').includes(title.toLocaleLowerCase('es')))||
+        results.find(x=>/restaurant|cafe|fast_food|amenity|house|building/i.test(String(x.type||'')+' '+String(x.class||'')))||results[0];
+       const lat=Number(exact.lat),lon=Number(exact.lon);
+       if(Number.isFinite(lat)&&Number.isFinite(lon)){found={lat,lon};break}
+      }catch(err){console.warn('Nominatim no disponible',query,err)}
      }
     }
-    if(!found)throw Error('No se encontró la dirección');
+    if(!found)throw Error('No se encontró la dirección en los proveedores disponibles');
     lat=found.lat;lon=found.lon;
     await new Promise(r=>setTimeout(r,350));
    }
