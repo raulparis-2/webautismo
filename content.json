@@ -12,16 +12,19 @@
       "id": "associations-1792686672406",
       "title": "EJEMPLO",
       "name": "EJEMPLO",
-      "place": "C. de José Martinez Ruiz Azorín",
-      "province": "C. de José Martinez Ruiz Azorín",
-      "category": "C. de José Martinez Ruiz Azorín",
+      "place": "Parque Comercial Ademuz, Av. de la Ilustración, 6, 46100 Burjassot, Valencia",
+      "province": "Parque Comercial Ademuz, Av. de la Ilustración, 6, 46100 Burjassot, Valencia",
+      "category": "Parque Comercial Ademuz, Av. de la Ilustración, 6, 46100 Burjassot, Valencia",
       "summary": "esto es un ejemplo",
       "description": "esto es un ejemplo",
       "url": "",
       "image": "",
       "video": "",
       "body": "",
-      "date": ""
+      "date": "",
+      "latitude": 40.80632573398765,
+      "longitude": -5.323304168571211,
+      "geocodedAddress": "Parque Comercial Ademuz, Av. de la Ilustración, 6, 46100 Burjassot, Valencia"
     }
   ],
   "grants": [
