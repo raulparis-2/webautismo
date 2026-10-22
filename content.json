@@ -3,10 +3,22 @@
     {
       "id": "assoc-asperga",
       "title": "ASPERGA",
-      "place": "Avenida de Oza, 240, A Coruña",
+      "place": "Punto del mapa (40.061970, -2.168624)",
       "description": "Asociación gallega centrada en personas dentro del espectro autista y sus familias, con información y servicios de apoyo.",
       "contact": "881 917 318 · 633 283 164 · asperga@asperga.org",
-      "url": "https://www.asperga.org/"
+      "url": "https://www.asperga.org/",
+      "name": "ASPERGA",
+      "province": "Punto del mapa (40.061970, -2.168624)",
+      "mapsUrl": "https://www.google.com/maps/place/Cuenca/@40.0619703,-2.1686245,14z/data=!3m1!4b1!4m6!3m5!1s0xd5d6741369751c3:0x6e81ab6ed08cd292!8m2!3d40.0703925!4d-2.1374162!16zL20vMDJydmti?entry=ttu&g_ep=EgoyMDI2MTAxOS4wIKXMDSoASAFQAw%3D%3D",
+      "category": "Punto del mapa (40.061970, -2.168624)",
+      "summary": "Asociación gallega centrada en personas dentro del espectro autista y sus familias, con información y servicios de apoyo.",
+      "image": "",
+      "video": "",
+      "body": "",
+      "date": "",
+      "latitude": 40.0619703,
+      "longitude": -2.1686245,
+      "geocodedAddress": "Punto del mapa (40.061970, -2.168624)"
     },
     {
       "id": "associations-1792686672406",
