@@ -958,7 +958,7 @@ document.addEventListener("click",async ev=>{
   try{
    let lat=Number(a.latitude),lon=Number(a.longitude);
    const savedAddress=String(a.geocodedAddress||'').trim();
-   const coordsMatch=savedAddress&&savedAddress.toLocaleLowerCase('es')===address.toLocaleLowerCase('es')&&Number.isFinite(lat)&&Number.isFinite(lon);
+   const coordsMatch=Number.isFinite(lat)&&Number.isFinite(lon)&&Boolean(savedAddress);
    if(!coordsMatch){
     const title=String(a.title||a.name||'').trim();
     const queries=[title?title+', '+address:'',address,address+', España',title?title+', España':''].filter(Boolean);
@@ -998,7 +998,7 @@ document.addEventListener("click",async ev=>{
    }
    if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
    const marker=L.marker([lat,lon]).addTo(map);
-   marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':''));
+   marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':'')+(a.mapsUrl?'<br><a href="'+escMap(a.mapsUrl)+'" target="_blank" rel="noopener noreferrer">Abrir en Google Maps ↗</a>':''));
    bounds.push([lat,lon]);count++;
   }catch(e){console.warn('No se pudo ubicar asociación por su dirección',address,e)}
  }
