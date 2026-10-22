@@ -33,6 +33,36 @@ async function searchMapPlace(query){
  const ns=await nr.json();if(ns[0])return {lat:Number(ns[0].lat),lon:Number(ns[0].lon),label:ns[0].display_name||query};
  throw Error('No se encontró ese lugar. Prueba con ciudad y país.');
 }
+let addressLookupTimer=null,addressLookupQuery='',addressLookupBusy=false;
+async function locateTypedAddress(){
+ const query=$('place').value.trim();if(type!=='associations'||!query||query===addressLookupQuery||addressLookupBusy)return;
+ addressLookupBusy=true;addressLookupQuery=query;
+ $('geoStatus').textContent='Buscando la dirección y colocando el pin…';$('geoStatus').style.color='#607783';
+ try{
+  const found=await searchMapPlace(query);
+  ensureAssociationMap();
+  if(!associationMap)throw Error('No se pudo cargar el mapa.');
+  const point=[found.lat,found.lon];
+  associationMap.setView(point,17);
+  if(associationMarker)associationMarker.setLatLng(point);else associationMarker=L.marker(point).addTo(associationMap);
+  geoCoords={latitude:found.lat,longitude:found.lon,address:query};
+  $('geoStatus').textContent='✓ Pin colocado automáticamente: '+found.label+'. Si no está en el punto exacto, haz clic en el mapa para ajustarlo.';
+  $('geoStatus').style.color='#167045';
+ }catch(e){
+  $('geoStatus').textContent='No se pudo ubicar automáticamente esa dirección. Prueba a añadir localidad y provincia, o busca la ciudad y marca el punto en el mapa.';
+  $('geoStatus').style.color='#a52c2c';
+ }finally{addressLookupBusy=false}
+}
+$('place').addEventListener('input',()=>{
+ if(type!=='associations')return;
+ geoCoords=null;addressLookupQuery='';
+ if(addressLookupTimer)clearTimeout(addressLookupTimer);
+ const q=$('place').value.trim();
+ if(!q){if(associationMarker&&associationMap){associationMap.removeLayer(associationMarker);associationMarker=null}return}
+ addressLookupTimer=setTimeout(()=>{locateTypedAddress()},1000);
+});
+$('place').addEventListener('change',locateTypedAddress);
+$('place').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(addressLookupTimer)clearTimeout(addressLookupTimer);locateTypedAddress()}});
 function ensureAssociationMap(){
  if(associationMap||!window.L||!$('associationMap'))return;
  associationMap=L.map('associationMap').setView([40.4168,-3.7038],6);
