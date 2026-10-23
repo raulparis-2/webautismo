@@ -85,8 +85,14 @@
       "title": "Cómo favorecer la comunicación en casa",
       "category": "Consejos",
       "summary": "Ideas sencillas para crear momentos de comunicación respetuosos.",
-      "body": "<p>Cada persona tiene su propia forma y ritmo de comunicarse. La comunicación no se limita al habla: también puede incluir gestos, imágenes, escritura o dispositivos de apoyo.</p><h3>Ideas para el día a día</h3><ul><li>Deja tiempo suficiente para responder.</li><li>Usa apoyos visuales si ayudan a comprender.</li><li>Respeta la forma de comunicarse de cada persona.</li></ul>",
-      "weekly": true
+      "body": "<p>Cada persona tiene su propia forma y ritmo de comunicarse. La comunicación no se limita al habla: también puede incluir gestos, imágenes, escritura o dispositivos de apoyo.</p><h3>Ideas para el día a día</h3><ul><li>Deja tieficiente para responder.</li><li>Usa apoyos visuales si ayudan a comprender.</li><li>Respeta la forma de comunicarse de cada persona.</li></ul>",
+      "weekly": true,
+      "name": "Cómo favorecer la comunicación en casa",
+      "description": "Ideas sencillas para crear momentos de comunicación respetuosos.",
+      "url": "",
+      "image": "",
+      "video": "",
+      "date": ""
     },
     {
       "id": "art-2",
