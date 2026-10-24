@@ -1,25 +1,5 @@
 {
-  "associations": [
-    {
-      "id": "associations-1792856724699",
-      "title": "Prueba",
-      "name": "Prueba",
-      "place": "La Secreta, Castillejo de Martín Viejo, Salamanca, Castilla y León, España",
-      "province": "La Secreta, Castillejo de Martín Viejo, Salamanca, Castilla y León, España",
-      "mapsUrl": "",
-      "category": "La Secreta, Castillejo de Martín Viejo, Salamanca, Castilla y León, España",
-      "summary": "",
-      "description": "",
-      "url": "",
-      "image": "uploads/image-1792856698739-drive-import.jpg",
-      "video": "",
-      "body": "",
-      "date": "",
-      "latitude": 40.77055799374805,
-      "longitude": -6.66059315361769,
-      "geocodedAddress": "La Secreta, Castillejo de Martín Viejo, Salamanca, Castilla y León, España"
-    }
-  ],
+  "associations": [],
   "grants": [],
   "videos": [],
   "articles": [],
