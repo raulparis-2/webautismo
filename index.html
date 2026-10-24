@@ -361,7 +361,7 @@ body{overflow-x:hidden}
 
 <main id="inicio" class="wrap">
 <section class="hero">
-<div class="hero-copy"><div class="eyebrow">UN ESPACIO PARA TODA LA FAMILIA</div><h1>Juntos en<br><span>cada paso</span></h1><p>Autismo familiar es un canal de comunicación bidireccional entre familias y profesionales.</p><div class="hero-reassurance"><span class="hero-reassurance-mark" aria-label="Pieza de puzle">🧩</span><div><strong>No estás solo.</strong><span>Estamos aquí para conectar, orientar y acompañar.</span></div></div><div class="buttons"><a class="btn primary" href="#profesionales" onclick="goSection(event,'profesionales')">Buscar profesionales →</a><a class="btn secondary" href="#recursos" onclick="goSection(event,'recursos')">Ver recursos</a></div></div>
+<div class="hero-copy"><div class="eyebrow">UN ESPACIO PARA TODA LA FAMILIA</div><h1>Juntos en<br><span>cada paso</span></h1><p>Autismo familiar es un canal de comunicación bidireccional entre familias y profesionales.</p><div class="hero-reassurance"><span class="hero-reassurance-mark" aria-label="Pieza de puzle"><span class="hero-puzzle-emoji" aria-hidden="true">🧩</span></span><div><strong>No estás solo.</strong><span>Estamos aquí para conectar, orientar y acompañar.</span></div></div><div class="buttons"><a class="btn primary" href="#profesionales" onclick="goSection(event,'profesionales')">Buscar profesionales →</a><a class="btn secondary" href="#recursos" onclick="goSection(event,'recursos')">Ver recursos</a></div></div>
 <div class="hero-photo" style="display:flex;align-items:center;justify-content:center;background:#e7f0ec"><img src="/uploads/portada-autismo-familiar.jpeg" alt="Tres jóvenes compartiendo un momento juntos en un parque" loading="eager" fetchpriority="high" style="display:block;width:100%;height:100%;object-fit:contain;object-position:center center"></div>
 </section>
 
@@ -1039,6 +1039,11 @@ document.addEventListener("click",async ev=>{
 </script>
 <footer class="footer" aria-label="Información legal" style="margin-top:32px"><div class="wrap"><div class="footer-inner" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:18px;align-items:center"><div class="foot-brand"><span class="foot-logo" aria-hidden="true">🧩</span><div><b>Autismo Familiar</b><small>Juntos en cada paso</small></div></div><nav class="foot-links" aria-label="Enlaces legales"><a href="/politica-privacidad.html">Política de privacidad</a><a href="/politica-cookies.html">Política de cookies</a><a href="/aviso-legal.html">Aviso legal</a><a href="/condiciones-uso.html">Condiciones de uso</a></nav><a href="mailto:autismofamiliar@autismofamiliar.com" style="color:#d7eef0;font-size:11px">Contacto</a></div><div class="copy">© Autismo Familiar · La información publicada debe respetar la privacidad y los derechos de terceros.</div></div></footer>
 
+<style id="hero-puzzle-emoji-size-fix">
+.hero-reassurance-mark{font-size:0!important}
+.hero-reassurance-mark .hero-puzzle-emoji{display:block!important;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif!important;font-size:76px!important;line-height:1!important;width:auto!important;height:auto!important;max-width:none!important;transform:scale(1.25)!important;transform-origin:center!important}
+@media(max-width:600px){.hero-reassurance-mark .hero-puzzle-emoji{font-size:68px!important;transform:scale(1.2)!important}}
+</style>
 </body>
 </html>
 <style id="article-photo-fix">
