@@ -1,78 +1,28 @@
 {
   "associations": [
     {
-      "id": "assoc-asperga",
-      "title": "ASPERGA",
-      "place": "",
-      "description": "Asociación gallega centrada en personas dentro del espectro autista y sus familias, con información y servicios de apoyo.",
-      "contact": "881 917 318 · 633 283 164 · asperga@asperga.org",
-      "url": "https://www.asperga.org/",
-      "name": "ASPERGA",
-      "province": "",
-      "category": "",
-      "summary": "Asociación gallega centrada en personas dentro del espectro autista y sus familias, con información y servicios de apoyo.",
-      "image": "",
+      "id": "associations-1792856724699",
+      "title": "Prueba",
+      "name": "Prueba",
+      "place": "La Secreta, Castillejo de Martín Viejo, Salamanca, Castilla y León, España",
+      "province": "La Secreta, Castillejo de Martín Viejo, Salamanca, Castilla y León, España",
+      "mapsUrl": "",
+      "category": "La Secreta, Castillejo de Martín Viejo, Salamanca, Castilla y León, España",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "uploads/image-1792856698739-drive-import.jpg",
       "video": "",
       "body": "",
-      "date": ""
+      "date": "",
+      "latitude": 40.77055799374805,
+      "longitude": -6.66059315361769,
+      "geocodedAddress": "La Secreta, Castillejo de Martín Viejo, Salamanca, Castilla y León, España"
     }
   ],
   "grants": [],
-  "videos": [
-    {
-      "id": "videos-1792178179839",
-      "title": "Que es el autismo",
-      "name": "Que es el autismo",
-      "place": "Video explicativo",
-      "province": "Video explicativo",
-      "category": "Video explicativo",
-      "summary": "Un video que...",
-      "description": "Un video que...",
-      "url": "https://youtu.be/FXDt0VRfGeY?si=NbCvAshqlrpIMSpB",
-      "body": "",
-      "date": ""
-    }
-  ],
-  "articles": [
-    {
-      "id": "art-1",
-      "title": "Cómo favorecer la comunicación en casa",
-      "category": "Consejos",
-      "summary": "Ideas sencillas para crear momentos de comunicación respetuosos.",
-      "body": "<p>Cada persona tiene su propia forma y ritmo de comunicarse. La comunicación no se limita al habla: también puede incluir gestos, imágenes, escritura o dispositivos de apoyo.</p><h3>Ideas para el día a día</h3><ul><li>Deja tieficiente para responder.</li><li>Usa apoyos visuales si ayudan a comprender.</li><li>Respeta la forma de comunicarse de cada persona.</li></ul>",
-      "weekly": true,
-      "name": "Cómo favorecer la comunicación en casa",
-      "description": "Ideas sencillas para crear momentos de comunicación respetuosos.",
-      "url": "",
-      "image": "",
-      "video": "",
-      "date": ""
-    },
-    {
-      "id": "art-2",
-      "title": "La importancia de las rutinas en el día a día",
-      "category": "Familia",
-      "summary": "Claves para anticipar cambios y construir rutinas.",
-      "body": "<p>Las rutinas pueden hacer que las actividades sean más previsibles. Deben adaptarse a las necesidades y preferencias de cada persona.</p><h3>Ideas prácticas</h3><ul><li>Divide las tareas en pasos pequeños.</li><li>Anticipa los cambios cuando sea posible.</li><li>Usa horarios visuales si resultan útiles.</li></ul>",
-      "weekly": false
-    },
-    {
-      "id": "art-3",
-      "title": "Recursos prácticos para la vida diaria",
-      "category": "Recursos",
-      "summary": "Materiales y herramientas que pueden facilitar las actividades cotidianas.",
-      "body": "<p>Los apoyos útiles son aquellos que se adaptan a cada persona y se revisan cuando dejan de funcionar.</p>",
-      "weekly": false
-    },
-    {
-      "id": "art-4",
-      "title": "Cuidar al cuidador también es importante",
-      "category": "Cuidadores",
-      "summary": "Ideas para reconocer tus límites, descansar y pedir apoyo.",
-      "body": "<p>El bienestar de quienes cuidan también importa. Pedir ayuda, repartir tareas y buscar espacios de descanso puede marcar una diferencia.</p>",
-      "weekly": false
-    }
-  ],
+  "videos": [],
+  "articles": [],
   "guides": [
     {
       "id": "guia-1",
