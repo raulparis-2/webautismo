@@ -406,10 +406,7 @@ body{overflow-x:hidden}
     <div class="app-feature">
       <h3>Lo nuevo de esta semana</h3>
       <p>Aquí iremos publicando un artículo nuevo cada semana, junto con vídeos, recursos y contenidos prácticos.</p>
-      <a class="week week-featured" href="#articulos" onclick="closeApp();setTimeout(()=>openArticle(0),80)" style="display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;overflow:hidden">
-        <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=640&q=80" alt="Familia compartiendo un momento en casa" loading="lazy" style="width:116px;height:84px;object-fit:cover;border-radius:12px;flex-shrink:0">
-        <div><span class="tag tblue" style="margin:0 0 7px">ÚLTIMO ARTÍCULO PUBLICADO · 2 OCT 2026</span><b style="display:block">Cómo favorecer la comunicación en casa</b><span>Ideas para comunicarse respetando el ritmo y la forma de expresarse de cada persona.</span><strong style="display:block;margin-top:7px;font-size:11px;color:#1491a4">Leer artículo completo →</strong></div>
-      </a>
+      <a class="week week-featured" id="afLatestArticle" href="#articulos" hidden style="display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;overflow:hidden"></a>
       <div class="app-note">Todo el contenido queda accesible desde la web, sin instalar otra aplicación.</div>
     </div>
 
@@ -730,6 +727,9 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
  let data;
  try{const res=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error('content');data=await res.json()}catch(e){return}
  const weeklyArticle=(data.articles||[]).find(x=>x.weekly&&!x.isDemo);
+ const latestArticleLink=document.getElementById('afLatestArticle');
+ if(latestArticleLink){if(weeklyArticle){latestArticleLink.hidden=false;latestArticleLink.innerHTML='<div><span class="tag tblue" style="margin:0 0 7px">ÚLTIMO ARTÍCULO PUBLICADO</span><b style="display:block">'+esc(weeklyArticle.title)+'</b><span>'+esc(weeklyArticle.summary||'')+'</span><strong style="display:block;margin-top:7px;font-size:11px;color:#1491a4">Leer artículo completo →</strong></div>';latestArticleLink.onclick=e=>{e.preventDefault();closeApp();setTimeout(()=>showArticle(weeklyArticle),80)}}else{latestArticleLink.hidden=true;latestArticleLink.innerHTML=''}}
+
  const realVideos=(data.videos||[]).filter(x=>!x.isDemo);const weeklyVideo=realVideos.find(x=>x.weekly)||realVideos[0];
  const weekly=document.querySelector('#informacion-semanal');
  if(weekly){
