@@ -60,6 +60,46 @@ module.exports = async function handler(req, res) {
       });
       return res.status(200).json({ sha: out.content.sha });
     }
+    if (body.action === 'importDriveText') {
+      if (typeof body.url !== 'string' || body.url.length > 2000) return res.status(400).json({ error: 'Pega un enlace público de Google Docs.' });
+      let url;
+      try { url = new URL(body.url); } catch { return res.status(400).json({ error: 'El enlace no es válido.' }); }
+      if (url.hostname !== 'docs.google.com' || !/^\/document\/d\/[A-Za-z0-9_-]+\/(?:edit|view|export)?/.test(url.pathname)) {
+        return res.status(400).json({ error: 'Para importar texto, utiliza un documento de Google Docs con permiso «Cualquier persona con el enlace: lector».' });
+      }
+      const match = url.pathname.match(/^\/document\/d\/([A-Za-z0-9_-]+)/);
+      if (!match) return res.status(400).json({ error: 'No se reconoce el documento de Google Docs.' });
+      const response = await fetch('https://docs.google.com/document/d/' + match[1] + '/export?format=txt', { redirect: 'follow', signal: AbortSignal.timeout(12000) });
+      if (!response.ok) return res.status(400).json({ error: 'No se pudo leer el documento. Comprueba que el enlace esté compartido públicamente como lector.' });
+      const text = await response.text();
+      if (!text || text.length > 25000 || /<html[\s>]/i.test(text.slice(0, 500))) return res.status(400).json({ error: 'Google Docs no devolvió texto legible. Revisa los permisos y el tamaño del documento (máximo 25.000 caracteres).' });
+      return res.status(200).json({ text });
+    }
+    if (body.action === 'importDriveImage') {
+      if (typeof body.url !== 'string' || body.url.length > 2000) return res.status(400).json({ error: 'Pega un enlace público de una imagen de Google Drive.' });
+      let url;
+      try { url = new URL(body.url); } catch { return res.status(400).json({ error: 'El enlace no es válido.' }); }
+      if (!['drive.google.com', 'docs.google.com'].includes(url.hostname)) return res.status(400).json({ error: 'Solo se aceptan enlaces de Google Drive.' });
+      const idMatch = url.pathname.match(/\/(?:file\/d|document\/d|uc)\/([A-Za-z0-9_-]+)/) || url.searchParams.get('id')?.match(/^([A-Za-z0-9_-]+)$/);
+      const fileId = typeof idMatch === 'string' ? idMatch : idMatch?.[1];
+      if (!fileId) return res.status(400).json({ error: 'No se encuentra el ID del archivo. Usa un enlace de Drive con formato drive.google.com/file/d/…' });
+      const response = await fetch('https://drive.google.com/uc?export=download&id=' + encodeURIComponent(fileId), { redirect: 'follow', signal: AbortSignal.timeout(12000) });
+      if (!response.ok) return res.status(400).json({ error: 'No se pudo descargar la imagen. Comprueba que el archivo esté compartido públicamente como lector.' });
+      const mime = (response.headers.get('content-type') || '').split(';')[0].toLowerCase();
+      if (!/^image\/(?:jpeg|png|webp|gif)$/.test(mime)) return res.status(400).json({ error: 'Drive no ha devuelto una imagen válida. Comprueba el enlace y que el archivo sea una imagen.' });
+      const declared = Number(response.headers.get('content-length') || 0);
+      if (declared > 3 * 1024 * 1024) return res.status(413).json({ error: 'La imagen debe pesar como máximo 3 MB.' });
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (!bytes.length || bytes.length > 3 * 1024 * 1024) return res.status(413).json({ error: 'La imagen debe pesar como máximo 3 MB.' });
+      const ext = ({'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'})[mime];
+      const filePath = 'uploads/image-' + Date.now() + '-drive-import.' + ext;
+      const out = await githubFetch('/repos/' + REPO + '/contents/' + filePath.split('/').map(encodeURIComponent).join('/'), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Importar imagen pública de Google Drive', content: bytes.toString('base64'), branch: 'main' })
+      });
+      return res.status(200).json({ path: out.content.path, sha: out.content.sha });
+    }
     if (body.action === 'upload') {
       if (typeof body.filePath !== 'string' || !/^uploads\/(image|video)-\d+-[a-z0-9_-]+\.[a-z0-9]{1,8}$/.test(body.filePath)) {
         return res.status(400).json({ error: 'Nombre de archivo no válido.' });
