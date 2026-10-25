@@ -1368,6 +1368,8 @@ document.addEventListener("click",async ev=>{
 (function(){
   function clampArticleText(){
     document.querySelectorAll('.af-week-card p,#app-articles .app-article-card p,#articulos .article p').forEach(p=>{
+      if(p.dataset.afClamped==='1')return;
+      p.dataset.afClamped='1';
       p.style.setProperty('display','-webkit-box','important');
       p.style.setProperty('-webkit-box-orient','vertical','important');
       p.style.setProperty('-webkit-line-clamp','3','important');
