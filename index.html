@@ -1434,3 +1434,28 @@ document.addEventListener("click",async ev=>{
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load);else load();
 })();
 </script>
+
+<style id="af-week-feature-visible">
+#afLatestArticle[hidden]{display:none!important}
+#afLatestArticle:not([hidden]){display:flex!important;min-height:105px!important;padding:18px!important;border-radius:14px!important;background:#eaf7f9!important;border:1px solid #cde7ed!important;align-items:center!important}
+#afLatestArticle b{font-size:17px!important;color:#16485c!important;margin:4px 0!important}
+#afLatestArticle .af-week-summary{display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:3!important;overflow:hidden!important;line-height:1.55!important;max-height:4.65em!important;color:#607783!important;font-size:13px!important}
+</style>
+<script id="af-week-feature-visible-script">
+(async function(){
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ async function renderWeek(){
+  const el=document.getElementById('afLatestArticle'); if(!el)return;
+  try{
+   const r=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!r.ok)return;
+   const d=await r.json();const list=(d.articles||[]).filter(a=>a&&!a.isDemo);
+   const a=list.find(x=>x.weekly)||list[0];
+   if(!a){el.hidden=true;el.style.display='none';return}
+   el.hidden=false;el.style.display='flex';
+   el.innerHTML='<div style="width:100%"><span class="tag tblue" style="margin:0 0 7px">ARTÍCULO DE LA SEMANA</span><b style="display:block">'+esc(a.title||a.name||'Artículo')+'</b><span class="af-week-summary">'+esc(a.summary||a.description||'')+'</span><strong style="display:block;margin-top:9px;font-size:12px;color:#1491a4">Ver artículo completo →</strong></div>';
+   el.onclick=e=>{e.preventDefault();if(typeof openAppSection==='function')openAppSection('articles');setTimeout(()=>{const cards=document.querySelectorAll('#app-articles .app-article-card');if(cards.length){const ix=list.findIndex(x=>x.id===a.id);cards[Math.max(0,ix)]?.scrollIntoView({behavior:'smooth',block:'center'});}},180)};
+  }catch(e){}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderWeek);else renderWeek();
+})();
+</script>
