@@ -1456,12 +1456,26 @@ document.addEventListener("click",async ev=>{
 #articulos .article-grid .article.af-final-article small{display:inline-flex!important;align-self:flex-start!important;visibility:visible!important;opacity:1!important;color:#fff!important;background:#164f61!important;border-radius:8px!important;padding:8px 11px!important;margin: auto 13px 13px!important;font-size:12px!important;font-weight:800!important}
 #articulos .article-grid{align-items:stretch!important}
 </style>
+<style id="af-resource-lists-hidden-until-click">
+#recursos .af-content-items{display:none}
+#recursos .af-content-items.af-resource-open{display:block;margin-top:18px}
+</style>
 <script id="af-resource-navigation-fix">
 function afNavigateResource(id){
+  if(id==='profesionales'){
+    const pros=document.getElementById('profesionales');
+    if(pros){pros.scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'','#profesionales');}
+    return;
+  }
   const target=document.getElementById(id);
-  const fallback=document.getElementById('recursos');
-  const destination=target||fallback;
-  if(destination){destination.scrollIntoView({behavior:'smooth',block:'start'});if(id==='profesionales')history.replaceState(null,'','#profesionales');else history.replaceState(null,'','#recursos');}
-  else if(typeof openAppSection==='function'){openAppSection('resources');}
+  const resources=document.getElementById('recursos');
+  if(!target){if(typeof openAppSection==='function')openAppSection('resources');return;}
+  if(resources){
+    resources.querySelectorAll('.af-content-items').forEach(el=>{el.classList.remove('af-resource-open');el.style.display='none';});
+  }
+  target.classList.add('af-resource-open');
+  target.style.display='block';
+  target.scrollIntoView({behavior:'smooth',block:'start'});
+  history.replaceState(null,'','#recursos');
 }
 </script>
