@@ -1285,3 +1285,60 @@ document.addEventListener("click",async ev=>{
 .hub-dialog[hidden]{display:none!important}.hub-dialog{position:fixed;inset:0;z-index:10000;background:#102e38a8;display:flex;align-items:center;justify-content:center;padding:18px}.hub-dialog-card{position:relative;background:#fff;border-radius:18px;padding:25px;max-width:440px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px #102e3840}.hub-dialog-card h3{font-size:23px;color:#16485c;margin:10px 0}.hub-dialog-card p{font-size:13px;line-height:1.6;color:#607a83}.hub-dialog-close{position:absolute;right:14px;top:10px;border:0;background:#edf7f7;border-radius:50%;width:32px;height:32px;font-size:22px;color:#245867;cursor:pointer}
 @media(max-width:600px){.hub-intro{padding:21px 18px}.hub-art{width:62px;height:62px;border-radius:20px;font-size:34px}.hub-art i{font-size:15px}.hub-art b{font-size:15px}.hub-intro h3{font-size:22px}.hub-intro p{font-size:11px}.hub-tools{grid-template-columns:1fr;padding:15px 14px 4px}.hub-section-title{padding:19px 14px 12px;align-items:start}.hub-section-title h3{font-size:16px}.hub-demo-note{font-size:9px;text-align:right}.hub-profiles{grid-template-columns:1fr;padding:0 14px 16px;gap:10px}.hub-profile{padding:15px}.hub-description{min-height:0}.hub-join{margin:0 14px 16px;padding:15px;flex-wrap:wrap;gap:11px}.hub-join>div:nth-child(2){width:calc(100% - 58px)}.hub-join>button{width:100%}.hub-profile-actions button{flex:1}}
 </style>
+
+
+<style id="af-article-fix-final">
+/* Resumen breve en las dos zonas de artículos */
+#articulos .article p,
+#informacion-semanal .af-week-card p {
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:3!important;
+  line-clamp:3!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  max-height:4.8em!important;
+  line-height:1.6!important;
+  white-space:normal!important;
+}
+#articulos .article small {display:inline-flex!important;margin-top:10px!important;padding:8px 12px!important;border-radius:9px!important;background:#16485c!important;color:#fff!important;font-size:11px!important;font-weight:800!important}
+#informacion-semanal .af-week-card .af-week-placeholder.af-week-read-more {border:0;background:#164f61;color:#fff;font-weight:800;cursor:pointer;padding:10px 13px}
+</style>
+<script id="af-article-fix-final-script">
+(async function(){
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let data;
+  try { const res=await fetch('content.json?v='+Date.now(),{cache:'no-store'}); if(!res.ok)return; data=await res.json(); } catch(e){return;}
+  const articles=Array.isArray(data.articles)?data.articles.filter(a=>a&&!a.isDemo):[];
+  const section=document.getElementById('articulos');
+  const grid=document.querySelector('#articulos .article-grid');
+  function openArticle(a){
+    if(!a)return;
+    const modal=document.getElementById('articleModal');
+    if(!modal)return;
+    document.getElementById('articleTitle').textContent=a.title||a.name||'Artículo';
+    document.getElementById('articleContent').innerHTML=a.body||a.content||('<p>'+esc(a.summary||'')+'</p>');
+    modal.style.display='flex'; modal.classList.add('on'); document.body.style.overflow='hidden';
+  }
+  if(grid){
+    if(articles.length){
+      if(section)section.hidden=false;
+      grid.innerHTML=articles.map((a,i)=>'<article class="article af-final-article" role="button" tabindex="0" data-af-final-article="'+i+'"><div class="pic"></div><span class="tag tblue">'+esc(a.category||'Artículo')+'</span><h3>'+esc(a.title||a.name||'Artículo')+'</h3><p>'+esc(a.summary||'')+'</p><small>Ver más →</small></article>').join('');
+      grid.querySelectorAll('[data-af-final-article]').forEach(el=>{
+        const open=()=>openArticle(articles[Number(el.dataset.afFinalArticle)]);
+        el.addEventListener('click',open);
+        el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+      });
+    } else {
+      grid.innerHTML='<p class="af-article-empty">Todavía no hay artículos publicados.</p>';
+      if(section)section.hidden=false;
+    }
+  }
+  const weekly=document.querySelector('#informacion-semanal .af-week-card:not(.af-week-video)');
+  const article=articles.find(a=>a.weekly)||articles[0];
+  if(weekly && article){
+    weekly.innerHTML='<div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div><h3>'+esc(article.title||article.name||'Artículo de la semana')+'</h3><p>'+esc(article.summary||'')+'</p><button type="button" class="af-week-placeholder af-week-read-more">Ver más →</button>';
+    weekly.querySelector('.af-week-read-more').addEventListener('click',()=>openArticle(article));
+  }
+})();
+</script>
