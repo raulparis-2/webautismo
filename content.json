@@ -52,6 +52,20 @@
   ],
   "professionals": [],
   "resources": [],
-  "activities": [],
+  "activities": [
+    {
+      "id": "activities-1792924296094",
+      "title": "EJEMPLO",
+      "name": "EJEMPLO",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "body": "",
+      "date": ""
+    }
+  ],
   "faqs": []
 }
