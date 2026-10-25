@@ -581,7 +581,7 @@ body{overflow-x:hidden}
 </script>
 
 <section class="section" id="recursos"><div class="section-title"><div><div class="label">PARA EL DÍA A DÍA</div><h2>Recursos para familias</h2></div></div>
-<div class="resources"><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M8 4v13a3 3 0 0 0 3 3"/></svg></div><h3>Guías y documentos</h3><p>Materiales claros para entender y acompañar diferentes situaciones.</p><a href="#" onclick="event.preventDefault();document.getElementById('af-list-resources')?.scrollIntoView({behavior:'smooth',block:'center'})">Ver recursos →</a></div><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M9 3h6v5h4v6h-4v5H9v-5H5V8h4z"/></svg></div><h3>Actividades</h3><p>Ideas adaptables para comunicación, autonomía y juego.</p><a href="#" onclick="event.preventDefault();document.getElementById('af-list-activities')?.scrollIntoView({behavior:'smooth',block:'center'})">Explorar →</a></div><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></div><h3>Servicios cercanos</h3><p>Encuentra profesionales y apoyo en tu zona.</p><a href="#profesionales">Buscar cerca →</a></div><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg></div><h3>Preguntas frecuentes</h3><p>Respuestas sencillas a dudas habituales de familias.</p><a href="#" onclick="event.preventDefault();document.getElementById('af-list-faqs')?.scrollIntoView({behavior:'smooth',block:'center'})">Consultar →</a></div></div></section>
+<div class="resources"><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M8 4v13a3 3 0 0 0 3 3"/></svg></div><h3>Guías y documentos</h3><p>Materiales claros para entender y acompañar diferentes situaciones.</p><a href="#recursos" onclick="event.preventDefault();afNavigateResource('af-list-resources')">Ver recursos →</a></div><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M9 3h6v5h4v6h-4v5H9v-5H5V8h4z"/></svg></div><h3>Actividades</h3><p>Ideas adaptables para comunicación, autonomía y juego.</p><a href="#recursos" onclick="event.preventDefault();afNavigateResource('af-list-activities')">Explorar →</a></div><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></div><h3>Servicios cercanos</h3><p>Encuentra profesionales y apoyo en tu zona.</p><a href="#profesionales" onclick="event.preventDefault();afNavigateResource('profesionales')">Buscar cerca →</a></div><div class="resource"><div class="resource-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg></div><h3>Preguntas frecuentes</h3><p>Respuestas sencillas a dudas habituales de familias.</p><a href="#recursos" onclick="event.preventDefault();afNavigateResource('af-list-faqs')">Consultar →</a></div></div></section>
 
 
 
@@ -1456,3 +1456,12 @@ document.addEventListener("click",async ev=>{
 #articulos .article-grid .article.af-final-article small{display:inline-flex!important;align-self:flex-start!important;visibility:visible!important;opacity:1!important;color:#fff!important;background:#164f61!important;border-radius:8px!important;padding:8px 11px!important;margin: auto 13px 13px!important;font-size:12px!important;font-weight:800!important}
 #articulos .article-grid{align-items:stretch!important}
 </style>
+<script id="af-resource-navigation-fix">
+function afNavigateResource(id){
+  const target=document.getElementById(id);
+  const fallback=document.getElementById('recursos');
+  const destination=target||fallback;
+  if(destination){destination.scrollIntoView({behavior:'smooth',block:'start'});if(id==='profesionales')history.replaceState(null,'','#profesionales');else history.replaceState(null,'','#recursos');}
+  else if(typeof openAppSection==='function'){openAppSection('resources');}
+}
+</script>
