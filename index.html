@@ -1459,3 +1459,12 @@ document.addEventListener("click",async ev=>{
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderWeek);else renderWeek();
 })();
 </script>
+<style id="af-article-card-visibility-fix">
+#articulos .article-grid .article.af-final-article{display:flex!important;flex-direction:column!important;min-height:270px!important;height:auto!important;background:#fff!important;color:#315865!important;overflow:hidden!important;border:1px solid #d8e5e8!important;border-radius:14px!important}
+#articulos .article-grid .article.af-final-article .pic{display:block!important;flex:0 0 118px!important;height:118px!important;min-height:118px!important;width:100%!important;background-size:cover!important;background-position:center!important}
+#articulos .article-grid .article.af-final-article .tag{display:inline-block!important;align-self:flex-start!important;margin:12px 13px 4px!important}
+#articulos .article-grid .article.af-final-article h3{display:block!important;visibility:visible!important;opacity:1!important;color:#16485c!important;font-size:16px!important;line-height:1.35!important;margin:5px 13px!important;font-weight:800!important}
+#articulos .article-grid .article.af-final-article p{display:-webkit-box!important;visibility:visible!important;opacity:1!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:3!important;overflow:hidden!important;color:#607783!important;font-size:13px!important;line-height:1.5!important;max-height:4.5em!important;margin:5px 13px 8px!important}
+#articulos .article-grid .article.af-final-article small{display:inline-flex!important;align-self:flex-start!important;visibility:visible!important;opacity:1!important;color:#fff!important;background:#164f61!important;border-radius:8px!important;padding:8px 11px!important;margin: auto 13px 13px!important;font-size:12px!important;font-weight:800!important}
+#articulos .article-grid{align-items:stretch!important}
+</style>
