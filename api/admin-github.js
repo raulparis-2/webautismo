@@ -73,7 +73,14 @@ module.exports = async function handler(req, res) {
       if (!response.ok) return res.status(400).json({ error: 'No se pudo leer el documento. Comprueba que el enlace esté compartido públicamente como lector.' });
       const text = await response.text();
       if (!text || text.length > 25000 || /<html[\s>]/i.test(text.slice(0, 500))) return res.status(400).json({ error: 'Google Docs no devolvió texto legible. Revisa los permisos y el tamaño del documento (máximo 25.000 caracteres).' });
-      return res.status(200).json({ text });
+      const lines = text.replace(/\r\n?/g, '\n').split('\n');
+      const titleIndex = lines.findIndex(line => line.trim());
+      const title = titleIndex >= 0 ? lines[titleIndex].trim().slice(0, 150) : '';
+      if (titleIndex >= 0) lines.splice(titleIndex, 1);
+      const articleBody = lines.join('\n').trim();
+      const firstParagraph = articleBody.split(/\n\s*\n/).map(part => part.trim()).find(Boolean) || articleBody;
+      const summary = firstParagraph.replace(/\s+/g, ' ').slice(0, 4000);
+      return res.status(200).json({ title, summary, body: articleBody, text });
     }
     if (body.action === 'importDriveImage') {
       if (typeof body.url !== 'string' || body.url.length > 2000) return res.status(400).json({ error: 'Pega un enlace público de una imagen de Google Drive.' });
