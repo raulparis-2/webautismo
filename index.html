@@ -450,19 +450,19 @@ body{overflow-x:hidden}
   </div>
 
 
-  <section class="directory-hub" aria-label="Anuncios de familias que buscan cuidadores">
+  <section class="directory-hub" aria-label="Anuncios de familias y profesionales">
     <div class="hub-intro">
-      <div><span class="hub-kicker">ANUNCIOS DE CUIDADOS</span><h3>Encuentra familias que necesitan una persona cuidadora</h3><p>Publica o consulta anuncios para encontrar cuidadores y cuidadoras de niños, jóvenes o personas adultas con autismo. Contacta directamente con la familia para acordar los detalles.</p></div>
+      <div><span class="hub-kicker">CONECTA CON LA COMUNIDAD</span><h3>¿Buscas apoyo o quieres ofrecer tus servicios?</h3><p>Las familias pueden publicar lo que necesitan y los profesionales pueden anunciar sus servicios. Elige una opción para consultar o publicar anuncios.</p></div>
       <div class="hub-art" aria-hidden="true"><span>🧩</span><i>✦</i><b>+</b></div>
     </div>
-    <div class="hub-tools">
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0"><button type="button" data-hub-type="family" onclick="setHubDirectoryType('family')" style="text-align:left;border:2px solid #138da0;border-radius:15px;padding:18px;background:#f3fbfb;color:#16485c;cursor:pointer"><strong style="display:block;font-size:17px;margin-bottom:6px">🔎 Busco apoyo</strong><span>Familias que necesitan una persona cuidadora o ayuda.</span></button><button type="button" data-hub-type="professional" onclick="setHubDirectoryType('professional')" style="text-align:left;border:2px solid #cfe5e8;border-radius:15px;padding:18px;background:#f7f6ff;color:#16485c;cursor:pointer"><strong style="display:block;font-size:17px;margin-bottom:6px">✦ Publico mi servicio</strong><span>Profesionales y cuidadores que ofrecen sus servicios.</span></button></div><div class="hub-tools">
       <label class="hub-search"><span>⌕</span><input id="hubSearch" type="search" placeholder="Buscar por localidad, horario o tipo de cuidado…" oninput="filterHubProfiles()"></label>
       <label class="hub-filter"><span>Filtrar por provincia</span><select id="hubCategory" onchange="filterHubProfiles()"><option value="">Todas las provincias</option></select></label>
     </div>
-    <div class="hub-section-title"><div><span class="hub-kicker">ANUNCIOS PUBLICADOS</span><h3>Familias que buscan cuidadores/as</h3></div><span class="hub-demo-note">Contacta directamente con quien publica</span></div>
+    <div class="hub-section-title"><div><span class="hub-kicker">ANUNCIOS PUBLICADOS</span><h3 id="hubDirectoryHeading">Familias que buscan cuidadores/as</h3></div><span class="hub-demo-note">Contacta directamente con quien publica</span></div>
     <div class="hub-profiles" id="hubProfiles"><div class="hub-no-results" style="grid-column:1/-1">Cargando anuncios publicados…</div></div>
     <div id="hubNoResults" class="hub-no-results" hidden>No hay perfiles que coincidan. Prueba otra búsqueda.</div>
-    <div class="hub-join"><div class="hub-join-icon">＋</div><div><span class="hub-kicker">¿TU FAMILIA NECESITA APOYO?</span><h3>Encuentra apoyo para tu familia</h3><p>Únete a Autismo Familiar publicando un anuncio para encontrar una persona cuidadora. Cuéntanos qué apoyo necesitas, en qué zona y en qué horario. La zona y el contacto que facilites podrán verlos otras personas. No publiques direcciones exactas, datos médicos ni datos identificativos de menores.</p></div><div class="hub-join-actions"><div class="hub-join-primary-wrap"><button type="button" class="hub-join-primary" onclick="showHubJoin()">✦ Únete a nosotros <span aria-hidden="true">→</span></button><small>Crea tu cuenta gratuita y publica tu anuncio para conectar con personas cuidadoras.</small></div><button type="button" class="hub-edit-cta" onclick="openMyHubAd()">✎ Editar mi anuncio</button></div></div>
+    <div class="hub-join"><div class="hub-join-icon">＋</div><div><span class="hub-kicker" id="hubJoinKicker">¿TU FAMILIA NECESITA APOYO?</span><h3 id="hubJoinHeading">Publica lo que necesitas</h3><p id="hubJoinDescription">Las familias pueden publicar lo que necesitan y los profesionales pueden anunciar sus servicios. Los datos que introduzcas en el anuncio serán públicos.</p></div><div class="hub-join-actions"><div class="hub-join-primary-wrap"><button type="button" class="hub-join-primary" onclick="showHubJoin()">✦ Únete a nosotros <span aria-hidden="true">→</span></button><small>Crea tu cuenta gratuita y publica tu anuncio para conectar con personas cuidadoras.</small></div><button type="button" class="hub-edit-cta" onclick="openMyHubAd()">✎ Editar mi anuncio</button></div></div>
     <div id="hubDialog" class="hub-dialog" role="dialog" aria-modal="true" aria-labelledby="hubDialogTitle" hidden><div class="hub-dialog-card"><button class="hub-dialog-close" type="button" onclick="closeHubDialog()" aria-label="Cerrar">×</button><span class="hub-kicker">AUTISMO FAMILIAR</span><h3 id="hubDialogTitle">Perfil</h3><div id="hubDialogBody"></div><button type="button" class="hub-dialog-main" onclick="closeHubDialog()">Entendido</button></div></div>
   </section>
 
@@ -733,12 +733,23 @@ function refreshHubZones(){
  window.AF_PROVINCES.forEach(province=>{const option=document.createElement('option');option.value=province.toLocaleLowerCase('es');option.textContent=province;select.appendChild(option);});
  if(window.AF_PROVINCES.some(province=>province.toLocaleLowerCase('es')===previous))select.value=previous;
 }
+window.hubDirectoryType='family';
+function setHubDirectoryType(type){
+ window.hubDirectoryType=type==='professional'?'professional':'family';const pro=window.hubDirectoryType==='professional';
+ document.querySelectorAll('[data-hub-type]').forEach(b=>{const active=b.dataset.hubType===window.hubDirectoryType;b.style.borderColor=active?'#138da0':'#cfe5e8';b.style.boxShadow=active?'0 0 0 2px #138da022':'none';});
+ const h=document.getElementById('hubDirectoryHeading');if(h)h.textContent=pro?'Profesionales y cuidadores que ofrecen sus servicios':'Familias que buscan cuidadores/as';
+ const k=document.getElementById('hubJoinKicker');if(k)k.textContent=pro?'¿OFRECES SERVICIOS DE APOYO?':'¿TU FAMILIA NECESITA APOYO?';
+ const j=document.getElementById('hubJoinHeading');if(j)j.textContent=pro?'Publica tu servicio profesional':'Publica lo que necesitas';
+ const d=document.getElementById('hubJoinDescription');if(d)d.textContent=pro?'Presenta tus servicios y zona de trabajo para que las familias puedan encontrarte. Los datos del anuncio serán públicos.':'Publica lo que necesita tu familia para encontrar apoyo. Los datos del anuncio serán públicos.';
+ filterHubProfiles();
+}
 function filterHubProfiles(){
  const q=(document.getElementById('hubSearch')?.value||'').trim().toLowerCase();
  const zone=document.getElementById('hubCategory')?.value||'';
+ const type=window.hubDirectoryType||'family';
  let visible=0;
  document.querySelectorAll('#hubProfiles .hub-profile').forEach(card=>{
-   const match=(!q||(card.dataset.search+' '+card.innerText).toLowerCase().includes(q))&&(!zone||card.dataset.province===zone);
+   const match=(card.dataset.profileType||'family')===type&&(!q||(card.dataset.search+' '+card.innerText).toLowerCase().includes(q))&&(!zone||card.dataset.province===zone);
    card.hidden=!match;if(match)visible++;
  });
  const empty=document.getElementById('hubNoResults');if(empty)empty.hidden=visible>0;
@@ -757,16 +768,16 @@ function showHubContact(name){
  showHubDialog('Contactar con '+name,'<p>En una versión con perfiles reales, aquí aparecerán los datos de contacto que la persona haya decidido publicar.</p><p style="font-size:11px;color:#8a9b9f">Este perfil es de ejemplo y no dispone de contacto real.</p>');
 }
 function showHubJoin(){
- // Si ya hay una sesión iniciada, abrir la ficha del profesional. Si no, mostrar el formulario de acceso.
- if(window.firebaseHubIsLoggedIn && window.firebaseHubIsLoggedIn() && window.firebaseHubOpenProfile){window.firebaseHubOpenProfile();return;}
- const body='<p>Accede o crea una cuenta gratuita para publicar un anuncio y encontrar una persona cuidadora para tu hijo/a o familiar con autismo. Cada cuenta puede tener un anuncio, que podrás editar desde cualquier dispositivo.</p>'+
+ if(window.firebaseHubIsLoggedIn && window.firebaseHubIsLoggedIn() && window.firebaseHubOpenProfile){window.firebaseHubOpenProfile(window.hubDirectoryType||'family');return;}
+ const type=window.hubDirectoryType||'family';
+  const body='<p>Accede o crea una cuenta gratuita para '+(type==='professional'?'publicar tu servicio y conectar con familias.':'publicar un anuncio y encontrar apoyo para tu familia.')+' Cada cuenta puede tener un anuncio, que podrás editar desde cualquier dispositivo.</p>'+
  '<form id="hubAuthForm" style="display:grid;gap:12px;text-align:left">'+
  '<label style="display:grid;gap:5px;font-weight:700">Correo electrónico<input name="email" type="email" autocomplete="email" required maxlength="180" style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<label style="display:grid;gap:5px;font-weight:700">Contraseña<input name="password" type="password" autocomplete="current-password" minlength="6" required style="padding:11px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<div style="display:flex;gap:8px;flex-wrap:wrap"><button data-hub-action="login" type="submit" style="border:0;border-radius:10px;padding:12px 16px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Iniciar sesión</button><button data-hub-action="register" type="submit" style="border:1px solid #164f61;border-radius:10px;padding:12px 16px;background:#fff;color:#164f61;font-weight:800;cursor:pointer">Crear cuenta</button></div>'+
  '<p id="hubAuthStatus" role="status" aria-live="polite" style="font-size:13px;margin:0;color:#526970"></p>'+
  '<p style="font-size:11px;color:#7b8b90;margin:0">Una cuenta puede publicar un solo anuncio. No publiques información médica ni datos personales de las familias.</p></form>';
- showHubDialog('Publicar un anuncio para encontrar cuidador/a',body);
+ showHubDialog(type==='professional'?'Publicar mi servicio':'Publicar un anuncio para encontrar apoyo',body);
 }
 
 document.addEventListener('click',e=>{const d=document.getElementById('hubDialog');if(d&&e.target===d)closeHubDialog()});
@@ -867,8 +878,8 @@ function showAuthMessage(msg){showHubDialog("Publicar un anuncio",'<p>'+escHub(m
 function profileForm(profile={}){
  const hasPhoto=profile.photo&&(String(profile.photo).startsWith('http')||String(profile.photo).startsWith('data:image/'));
  const body='<p>Cuenta qué ayuda necesita tu familia para que una persona cuidadora pueda contactar contigo. El anuncio se publica directamente y podrás editarlo o eliminarlo cuando quieras.</p>'+
- '<div role="note" style="background:#fff4d8;border:1px solid #e7cf8c;border-radius:12px;padding:13px 14px;font-size:12px;line-height:1.6;color:#654f20"><strong style="display:block;margin-bottom:4px">Importante: el anuncio será público</strong>El título, la provincia, la localidad o zona, la descripción y la fotografía que añadas serán visibles para cualquier persona que visite la web. El correo electrónico, teléfono u otro contacto que escribas también podrá verse al abrir «Ver anuncio» o pulsar «Contactar». No incluyas direcciones particulares exactas, datos médicos ni información que identifique a menores. <a href="/politica-privacidad.html" target="_blank" rel="noopener noreferrer" style="font-weight:800">Lee la Política de privacidad</a>.</div>'+
- '<form id="hubProfileForm" style="display:grid;gap:11px;text-align:left">'+
+ '<div role="note" style="background:#fff4d8;border:1px solid #e7cf8c;border-radius:12px;padding:13px 14px;font-size:12px;line-height:1.6;color:#654f20"><strong style="display:block;font-size:16px;margin-bottom:7px">⚠️ IMPORTANTE: TODOS LOS DATOS DEL ANUNCIO SERÁN PÚBLICOS</strong>El título, la provincia, la localidad o zona, la descripción, la fotografía y los datos de contacto que introduzcas podrán ser vistos por cualquier persona que visite la web. No incluyas direcciones particulares exactas, datos médicos ni información que identifique a menores. <a href="/politica-privacidad.html" target="_blank" rel="noopener noreferrer" style="font-weight:800">Lee la Política de privacidad</a>.</div>'+
+ '<form id="hubProfileForm" style="display:grid;gap:11px;text-align:left"><input type="hidden" name="profileType" value="'+escHub(window.hubDirectoryType||'family')+'">'+
  '<label style="display:grid;gap:5px;font-weight:700">Título del anuncio *<input name="name" required maxlength="120" value="'+escHub(profile.name||'')+'" placeholder="Ej. Familia busca cuidadora por las tardes" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<label style="display:grid;gap:5px;font-weight:700">Provincia *<select name="province" required style="padding:10px;border:1px solid #ccdadd;border-radius:8px"><option value="">Selecciona provincia</option>'+window.AF_PROVINCES.map(v=>'<option value="'+v+'" '+(getHubProvince(profile.location)===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>'+'<label style="display:grid;gap:5px;font-weight:700">Localidad o zona concreta (opcional)<input name="town" maxlength="120" value="'+escHub(getHubTown(profile.location))+'" placeholder="Ej. Santiago y alrededores (no pongas una dirección exacta)" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<label style="display:grid;gap:5px;font-weight:700">¿Qué tipo de ayuda y horario necesitas? *<textarea name="description" required maxlength="1600" rows="4" placeholder="Describe las tareas de cuidado, días y horarios aproximados. Evita incluir información médica o datos identificativos de menores." style="padding:10px;border:1px solid #ccdadd;border-radius:8px">'+escHub(profile.description||'')+'</textarea></label>'+
@@ -902,19 +913,19 @@ function profileForm(profile={}){
   }catch(err){if(status)status.textContent=err.message||'No se pudo preparar la imagen.';}
  });
 }
-window.firebaseHubOpenProfile = async function(){
+window.firebaseHubOpenProfile = async function(requestedType){
  if(!ready){showAuthMessage("El formulario de cuentas está preparado, pero aún falta configurar las claves del proyecto Firebase.");return;}
  if(!currentUser){showHubJoin();return;}
- try{const snap=await getDoc(doc(db,"profiles",currentUser.uid));profileForm(snap.exists()?snap.data():{});}
+ try{const snap=await getDoc(doc(db,"profiles",currentUser.uid));profileForm(snap.exists()?snap.data():{},requestedType);}
  catch(e){showAuthMessage(authError(e));}
 };
 function addProfileCard(p){
  const host=document.getElementById("hubProfiles");if(!host)return;
  let card=document.getElementById("hub-user-"+p.uid);
  if(!card){card=document.createElement("article");card.className="hub-profile";card.id="hub-user-"+p.uid;host.prepend(card);}
- const label="Anuncio de cuidados";
+ const label=p.profileType==="professional"?"Servicio profesional":"Familia busca apoyo";
  const initials=(p.name||"AF").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
- card.dataset.zone=(p.location||"").trim().toLocaleLowerCase("es");card.dataset.province=getHubProvince(p.location).toLocaleLowerCase("es");card.dataset.search=[p.name,p.location,p.description].join(" ").toLowerCase();
+ card.dataset.profileType=p.profileType==="professional"?"professional":"family";card.dataset.zone=(p.location||"").trim().toLocaleLowerCase("es");card.dataset.province=getHubProvince(p.location).toLocaleLowerCase("es");card.dataset.search=[p.name,p.location,p.description].join(" ").toLowerCase();
  const photo=p.photo&&(p.photo.startsWith("http")||p.photo.startsWith("data:image/"))?'<img src="'+escHub(p.photo)+'" alt="" style="width:54px;height:54px;object-fit:cover;border-radius:50%">':'<div class="hub-avatar avatar-teal">'+escHub(initials)+'</div>';
  card.innerHTML='<div class="hub-profile-top">'+photo+'<span class="hub-pill">'+escHub(label)+'</span></div><h4>'+escHub(p.name)+'</h4><p class="hub-role">'+escHub(p.location)+'</p><p class="hub-description">'+escHub(p.description)+'</p><div class="hub-profile-actions"><button type="button" data-profile-action="view">Ver anuncio</button><button type="button" class="hub-contact" data-profile-action="contact">Contactar</button></div>';
  card.querySelector('[data-profile-action="view"]').addEventListener("click",()=>showHubDialog(p.name,'<p><strong>'+escHub(label)+'</strong></p><p>'+escHub(p.description)+'</p><p><strong>Zona:</strong> '+escHub(p.location)+'</p><p><strong>Contacto:</strong> '+escHub(p.contactEmail)+'</p>'+(p.contact?'<p><strong>Teléfono o web:</strong> '+escHub(p.contact)+'</p>':'')+(p.photo?'<p><img src="'+escHub(p.photo)+'" alt="" style="max-width:100%;max-height:240px;object-fit:contain;border-radius:10px"></p>':'')));
@@ -954,7 +965,7 @@ document.addEventListener("submit",async ev=>{
   const form=ev.target;if(!ready||!currentUser){setStatus("hubProfileStatus","Inicia sesión para guardar el anuncio.");return;}
   const fd=new FormData(form),status=document.getElementById("hubProfileStatus");
   if(status)status.textContent="Publicando…";
-  const town=String(fd.get("town")||"").trim();if(town&&/\b(calle|rua|rúa|avenida|avda\.?|paseo|plaza|portal|piso|código postal)\b|\b\d{1,5}\b/i.test(town)){if(status)status.textContent="Por privacidad, indica solo una localidad o zona aproximada, no una calle, número ni dirección particular.";return;}const p={uid:currentUser.uid,name:String(fd.get("name")||"").trim(),specialty:"general",location:[String(fd.get("province")||"").trim(),town].filter(Boolean).join(" — "),description:String(fd.get("description")||"").trim(),contactEmail:String(fd.get("contactEmail")||"").trim(),contact:String(fd.get("contact")||"").trim(),photo:String(fd.get("photo")||"").trim(),consent:fd.get("consent")==="on",updatedAt:serverTimestamp()};
+  const town=String(fd.get("town")||"").trim();if(town&&/\b(calle|rua|rúa|avenida|avda\.?|paseo|plaza|portal|piso|código postal)\b|\b\d{1,5}\b/i.test(town)){if(status)status.textContent="Por privacidad, indica solo una localidad o zona aproximada, no una calle, número ni dirección particular.";return;}const p={uid:currentUser.uid,profileType:String(fd.get("profileType")||"family"),name:String(fd.get("name")||"").trim(),specialty:"general",location:[String(fd.get("province")||"").trim(),town].filter(Boolean).join(" — "),description:String(fd.get("description")||"").trim(),contactEmail:String(fd.get("contactEmail")||"").trim(),contact:String(fd.get("contact")||"").trim(),photo:String(fd.get("photo")||"").trim(),consent:fd.get("consent")==="on",updatedAt:serverTimestamp()};
   try{
    const ref=doc(db,"profiles",currentUser.uid);const snap=await getDoc(ref);
    if(!snap.exists()){p.createdAt=serverTimestamp();}
