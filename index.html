@@ -875,9 +875,10 @@ function authError(e){
  return "No se pudo completar la operación. Revisa la configuración de Firebase y vuelve a intentarlo.";
 }
 function showAuthMessage(msg){showHubDialog("Publicar un anuncio",'<p>'+escHub(msg)+'</p><p>La web necesita que el propietario configure Firebase una sola vez para activar las cuentas.</p>');}
-function profileForm(profile={}){
+function profileForm(profile={},requestedType){
+ const profileType=profile.profileType||requestedType||window.hubDirectoryType||'family';window.hubDirectoryType=profileType;const isProfessional=profileType==='professional';
  const hasPhoto=profile.photo&&(String(profile.photo).startsWith('http')||String(profile.photo).startsWith('data:image/'));
- const body='<p>Cuenta qué ayuda necesita tu familia para que una persona cuidadora pueda contactar contigo. El anuncio se publica directamente y podrás editarlo o eliminarlo cuando quieras.</p>'+
+ const body='<p>'+(isProfessional?'Presenta tu servicio y zona de trabajo para que las familias puedan contactar contigo.':'Cuenta qué ayuda necesita tu familia para que una persona cuidadora pueda contactar contigo.')+' El anuncio se publica directamente y podrás editarlo o eliminarlo cuando quieras.</p>'+
  '<div role="note" style="background:#fff4d8;border:1px solid #e7cf8c;border-radius:12px;padding:13px 14px;font-size:12px;line-height:1.6;color:#654f20"><strong style="display:block;font-size:16px;margin-bottom:7px">⚠️ IMPORTANTE: TODOS LOS DATOS DEL ANUNCIO SERÁN PÚBLICOS</strong>El título, la provincia, la localidad o zona, la descripción, la fotografía y los datos de contacto que introduzcas podrán ser vistos por cualquier persona que visite la web. No incluyas direcciones particulares exactas, datos médicos ni información que identifique a menores. <a href="/politica-privacidad.html" target="_blank" rel="noopener noreferrer" style="font-weight:800">Lee la Política de privacidad</a>.</div>'+
  '<form id="hubProfileForm" style="display:grid;gap:11px;text-align:left"><input type="hidden" name="profileType" value="'+escHub(window.hubDirectoryType||'family')+'">'+
  '<label style="display:grid;gap:5px;font-weight:700">Título del anuncio *<input name="name" required maxlength="120" value="'+escHub(profile.name||'')+'" placeholder="Ej. Familia busca cuidadora por las tardes" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
