@@ -1011,7 +1011,8 @@ document.addEventListener("submit",async ev=>{
    await setDoc(ref,p,{merge:true});
    document.getElementById("hub-user-"+currentUser.uid)?.remove();
    try{const token=await currentUser.getIdToken();await fetch("/api/notify-profile",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({name:p.name,profileType:p.profileType,location:p.location,description:p.description,contactEmail:p.contactEmail})});}catch(notifyError){console.warn("No se pudo enviar el aviso por correo:",notifyError);}
-   window.firebaseHubRefreshRequestButton(currentUser);\n   showHubDialog("¡Solicitud enviada!", '<div style="text-align:center;padding:8px 0 4px"><div style="width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:#e4f7ed;color:#16834a;display:grid;place-items:center;font-size:34px;font-weight:900" aria-hidden="true">✓</div><p style="font-size:16px;font-weight:900;color:#16485c;margin:0 0 10px">Tu anuncio está pendiente de revisión.</p><p style="line-height:1.65;margin:0">Todavía no será visible en la web. El equipo de Autismo Familiar lo revisará y te avisaremos cuando haya sido revisado.</p></div>');
+   window.firebaseHubRefreshRequestButton(currentUser);
+   showHubDialog("¡Solicitud enviada!", '<div style="text-align:center;padding:8px 0 4px"><div style="width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:#e4f7ed;color:#16834a;display:grid;place-items:center;font-size:34px;font-weight:900" aria-hidden="true">✓</div><p style="font-size:16px;font-weight:900;color:#16485c;margin:0 0 10px">Tu anuncio está pendiente de revisión.</p><p style="line-height:1.65;margin:0">Todavía no será visible en la web. El equipo de Autismo Familiar lo revisará y te avisaremos cuando haya sido revisado.</p></div>');
   }catch(e){if(status)status.textContent=authError(e);}
  }
 });
