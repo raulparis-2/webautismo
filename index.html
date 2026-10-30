@@ -667,26 +667,9 @@ function openMyHubAd(){
  if(window.firebaseHubOpenProfile){window.firebaseHubOpenProfile();return;}
  showHubJoin();
 }
-async function refreshHubRequestButton(user=currentUser){
- const btn=document.getElementById('hubViewRequestBtn');if(!btn)return;
- if(!user||!window.firebaseHubReady){btn.hidden=true;return;}
- try{const snap=await getDoc(doc(db,'profiles',user.uid));btn.hidden=!snap.exists();}
- catch(e){btn.hidden=true;console.warn('No se pudo comprobar la solicitud:',e);}
-}
-async function viewMyHubRequest(){
- if(!currentUser){showHubJoin();return;}
- try{
-  const snap=await getDoc(doc(db,'profiles',currentUser.uid));
-  if(!snap.exists()){const b=document.getElementById('hubViewRequestBtn');if(b)b.hidden=true;showHubJoin();return;}
-  const p=snap.data(),state=p.status||'pending';
-  const approved=state==='approved',rejected=state==='rejected';
-  const heading=approved?'SOLICITUD ACEPTADA':rejected?'SOLICITUD DENEGADA':'SOLICITUD PENDIENTE DE REVISIÓN';
-  const color=approved?'#137a45':rejected?'#b42318':'#9a6500';
-  const bg=approved?'#e8f7ee':rejected?'#fff0ef':'#fff7df';
-  const reason=rejected?'<div style="margin-top:14px;padding:14px;background:#fff;border:1px solid #efc5c1;border-radius:12px;text-align:left"><strong style="color:#9d2525;font-size:15px">Motivo de la denegación</strong><p style="margin:7px 0 0;line-height:1.6">'+escHub(p.rejectionReason||'No se indicó un motivo.')+'</p></div>':'';
-  const action=rejected?'<button type="button" class="hub-dialog-main" style="margin-top:16px" onclick="closeHubDialog();openMyHubAd()">Corregir mi solicitud</button>':'';
-  showHubDialog('Mi solicitud','<div style="text-align:center;padding:12px 4px 8px"><div style="display:inline-block;background:'+bg+';color:'+color+';border:2px solid '+color+';border-radius:16px;padding:18px 20px;font-size:clamp(20px,4vw,27px);font-weight:900;line-height:1.25">'+heading+'</div><p style="margin:16px 0 0;color:#425b62;font-size:15px;line-height:1.6">'+(approved?'Tu anuncio ha sido aceptado y ya está publicado en el directorio.':rejected?'El equipo ha revisado tu anuncio y no lo ha aceptado. Consulta el motivo y, si lo deseas, corrígelo.':'Hemos recibido tu solicitud. El equipo de Autismo Familiar todavía no la ha revisado. Te aparecerá aquí cuando haya una decisión.')+'</p>'+reason+'</div><div style="margin-top:12px;padding:13px;background:#f3f8f9;border-radius:12px;text-align:left"><strong>'+escHub(p.name||'Tu anuncio')+'</strong><p style="margin:5px 0 0;color:#60777d">'+escHub(p.location||'')+'</p></div>'+action);
- }catch(e){showHubDialog('Mi solicitud','<p>'+escHub(authError(e))+'</p>');}
+function viewMyHubRequest(){
+ if(window.firebaseHubViewRequest){window.firebaseHubViewRequest();return;}
+ showHubJoin();
 }
 function googleDirectoryUrl(){let q=(document.getElementById('query')?.value||'').trim(),c=(document.getElementById('city')?.value||'').trim();let term=[q,c].filter(Boolean).join(' ').trim()||'centros de autismo y profesionales cerca de mí';return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(term)}
 function searchPros(){window.location.href=googleDirectoryUrl()}
@@ -950,6 +933,25 @@ function profileForm(profile={},requestedType){
   }catch(err){if(status)status.textContent=err.message||'No se pudo preparar la imagen.';}
  });
 }
+window.firebaseHubRefreshRequestButton = async function(user=currentUser){
+ const btn=document.getElementById('hubViewRequestBtn');if(!btn)return;
+ if(!user){btn.hidden=true;return;}
+ try{const snap=await getDoc(doc(db,'profiles',user.uid));btn.hidden=!snap.exists();}
+ catch(e){btn.hidden=true;console.warn('No se pudo comprobar la solicitud:',e);}
+};
+window.firebaseHubViewRequest = async function(){
+ if(!currentUser){showHubJoin();return;}
+ try{
+  const snap=await getDoc(doc(db,'profiles',currentUser.uid));
+  if(!snap.exists()){const b=document.getElementById('hubViewRequestBtn');if(b)b.hidden=true;showHubJoin();return;}
+  const p=snap.data(),state=p.status||'pending',approved=state==='approved',rejected=state==='rejected';
+  const heading=approved?'SOLICITUD ACEPTADA':rejected?'SOLICITUD DENEGADA':'SOLICITUD PENDIENTE DE REVISIÓN';
+  const color=approved?'#137a45':rejected?'#b42318':'#9a6500',bg=approved?'#e8f7ee':rejected?'#fff0ef':'#fff7df';
+  const reason=rejected?'<div style="margin-top:14px;padding:14px;background:#fff;border:1px solid #efc5c1;border-radius:12px;text-align:left"><strong style="color:#9d2525;font-size:15px">Motivo de la denegación</strong><p style="margin:7px 0 0;line-height:1.6">'+escHub(p.rejectionReason||'No se indicó un motivo.')+'</p></div>':'';
+  const action=rejected?'<button type="button" class="hub-dialog-main" style="margin-top:16px" onclick="closeHubDialog();openMyHubAd()">Corregir mi solicitud</button>':'';
+  showHubDialog('Mi solicitud','<div style="text-align:center;padding:12px 4px 8px"><div style="display:inline-block;background:'+bg+';color:'+color+';border:2px solid '+color+';border-radius:16px;padding:18px 20px;font-size:clamp(20px,4vw,27px);font-weight:900;line-height:1.25">'+heading+'</div><p style="margin:16px 0 0;color:#425b62;font-size:15px;line-height:1.6">'+(approved?'Tu anuncio ha sido aceptado y ya está publicado en el directorio.':rejected?'El equipo ha revisado tu anuncio y no lo ha aceptado. Consulta el motivo y, si lo deseas, corrígelo.':'Hemos recibido tu solicitud. El equipo de Autismo Familiar todavía no la ha revisado. Te aparecerá aquí cuando haya una decisión.')+'</p>'+reason+'</div><div style="margin-top:12px;padding:13px;background:#f3f8f9;border-radius:12px;text-align:left"><strong>'+escHub(p.name||'Tu anuncio')+'</strong><p style="margin:5px 0 0;color:#60777d">'+escHub(p.location||'')+'</p></div>'+action);
+ }catch(e){showHubDialog('Mi solicitud','<p>'+escHub(authError(e))+'</p>');}
+};
 window.firebaseHubOpenProfile = async function(requestedType){
  if(!ready){showAuthMessage("El formulario de cuentas está preparado, pero aún falta configurar las claves del proyecto Firebase.");return;}
  if(!currentUser){showHubJoin();return;}
@@ -978,7 +980,7 @@ if(ready){
  try{
   const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
   auth=getAuth(app);db=getFirestore(app);
-  onAuthStateChanged(auth,user=>{currentUser=user;refreshHubRequestButton(user);});
+  onAuthStateChanged(auth,user=>{currentUser=user;window.firebaseHubRefreshRequestButton(user);});
   await loadPublicProfiles();
  }catch(e){console.error("Firebase no está configurado:",e);}
 }
@@ -1009,7 +1011,7 @@ document.addEventListener("submit",async ev=>{
    await setDoc(ref,p,{merge:true});
    document.getElementById("hub-user-"+currentUser.uid)?.remove();
    try{const token=await currentUser.getIdToken();await fetch("/api/notify-profile",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({name:p.name,profileType:p.profileType,location:p.location,description:p.description,contactEmail:p.contactEmail})});}catch(notifyError){console.warn("No se pudo enviar el aviso por correo:",notifyError);}
-   refreshHubRequestButton(currentUser);\n   showHubDialog("¡Solicitud enviada!", '<div style="text-align:center;padding:8px 0 4px"><div style="width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:#e4f7ed;color:#16834a;display:grid;place-items:center;font-size:34px;font-weight:900" aria-hidden="true">✓</div><p style="font-size:16px;font-weight:900;color:#16485c;margin:0 0 10px">Tu anuncio está pendiente de revisión.</p><p style="line-height:1.65;margin:0">Todavía no será visible en la web. El equipo de Autismo Familiar lo revisará y te avisaremos cuando haya sido revisado.</p></div>');
+   window.firebaseHubRefreshRequestButton(currentUser);\n   showHubDialog("¡Solicitud enviada!", '<div style="text-align:center;padding:8px 0 4px"><div style="width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:#e4f7ed;color:#16834a;display:grid;place-items:center;font-size:34px;font-weight:900" aria-hidden="true">✓</div><p style="font-size:16px;font-weight:900;color:#16485c;margin:0 0 10px">Tu anuncio está pendiente de revisión.</p><p style="line-height:1.65;margin:0">Todavía no será visible en la web. El equipo de Autismo Familiar lo revisará y te avisaremos cuando haya sido revisado.</p></div>');
   }catch(e){if(status)status.textContent=authError(e);}
  }
 });
