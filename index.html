@@ -462,7 +462,7 @@ body{overflow-x:hidden}
     <div class="hub-section-title"><div><span class="hub-kicker">ANUNCIOS PUBLICADOS</span><h3 id="hubDirectoryHeading">Familias que buscan cuidadores/as</h3></div><span class="hub-demo-note">Contacta directamente con quien publica</span></div>
     <div class="hub-profiles" id="hubProfiles"><div class="hub-no-results" style="grid-column:1/-1">Cargando anuncios publicados…</div></div>
     <div id="hubNoResults" class="hub-no-results" hidden>No hay perfiles que coincidan. Prueba otra búsqueda.</div>
-    <div class="hub-join"><div class="hub-join-icon">＋</div><div><span class="hub-kicker" id="hubJoinKicker">¿TU FAMILIA NECESITA APOYO?</span><h3 id="hubJoinHeading">Publica lo que necesitas</h3><p id="hubJoinDescription">Las familias pueden publicar lo que necesitan y los profesionales pueden anunciar sus servicios. Los datos que introduzcas en el anuncio serán públicos.</p></div><div class="hub-join-actions"><div class="hub-join-primary-wrap"><button type="button" class="hub-join-primary" onclick="showHubJoin()">✦ Únete a nosotros <span aria-hidden="true">→</span></button><small>Crea tu cuenta gratuita y publica tu anuncio para conectar con personas cuidadoras.</small></div><button type="button" id="hubViewRequestBtn" class="hub-edit-cta" onclick="viewMyHubRequest()" hidden>▣ Ver mi solicitud</button></div></div>
+    <div class="hub-join"><div class="hub-join-icon">＋</div><div><span class="hub-kicker" id="hubJoinKicker">¿TU FAMILIA NECESITA APOYO?</span><h3 id="hubJoinHeading">Publica lo que necesitas</h3><p id="hubJoinDescription">Las familias pueden publicar lo que necesitan y los profesionales pueden anunciar sus servicios. Los datos que introduzcas en el anuncio serán públicos.</p></div><div class="hub-join-actions"><div class="hub-join-primary-wrap"><button type="button" class="hub-join-primary" onclick="showHubJoin()">✦ Únete a nosotros <span aria-hidden="true">→</span></button><small>Crea tu cuenta gratuita y publica tu anuncio para conectar con personas cuidadoras.</small><button type="button" id="hubEditAdBtn" onclick="openMyHubAd()" hidden style="margin-top:7px;padding:6px 10px;border:1px solid #cbdde1;border-radius:8px;background:#fff;color:#315d68;font-size:12px;font-weight:700;cursor:pointer">✎ Editar mi anuncio</button></div><button type="button" id="hubViewRequestBtn" class="hub-edit-cta" onclick="viewMyHubRequest()" hidden>▣ Ver mi solicitud</button></div></div>
     <div id="hubDialog" class="hub-dialog" role="dialog" aria-modal="true" aria-labelledby="hubDialogTitle" hidden><div class="hub-dialog-card"><button class="hub-dialog-close" type="button" onclick="closeHubDialog()" aria-label="Cerrar">×</button><span class="hub-kicker">AUTISMO FAMILIAR</span><h3 id="hubDialogTitle">Perfil</h3><div id="hubDialogBody"></div><button type="button" class="hub-dialog-main" onclick="closeHubDialog()">Entendido</button></div></div>
   </section>
 
@@ -936,10 +936,10 @@ function profileForm(profile={},requestedType){
  });
 }
 window.firebaseHubRefreshRequestButton = async function(user=currentUser){
- const btn=document.getElementById('hubViewRequestBtn');if(!btn)return;
- if(!user){btn.hidden=true;return;}
- try{const snap=await getDoc(doc(db,'profiles',user.uid));btn.hidden=!snap.exists();}
- catch(e){btn.hidden=true;console.warn('No se pudo comprobar la solicitud:',e);}
+ const btn=document.getElementById('hubViewRequestBtn'),editBtn=document.getElementById('hubEditAdBtn');
+ if(!user){if(btn)btn.hidden=true;if(editBtn)editBtn.hidden=true;return;}
+ try{const snap=await getDoc(doc(db,'profiles',user.uid));const hasProfile=snap.exists();if(btn)btn.hidden=!hasProfile;if(editBtn)editBtn.hidden=!hasProfile;}
+ catch(e){if(btn)btn.hidden=true;if(editBtn)editBtn.hidden=true;console.warn('No se pudo comprobar la solicitud:',e);}
 };
 window.firebaseHubViewRequest = async function(){
  if(!currentUser){showHubJoin();return;}
@@ -1022,7 +1022,7 @@ document.addEventListener("click",async ev=>{
  const b=ev.target.closest("[data-hub-action]");if(!b)return;
  if(b.dataset.hubAction==="delete-profile"){
   if(!currentUser||!confirm("¿Seguro que quieres eliminar tu anuncio del directorio? Esta acción no se puede deshacer."))return;
-  try{await deleteDoc(doc(db,"profiles",currentUser.uid));document.getElementById("hub-user-"+currentUser.uid)?.remove();const requestButton=document.getElementById("hubViewRequestBtn");if(requestButton)requestButton.hidden=true;showHubDialog("Anuncio eliminado","<p>Tu anuncio y su estado de revisión se han eliminado. Si vuelves a entrar en «Únete a nosotros», verás el formulario limpio, sin el aviso de solicitud pendiente.</p>");}
+  try{await deleteDoc(doc(db,"profiles",currentUser.uid));document.getElementById("hub-user-"+currentUser.uid)?.remove();const requestButton=document.getElementById("hubViewRequestBtn"),editButton=document.getElementById("hubEditAdBtn");if(requestButton)requestButton.hidden=true;if(editButton)editButton.hidden=true;showHubDialog("Anuncio eliminado","<p>Tu anuncio y su estado de revisión se han eliminado. Si vuelves a entrar en «Únete a nosotros», verás el formulario limpio, sin el aviso de solicitud pendiente.</p>");}
   catch(e){setStatus("hubProfileStatus",authError(e));}
   return;
  }
