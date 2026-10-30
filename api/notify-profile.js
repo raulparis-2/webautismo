@@ -43,7 +43,7 @@ module.exports = async function handler(req, res) {
       headers: { Authorization: 'Bearer ' + resendKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from,
-        to: ['autismofamiliar@autismofamiliar.com'],
+        to: ['parisnovoraul2@gmail.com'],
         subject: 'Nueva solicitud de anuncio pendiente de revisión',
         text: [
           'Se ha recibido una nueva solicitud en Autismo Familiar.',
