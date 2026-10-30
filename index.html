@@ -878,7 +878,7 @@ function showAuthMessage(msg){showHubDialog("Publicar un anuncio",'<p>'+escHub(m
 function profileForm(profile={},requestedType){
  const profileType=profile.profileType||requestedType||window.hubDirectoryType||'family';window.hubDirectoryType=profileType;const isProfessional=profileType==='professional';
  const hasPhoto=profile.photo&&(String(profile.photo).startsWith('http')||String(profile.photo).startsWith('data:image/'));
- const body='<p>'+(isProfessional?'Presenta tu servicio y zona de trabajo para que las familias puedan contactar contigo.':'Cuenta qué ayuda necesita tu familia para que una persona cuidadora pueda contactar contigo.')+' El anuncio se publica directamente y podrás editarlo o eliminarlo cuando quieras.</p>'+
+ const body='<p>'+(isProfessional?'Presenta tu servicio y zona de trabajo para que las familias puedan contactar contigo.':'Cuenta qué ayuda necesita tu familia para que una persona cuidadora pueda contactar contigo.')+' El anuncio quedará pendiente de revisión. Solo será visible cuando el equipo de Autismo Familiar lo apruebe.</p>'+
  '<div role="note" style="background:#fff4d8;border:1px solid #e7cf8c;border-radius:12px;padding:13px 14px;font-size:12px;line-height:1.6;color:#654f20"><strong style="display:block;font-size:16px;margin-bottom:7px">⚠️ IMPORTANTE: TODOS LOS DATOS DEL ANUNCIO SERÁN PÚBLICOS</strong>El título, la provincia, la localidad o zona, la descripción, la fotografía y los datos de contacto que introduzcas podrán ser vistos por cualquier persona que visite la web. No incluyas direcciones particulares exactas, datos médicos ni información que identifique a menores. <a href="/politica-privacidad.html" target="_blank" rel="noopener noreferrer" style="font-weight:800">Lee la Política de privacidad</a>.</div>'+
  '<form id="hubProfileForm" style="display:grid;gap:11px;text-align:left"><label style="display:grid;gap:6px;font-weight:800;background:#eaf7f8;border:2px solid #138da0;border-radius:12px;padding:13px">¿QUÉ TIPO DE ANUNCIO QUIERES PUBLICAR? *<select id="hubProfileType" name="profileType" required style="padding:12px;border:1px solid #9abdc3;border-radius:8px;font-size:15px"><option value="family" '+(profileType==='family'?'selected':'')+'>Busco apoyo (familia)</option><option value="professional" '+(profileType==='professional'?'selected':'')+'>Publico mi servicio (profesional/cuidador)</option></select></label>'+
  '<label style="display:grid;gap:5px;font-weight:700">Título del anuncio *<input name="name" required maxlength="120" value="'+escHub(profile.name||'')+'" placeholder="'+(isProfessional?'Ej. Cuidadora ofrece apoyo por las tardes':'Ej. Familia busca cuidadora por las tardes')+'" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
@@ -890,7 +890,7 @@ function profileForm(profile={},requestedType){
  '<label style="display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500"><input name="consent" type="checkbox" required style="margin-top:4px" '+(profile.consent?'checked':'')+'>Confirmo que tengo derecho a publicar estos datos y entiendo que el título, la zona, la descripción, la foto y los datos de contacto que añada al anuncio serán visibles públicamente para cualquier visitante. No incluiré direcciones exactas, datos médicos ni datos identificativos de menores.</label>'+
  '<button type="submit" style="border:0;border-radius:10px;padding:13px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Publicar / guardar anuncio</button>'+
  '<button type="button" data-hub-action="delete-profile" style="border:1px solid #b42318;border-radius:10px;padding:11px;background:white;color:#b42318;cursor:pointer">Eliminar mi anuncio</button><button type="button" data-hub-action="logout" style="border:1px solid #ccdadd;border-radius:10px;padding:11px;background:white;cursor:pointer">Cerrar sesión</button><p id="hubProfileStatus" role="status" aria-live="polite" style="font-size:13px;margin:0"></p>'+
- '<p style="font-size:11px;color:#7b8b90;margin:0">El anuncio será público en cuanto lo guardes y aparecerá en el directorio. Solo puedes tener uno por cuenta. Usa una zona aproximada, nunca la dirección de casa, y no incluyas el nombre completo ni datos identificativos de menores. El correo y el teléfono también se ven al abrir «Ver anuncio» o al pulsar «Contactar».</p></form>';
+ '<p style="font-size:11px;color:#7b8b90;margin:0">El anuncio quedará pendiente de revisión y solo aparecerá en el directorio cuando el equipo lo apruebe. Solo puedes tener uno por cuenta. Usa una zona aproximada, nunca la dirección de casa, y no incluyas el nombre completo ni datos identificativos de menores. El correo y el teléfono también se ven al abrir «Ver anuncio» o al pulsar «Contactar».</p></form>';
  showHubDialog(profile.name?'Editar mi anuncio':(isProfessional?'Publicar mi servicio':'Publicar un anuncio'),body);
  const typeSelect=document.getElementById('hubProfileType');
  if(typeSelect)typeSelect.addEventListener('change',()=>{
@@ -946,7 +946,7 @@ function addProfileCard(p){
  filterHubProfiles();}
 async function loadPublicProfiles(){
  if(!ready||!db)return;
- try{const host=document.getElementById("hubProfiles");if(host)host.innerHTML="";const snaps=await getDocs(collection(db,"profiles"));snaps.forEach(s=>addProfileCard({...s.data(),uid:s.id}));refreshHubZones();filterHubProfiles();}
+ try{const host=document.getElementById("hubProfiles");if(host)host.innerHTML="";const snaps=await getDocs(collection(db,"profiles"));snaps.forEach(s=>{const p=s.data();if(p.status==="approved")addProfileCard({...p,uid:s.id});});refreshHubZones();filterHubProfiles();}
  catch(e){console.warn("No se pudieron cargar los perfiles publicados:",e);}
 }
 if(ready){
@@ -977,13 +977,14 @@ document.addEventListener("submit",async ev=>{
   const form=ev.target;if(!ready||!currentUser){setStatus("hubProfileStatus","Inicia sesión para guardar el anuncio.");return;}
   const fd=new FormData(form),status=document.getElementById("hubProfileStatus");
   if(status)status.textContent="Publicando…";
-  const town=String(fd.get("town")||"").trim();if(town&&/\b(calle|rua|rúa|avenida|avda\.?|paseo|plaza|portal|piso|código postal)\b|\b\d{1,5}\b/i.test(town)){if(status)status.textContent="Por privacidad, indica solo una localidad o zona aproximada, no una calle, número ni dirección particular.";return;}const p={uid:currentUser.uid,profileType:String(fd.get("profileType")||"family"),name:String(fd.get("name")||"").trim(),specialty:"general",location:[String(fd.get("province")||"").trim(),town].filter(Boolean).join(" — "),description:String(fd.get("description")||"").trim(),contactEmail:String(fd.get("contactEmail")||"").trim(),contact:String(fd.get("contact")||"").trim(),photo:String(fd.get("photo")||"").trim(),consent:fd.get("consent")==="on",updatedAt:serverTimestamp()};
+  const town=String(fd.get("town")||"").trim();if(town&&/\b(calle|rua|rúa|avenida|avda\.?|paseo|plaza|portal|piso|código postal)\b|\b\d{1,5}\b/i.test(town)){if(status)status.textContent="Por privacidad, indica solo una localidad o zona aproximada, no una calle, número ni dirección particular.";return;}const p={uid:currentUser.uid,profileType:String(fd.get("profileType")||"family"),name:String(fd.get("name")||"").trim(),specialty:"general",location:[String(fd.get("province")||"").trim(),town].filter(Boolean).join(" — "),description:String(fd.get("description")||"").trim(),contactEmail:String(fd.get("contactEmail")||"").trim(),contact:String(fd.get("contact")||"").trim(),photo:String(fd.get("photo")||"").trim(),consent:fd.get("consent")==="on",status:"pending",updatedAt:serverTimestamp()};
   try{
    const ref=doc(db,"profiles",currentUser.uid);const snap=await getDoc(ref);
    if(!snap.exists()){p.createdAt=serverTimestamp();}
    await setDoc(ref,p,{merge:true});
-   addProfileCard({...p,uid:currentUser.uid});
-   if(status)status.textContent="Anuncio publicado. Ya aparece en el directorio y puedes editarlo cuando quieras.";
+   document.getElementById("hub-user-"+currentUser.uid)?.remove();
+   try{const token=await currentUser.getIdToken();await fetch("/api/notify-profile",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({name:p.name,profileType:p.profileType,location:p.location,description:p.description,contactEmail:p.contactEmail})});}catch(notifyError){console.warn("No se pudo enviar el aviso por correo:",notifyError);}
+   if(status)status.textContent="Solicitud enviada. Tu anuncio queda pendiente de revisión y no será visible hasta que el equipo lo apruebe. Te avisaremos cuando se revise.";
   }catch(e){if(status)status.textContent=authError(e);}
  }
 });
