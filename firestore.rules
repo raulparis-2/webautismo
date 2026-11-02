@@ -52,7 +52,7 @@ service cloud.firestore {
         && request.resource.data.consent == true;
 
       // La cuenta administradora puede aprobar o denegar solicitudes desde el panel.
-      allow update: if request.auth != null && request.auth.token.email == 'parisnovoraul2@gmail.com';
+      allow update: if request.auth != null && request.auth.token.email == 'autismofamiliar@autismofamiliar.com';
 
       allow delete: if request.auth != null && request.auth.uid == profileId;
     }
