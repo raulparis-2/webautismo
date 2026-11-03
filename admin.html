@@ -72,6 +72,7 @@ a{color:var(--teal)}
 <textarea id="summary" maxlength="4000" placeholder="Una o dos frases para presentar el artículo. Si lo dejas vacío, se crea automáticamente."></textarea>
 
 <label>Contenido del artículo</label>
+<div class="actions" style="margin:0 0 10px"><button class="btn secondary" id="importWord" type="button">📄 Cargar documento Word (.docx)</button><input id="wordFile" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hide"><span class="muted" style="align-self:center">Elige el archivo del escritorio y se rellenarán el título y el texto automáticamente.</span></div>
 <div class="toolbar" role="toolbar" aria-label="Formato del texto">
 <button class="tool" type="button" data-cmd="bold" title="Negrita"><b>N</b></button>
 <button class="tool" type="button" data-cmd="italic" title="Cursiva"><i>C</i></button>
@@ -115,6 +116,7 @@ a{color:var(--teal)}
 </div>
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.9.0/mammoth.browser.min.js"></script>
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
@@ -169,6 +171,43 @@ document.querySelectorAll('[data-cmd]').forEach(b=>b.addEventListener('click',()
  $('bodyEditor').focus();const cmd=b.dataset.cmd,val=b.dataset.value;
  if(cmd==='formatBlock')document.execCommand(cmd,false,val);else document.execCommand(cmd,false,null);
 }));
+$('importWord').onclick=()=>$('wordFile').click();
+$('wordFile').onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  if(!/\.docx$/i.test(file.name))throw new Error('Selecciona un documento de Word en formato .docx.');
+  if(file.size>10*1024*1024)throw new Error('El documento supera los 10 MB.');
+  if(!window.mammoth)throw new Error('No se ha podido cargar el lector de documentos. Recarga la página e inténtalo de nuevo.');
+  if(($('title').value.trim()||$('bodyEditor').innerText.trim())&&!confirm('Al importar el documento se sustituirán el título, el resumen y el texto que hay ahora en el editor. ¿Continuar?'))return;
+  say('editorStatus','Leyendo el documento Word…');
+  const buffer=await file.arrayBuffer();
+  const result=await mammoth.convertToHtml({arrayBuffer:buffer});
+  const holder=document.createElement('div');holder.innerHTML=result.value;
+  holder.querySelectorAll('script,style,iframe,object,embed,form,svg,video,audio').forEach(n=>n.remove());
+  const allowed=new Set(['P','H1','H2','H3','H4','STRONG','B','EM','I','U','UL','OL','LI','BLOCKQUOTE','BR','A']);
+  const clean=node=>{
+   [...node.childNodes].forEach(child=>{
+    if(child.nodeType===1){
+     if(!allowed.has(child.tagName)){child.replaceWith(...child.childNodes);return}
+     [...child.attributes].forEach(attr=>{if(child.tagName!=='A'||attr.name!=='href'||!/^https?:\/\//i.test(attr.value))child.removeAttribute(attr.name)});
+     clean(child);
+    }else if(child.nodeType!==3)child.remove();
+   });
+  };
+  clean(holder);
+  const first=holder.querySelector('h1,h2,h3,h4,p');
+  if(!first||!first.textContent.trim())throw new Error('No se ha encontrado texto en el documento.');
+  const importedTitle=first.textContent.replace(/\s+/g,' ').trim().slice(0,150);
+  first.remove();
+  const html=holder.innerHTML.trim();
+  if(!html||!holder.textContent.trim())throw new Error('El documento solo contiene un título o no tiene texto.');
+  $('title').value=importedTitle;
+  $('bodyEditor').innerHTML=html;
+  $('summary').value=(holder.textContent||'').replace(/\s+/g,' ').trim().slice(0,220);
+  say('editorStatus','Documento cargado. Se han rellenado el título y el artículo. Revisa el contenido y pulsa «Guardar artículo».',true);
+ }catch(err){say('editorStatus',err.message||'No se pudo leer el documento.')}
+ finally{e.target.value=''}
+};
 $('addInlineImage').onclick=()=>$('inlineImageFile').click();
 $('inlineImageFile').onchange=async e=>{
  const f=e.target.files[0];if(!f)return;
