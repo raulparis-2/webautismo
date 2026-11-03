@@ -36,7 +36,7 @@ textarea{min-height:90px;resize:vertical}
 .tip{background:#eef8f8;border-radius:10px;padding:12px;color:#41636e;font-size:13px;line-height:1.5;margin-top:12px}
 #loginGate{max-width:480px;margin:55px auto}
 a{color:var(--teal)}
-@media(max-width:760px){.layout{grid-template-columns:1fr}header h1{font-size:21px}main{margin:14px auto;padding:0 11px}.panel{padding:16px}#bodyEditor{min-height:280px}}
+.editor-fullscreen{position:fixed!important;inset:0!important;z-index:9999!important;margin:0!important;border-radius:0!important;overflow:auto!important;max-height:100dvh!important;padding:22px max(16px,calc((100% - 1050px)/2))!important;background:#fff!important}.editor-fullscreen #bodyEditor{min-height:45vh}.editor-fullscreen #toggleMaximize{position:sticky;top:8px;z-index:2}@media(max-width:760px){.editor-fullscreen{padding:14px!important}.editor-fullscreen #bodyEditor{min-height:42vh}}\n@media(max-width:760px){.layout{grid-template-columns:1fr}header h1{font-size:21px}main{margin:14px auto;padding:0 11px}.panel{padding:16px}#bodyEditor{min-height:280px}}
 </style>
 </head>
 <body>
@@ -63,8 +63,8 @@ a{color:var(--teal)}
 <button class="btn secondary" id="logout" type="button">Cerrar sesión</button>
 </div>
 <div class="layout">
-<section class="panel">
-<h2 id="formHeading">Escribir un artículo</h2>
+<section class="panel" id="articleEditorPanel">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><h2 id="formHeading">Escribir un artículo</h2><button class="btn secondary" id="toggleMaximize" type="button" aria-pressed="false">⛶ Maximizar editor</button></div>
 <p class="muted">Rellena el título, escribe el texto y, si quieres, añade una foto. No necesitas usar Google Drive.</p>
 <label for="title">Título del artículo</label>
 <input id="title" maxlength="150" placeholder="Escribe aquí el título">
@@ -191,6 +191,7 @@ $('saveArticle').onclick=()=>{
  if(selected>=0)data.articles[selected]=article;else data.articles.unshift(article);
  clearForm();drawList();say('editorStatus','Artículo guardado. Ahora pulsa «Publicar cambios» para mostrarlo en la web.',true);
 };
+$('toggleMaximize').onclick=()=>{const panel=$('articleEditorPanel');const active=panel.classList.toggle('editor-fullscreen');$('toggleMaximize').textContent=active?'⤢ Salir de maximizar':'⛶ Maximizar editor';$('toggleMaximize').setAttribute('aria-pressed',String(active));document.body.style.overflow=active?'hidden':'';};
 $('newArticle').onclick=clearForm;
 $('deleteArticle').onclick=()=>{
  if(selected<0)return;
