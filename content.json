@@ -67,5 +67,8 @@
       "date": ""
     }
   ],
-  "faqs": []
+  "faqs": [],
+  "settings": {
+    "fontFamily": "Nunito"
+  }
 }
