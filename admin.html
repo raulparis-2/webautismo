@@ -1,185 +1,220 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Panel de edición · Autismo Familiar</title><style>
-*{box-sizing:border-box}body{margin:0;font:15px Arial,sans-serif;background:#f2f6f8;color:#203746}.top{background:#16485c;color:white;padding:24px max(18px,calc((100% - 1050px)/2))}.top h1{margin:0 0 8px}.top p{margin:0;line-height:1.5;color:#d9e9ed}.wrap{max-width:1050px;margin:22px auto;padding:0 15px}.panel{background:white;border:1px solid #dbe5e9;border-radius:14px;padding:20px;margin-bottom:16px}.notice{background:#fff5dc;border:1px solid #eedba1;border-radius:10px;padding:13px;line-height:1.55;font-size:13px}.muted{font-size:13px;line-height:1.55;color:#607783}.row{display:grid;grid-template-columns:1fr 1fr;gap:18px}label{display:grid;gap:6px;font-size:13px;font-weight:700;margin:12px 0}input,textarea{width:100%;padding:11px;border:1px solid #cad9df;border-radius:8px;font:inherit}textarea{min-height:110px;resize:vertical}.btn{background:#17647a;color:white;border:0;border-radius:9px;padding:11px 14px;font-weight:700;cursor:pointer}.btn.alt{background:#e8f0f3;color:#254b59}.btn.red{background:#fff0f0;color:#9d3030}.tabs,.actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.tab{border:1px solid #d0dce1;background:white;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:bold}.tab.active{background:#16485c;color:white}.entry{border:1px solid #dce6ea;border-radius:9px;padding:12px;margin:8px 0;display:flex;justify-content:space-between;gap:10px;align-items:center}.entry small{display:block;color:#70818a;margin-top:4px}.status{font-size:13px;line-height:1.5;margin-top:12px}.hide{display:none!important}@media(max-width:650px){.row{grid-template-columns:1fr}.entry{align-items:flex-start;flex-direction:column}}
-#associationMap{height:340px;width:100%;border:1px solid #cad9df;border-radius:12px;z-index:1}.map-search{display:grid;grid-template-columns:1fr auto;gap:8px;margin:10px 0}.map-search input{min-width:0}.map-note{font-size:12px;line-height:1.5;color:#607783;margin:8px 0 12px}@media(max-width:650px){#associationMap{height:300px}.map-search{grid-template-columns:1fr}}\n</style><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script></head><body><header class="top"><h1>Autismo Familiar · Panel de edición</h1><p>Añade y modifica asociaciones, ayudas, artículos, vídeos, guías e imágenes. En todos los apartados con imagen puedes elegir un archivo de tu ordenador; los cambios se publican en la web cuando los guardas en GitHub.</p><p style="margin-top:12px"><a href="https://autismofamiliar.com/" target="_blank" rel="noopener" style="color:white;text-decoration:underline;font-weight:700">Ver la web pública ↗</a></p></header><div id="loginGate" class="wrap"><div class="panel" style="max-width:480px;margin:35px auto"><h2>Acceso de administración</h2><p class="muted">Introduce la contraseña para editar el contenido de Autismo Familiar.</p><form id="loginForm"><label>Contraseña<input id="adminPassword" type="password" autocomplete="current-password" required></label><button class="btn" type="submit">Entrar</button></form><div id="loginStatus" class="status" role="status"></div></div></div><div id="adminApp" class="hide"><main class="wrap">
-<div class="actions" style="margin:0 0 14px"><button class="btn" id="showEditor" type="button">Editar contenido</button><button class="btn alt" id="showAnalytics" type="button">Visitas y estadísticas</button></div><div class="actions" style="margin:0 0 14px"><button class="btn alt" id="showReviews" type="button">Revisar anuncios</button></div><section id="reviewPanel" class="panel hide"><h2>Revisión de anuncios</h2><p class="muted">Accede con el correo y la contraseña de Autismo Familiar para consultar, aprobar o denegar anuncios.</p><div id="reviewLogin"><form id="reviewLoginForm"><label>Correo electrónico<input id="reviewEmail" type="email" value="autismofamiliar@autismofamiliar.com" autocomplete="username" required></label><label>Contraseña de Firebase<input id="reviewPassword" type="password" autocomplete="current-password" required></label><button class="btn" type="submit">Acceder a las solicitudes</button></form></div><div id="reviewSigned" class="hide"><div class="actions"><button class="btn" id="refreshReviews" type="button">Actualizar solicitudes</button></div></div><p id="reviewStatus" class="status" role="status"></p><div id="reviewList"></div></section><section id="analyticsPanel" class="panel hide"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><h2 style="margin-bottom:6px">Visitas y estadísticas</h2><p class="muted">Datos reales de Google Analytics 4 de Autismo Familiar.</p></div><div class="actions"><label style="margin:0">Periodo<select id="analyticsPeriod" style="padding:10px;border:1px solid #cad9df;border-radius:8px"><option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option><option value="90">Últimos 90 días</option></select></label><button class="btn" id="refreshAnalytics" type="button">Actualizar</button></div></div><div id="analyticsStatus" class="status" role="status">Cargando estadísticas…</div><div id="analyticsResults" class="hide"><div id="analyticsCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin:18px 0"></div><div class="row"><div class="panel" style="margin:0"><h3>Visitas por día</h3><div id="analyticsChart" style="width:100%;overflow:hidden"></div></div><div class="panel" style="margin:0"><h3>Páginas más vistas</h3><div id="analyticsPages"></div></div></div><div class="row" style="margin-top:16px"><div class="panel" style="margin:0"><h3>De dónde llegan las visitas</h3><div id="analyticsChannels"></div></div><div class="panel" style="margin:0"><h3>Resumen</h3><p id="analyticsSummary" class="muted"></p></div></div><p class="muted">Los datos pueden tardar entre 24 y 48 horas en aparecer en Google Analytics. Las visitas propias y las personas que rechazan las cookies pueden no registrarse.</p></div></section><div id="editorPanel" class="panel"><h2>¿Qué quieres editar?</h2><div class="tabs" id="tabs"><button class="tab active" data-type="associations">Asociaciones</button><button class="tab" data-type="grants">Subvenciones</button><button class="tab" data-type="articles">Artículos</button><button class="tab" data-type="videos">Vídeos</button><button class="tab" data-type="guides">Guías y documentos</button><button class="tab" data-type="activities">Actividades</button><button class="tab" data-type="faqs">Preguntas frecuentes</button></div><div class="row"><div><h3 id="formHeading">Añadir asociación</h3><label>Nombre o título *<input id="title" maxlength="150"></label><label id="placeLabel">Dirección de la asociación<input id="place" maxlength="250" placeholder="Ej. Rúa da Xustiza 12, A Coruña"></label><div id="mapsLinkWrap" class="hide"><label>Enlace de Google Maps (opcional)<input id="mapsUrl" type="url" placeholder="Pega aquí el enlace de Google Maps"></label><div class="actions"><button class="btn alt" id="useMapsLink" type="button">Intentar obtener el pin del enlace</button></div><p class="muted">Si el enlace contiene coordenadas, colocaremos el pin automáticamente. Si es un enlace corto de Google Maps, pulsa el punto exacto en el mapa de abajo. El pin guardado aparecerá en el mapa de la web pública.</p></div><label id="grantScopeWrap" class="hide">Ámbito de la subvención<select id="grantScope" style="width:100%;padding:11px;border:1px solid #cad9df;border-radius:8px;font:inherit"><option value="Toda España">Toda España (todas las comunidades)</option><option>Andalucía</option><option>Aragón</option><option>Asturias</option><option>Illes Balears</option><option>Canarias</option><option>Cantabria</option><option>Castilla-La Mancha</option><option>Castilla y León</option><option>Cataluña</option><option>Comunitat Valenciana</option><option>Extremadura</option><option>Galicia</option><option>Comunidad de Madrid</option><option>Región de Murcia</option><option>Navarra</option><option>País Vasco</option><option>La Rioja</option><option>Ceuta</option><option>Melilla</option></select></label><div id="mapPickerWrap" class="hide"><div class="map-search"><input id="mapSearch" placeholder="Busca una ciudad o lugar, por ejemplo Madrid" aria-label="Buscar ciudad o lugar"><button class="btn alt" id="mapSearchButton" type="button">Buscar en el mapa</button></div><div id="associationMap" role="application" aria-label="Mapa para elegir la ubicación de la asociación"></div><p class="map-note">Busca una ciudad para acercarte al mapa y después haz clic en el punto exacto donde está la asociación. Puedes mover el mapa y acercar o alejar el zoom.</p><p id="geoStatus" class="muted" role="status">Busca una ciudad y pulsa en el mapa para colocar el marcador.</p></div><p id="placeHint" class="muted" style="margin-top:-6px">La ubicación se elige directamente en el mapa, no depende de que el buscador reconozca la dirección.</p><label>Resumen o descripción<textarea id="summary" maxlength="4000"></textarea></label><div class="panel" style="padding:12px;margin:8px 0;background:#f7fbfc"><label style="margin-top:0">Importar texto desde Google Docs (enlace público)<input id="driveTextUrl" type="url" placeholder="https://docs.google.com/document/d/…"></label><button class="btn alt" id="importDriveText" type="button">Importar texto del documento</button><p class="muted" style="margin-bottom:0">En Google Docs, comparte como «Cualquier persona con el enlace: lector» y coloca el título en la primera línea. Al importar, esa primera línea será el título, el resumen se tomará del inicio y el resto se copiará como artículo completo. Después pulsa «Añadir elemento» y «Publicar en la web».</p></div><label>Enlace web (opcional)<input id="url" type="url" placeholder="https://…"></label>
-<label>Foto o imagen (puedes pegar un enlace o subir un archivo debajo)<input id="imageUrl" type="url" placeholder="https://… o ruta uploads/…"></label><label>Importar imagen desde Google Drive (enlace público)<input id="driveImageUrl" type="url" placeholder="https://drive.google.com/file/d/…"></label><div class="actions"><button class="btn alt" id="importDriveImage" type="button">Importar foto de Drive a la web</button></div><p class="muted">La imagen debe estar compartida como lector y pesar 3 MB o menos. Se copia a la web para que no dependa del enlace de Drive.</p>
-<label>Elegir foto desde el ordenador<input id="imageFile" type="file" accept="image/*"></label><div class="actions"><button class="btn alt" id="uploadImage" type="button">Subir foto seleccionada a la web</button></div><p class="muted" id="imageStatus">Puedes subir una imagen desde tu ordenador en asociaciones, ayudas, artículos, guías y anuncios. Primero pulsa «Subir foto seleccionada a la web» y después guarda el elemento.</p>
-<div id="videoUploadWrap" class="hide"><label>Vídeo local o ruta subida (opcional)<input id="videoUrl" placeholder="Se rellena al subir un vídeo local"></label><label>Subir vídeo desde el ordenador<input id="videoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/ogg"></label><div class="actions"><button class="btn alt" id="uploadVideo" type="button">Subir vídeo a la web</button></div><p class="muted" id="videoStatus">Máximo 20 MB por vídeo. Para vídeos grandes, utiliza un enlace de YouTube.</p></div><label id="bodyWrap" class="hide">Contenido completo (artículo o guía)<textarea id="body" maxlength="25000"></textarea></label><label id="dateWrap" class="hide">Fecha o vigencia<input id="date" maxlength="150" placeholder="Ej. Convocatoria 2026"></label><label id="weeklyWrap" class="hide" style="display:flex;grid-template-columns:auto 1fr;align-items:center"><input id="weekly" type="checkbox" style="width:auto"> Marcar como artículo de la semana</label><label id="contactWrap" class="hide">Contacto profesional público<input id="contact" maxlength="180" placeholder="Email o teléfono profesional"></label><label id="priceWrap" class="hide">Precio por hora (opcional)<input id="price" maxlength="80" placeholder="Ej. 45 €/hora"></label><label id="ratingWrap" class="hide">Valoración media (opcional)<input id="rating" type="number" min="0" max="5" step="0.1"></label><label id="reviewsWrap" class="hide">Número de reseñas<input id="reviews" type="number" min="0" step="1"></label><label id="roleWrap" class="hide">Especialidad o servicio<input id="role" maxlength="180" placeholder="Ej. Logopedia"></label><div class="actions"><button class="btn" id="save">Añadir elemento</button><button class="btn alt" id="clear">Limpiar</button><button class="btn red" id="remove" disabled>Eliminar</button></div></div><div><h3>Contenido existente</h3><div id="list"></div><p class="muted" id="count"></p></div></div></div>
-<div id="publishPanel" class="panel"><h2>Publicar cambios</h2><p class="muted">Al publicar se actualiza content.json. La web puede tardar unos minutos en mostrar los cambios. Guarda una copia de seguridad si lo necesitas.</p><button class="btn" id="publish">Publicar en la web</button> <button class="btn alt" id="backup">Descargar copia de seguridad</button><div id="status" class="status"></div></div><div class="panel" style="margin-top:20px"><p class="muted">La sesión está protegida por contraseña. <button class="btn alt" id="logout" type="button">Cerrar sesión</button></p><div id="connection" class="status"></div></div>
-</main></div>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Editor fácil · Autismo Familiar</title>
+<style>
+:root{--navy:#16485c;--teal:#16899a;--ink:#263e49;--muted:#6c828b;--line:#dce7eb;--bg:#f3f7f8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px Arial,sans-serif}
+header{background:var(--navy);color:#fff;padding:22px max(18px,calc((100% - 1050px)/2))}
+header h1{font-size:25px;margin:0 0 6px}header p{margin:0;color:#d7e9ed;line-height:1.5}
+main{max-width:1050px;margin:24px auto;padding:0 16px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 5px 18px #16485c0a}
+h2{margin:0 0 8px;color:var(--navy)}h3{color:var(--navy)}
+.muted{color:var(--muted);font-size:14px;line-height:1.55}
+label{display:block;font-weight:700;font-size:14px;margin:17px 0 7px}
+input,textarea{display:block;width:100%;padding:13px;border:1px solid #cbd9de;border-radius:9px;font:inherit;color:var(--ink);background:#fff}
+textarea{min-height:90px;resize:vertical}
+.btn{border:0;border-radius:10px;padding:13px 17px;background:var(--teal);color:white;font-weight:700;font-size:15px;cursor:pointer}
+.btn.secondary{background:#eaf2f4;color:var(--navy)}.btn.danger{background:#fff0f0;color:#9d3030}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.hide{display:none!important}.status{font-size:14px;line-height:1.5;margin-top:12px;min-height:20px}
+.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr);gap:18px;align-items:start}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:9px;background:#f2f7f8;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0}
+.tool{min-width:38px;height:36px;padding:0 10px;border:1px solid #d4e0e4;border-radius:7px;background:#fff;color:var(--navy);font-weight:700;cursor:pointer}
+#bodyEditor{min-height:340px;border:1px solid #cbd9de;border-radius:0 0 10px 10px;padding:18px;outline:none;line-height:1.7;font-size:16px;background:white}
+#bodyEditor:focus{border-color:var(--teal);box-shadow:0 0 0 3px #16899a18}
+#bodyEditor:empty:before{content:"Empieza a escribir aquí…";color:#9aabb1}
+#bodyEditor img{max-width:100%;height:auto;border-radius:10px}
+.cover-preview{display:none;max-width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-top:10px}
+.article-item{padding:13px;border:1px solid var(--line);border-radius:10px;margin:9px 0}
+.article-item strong{display:block;color:var(--navy);margin-bottom:5px}
+.article-item small{color:var(--muted)}
+.article-item .actions{margin-top:9px}
+.tip{background:#eef8f8;border-radius:10px;padding:12px;color:#41636e;font-size:13px;line-height:1.5;margin-top:12px}
+#loginGate{max-width:480px;margin:55px auto}
+a{color:var(--teal)}
+@media(max-width:760px){.layout{grid-template-columns:1fr}header h1{font-size:21px}main{margin:14px auto;padding:0 11px}.panel{padding:16px}#bodyEditor{min-height:280px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Autismo Familiar · Editor de artículos</h1>
+<p>Escribe como en Word, añade fotos y publica con un botón.</p>
+</header>
+<main>
+<section id="loginGate" class="panel">
+<h2>Entrar al editor</h2>
+<p class="muted">Introduce la contraseña habitual del panel.</p>
+<form id="loginForm">
+<label for="adminPassword">Contraseña</label>
+<input id="adminPassword" type="password" autocomplete="current-password" required>
+<div class="actions"><button class="btn" type="submit">Entrar</button></div>
+</form>
+<div id="loginStatus" class="status" role="status"></div>
+</section>
+
+<div id="adminApp" class="hide">
+<div class="actions" style="margin:0 0 16px">
+<a class="btn secondary" href="https://autismofamiliar.com/" style="text-decoration:none">Ver la web</a>
+<a class="btn secondary" href="/admin-completo.html" style="text-decoration:none">Otras opciones del panel</a>
+<button class="btn secondary" id="logout" type="button">Cerrar sesión</button>
+</div>
+<div class="layout">
+<section class="panel">
+<h2 id="formHeading">Escribir un artículo</h2>
+<p class="muted">Rellena el título, escribe el texto y, si quieres, añade una foto. No necesitas usar Google Drive.</p>
+<label for="title">Título del artículo</label>
+<input id="title" maxlength="150" placeholder="Escribe aquí el título">
+<label for="summary">Pequeño resumen (opcional)</label>
+<textarea id="summary" maxlength="4000" placeholder="Una o dos frases para presentar el artículo. Si lo dejas vacío, se crea automáticamente."></textarea>
+
+<label>Contenido del artículo</label>
+<div class="toolbar" role="toolbar" aria-label="Formato del texto">
+<button class="tool" type="button" data-cmd="bold" title="Negrita"><b>N</b></button>
+<button class="tool" type="button" data-cmd="italic" title="Cursiva"><i>C</i></button>
+<button class="tool" type="button" data-cmd="underline" title="Subrayado"><u>S</u></button>
+<button class="tool" type="button" data-cmd="formatBlock" data-value="h2" title="Título">Títulos</button>
+<button class="tool" type="button" data-cmd="formatBlock" data-value="p" title="Párrafo">Párrafo</button>
+<button class="tool" type="button" data-cmd="insertUnorderedList" title="Lista">• Lista</button>
+<button class="tool" type="button" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+<button class="tool" type="button" data-cmd="justifyLeft" title="Alinear a la izquierda">≡</button>
+<button class="tool" type="button" data-cmd="justifyCenter" title="Centrar">☰</button>
+<button class="tool" type="button" id="addInlineImage" title="Insertar una foto">📷 Foto</button>
+</div>
+<div id="bodyEditor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Contenido del artículo"></div>
+<input id="inlineImageFile" type="file" accept="image/*" class="hide">
+<p class="muted">Puedes pegar texto directamente desde Word. Para añadir una foto dentro del texto, pulsa «📷 Foto».</p>
+
+<label for="coverFile">Foto principal del artículo (opcional)</label>
+<input id="coverFile" type="file" accept="image/*">
+<img id="coverPreview" class="cover-preview" alt="Vista previa de la foto principal">
+<p class="muted">Selecciona la foto desde el escritorio, la carpeta de imágenes o el móvil. Máximo 3 MB por imagen.</p>
+<label style="display:flex;gap:10px;align-items:center;font-weight:500"><input id="weekly" type="checkbox" style="width:auto"> Destacar como artículo de la semana</label>
+<div class="actions">
+<button class="btn" id="saveArticle" type="button">Guardar artículo</button>
+<button class="btn secondary" id="newArticle" type="button">Nuevo artículo</button>
+<button class="btn danger" id="deleteArticle" type="button" disabled>Eliminar</button>
+</div>
+<div id="editorStatus" class="status" role="status"></div>
+</section>
+
+<aside class="panel">
+<h2>Artículos</h2>
+<p class="muted">Pulsa sobre uno para modificarlo.</p>
+<div id="articleList"></div>
+<div class="tip">Consejo: primero pulsa «Guardar artículo». Después pulsa «Publicar cambios» para que aparezca en la web.</div>
+<div class="actions">
+<button class="btn" id="publish" type="button">Publicar cambios</button>
+</div>
+<div id="publishStatus" class="status" role="status"></div>
+</aside>
+</div>
+</div>
+</main>
+
 <script>
-(()=>{const owner='raulparis-2',repo='webautismo',path='content.json';let data={associations:[],grants:[],videos:[],articles:[],guides:[],professionals:[],resources:[],activities:[],faqs:[]},sha='',type='articles',selected=-1,connected=false,contentLoaded=false,geoCoords=null,associationMap=null,associationMarker=null,draftBodyFormat='';const $=id=>document.getElementById(id);const arr=()=>Array.isArray(data[type])?data[type]:(data[type]=[]);const say=(id,s,ok=false)=>{$(id).textContent=s;$(id).style.color=ok?'#167045':'#a52c2c'};const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const labels={associations:'asociación',grants:'subvención o ayuda',articles:'artículo',videos:'vídeo',guides:'guía práctica',resources:'documento o recurso',activities:'actividad',faqs:'pregunta frecuente',professionals:'profesional'};
-function clear(){selected=-1;draftBodyFormat='';geoCoords=null;if($('geoStatus'))$('geoStatus').textContent='Busca una ciudad y pulsa en el mapa para colocar el marcador.';if(associationMarker&&associationMap){associationMap.removeLayer(associationMarker);associationMarker=null}['title','place','mapsUrl','summary','url','imageUrl','videoUrl','body','date','contact','price','rating','reviews','role'].forEach(k=>{if($(k))$(k).value=''});if($('grantScope'))$('grantScope').value='Toda España';['imageFile','videoFile'].forEach(k=>{if($(k))$(k).value=''});$('weekly').checked=false;$('save').textContent='Añadir elemento';$('formHeading').textContent='Añadir '+labels[type];$('remove').disabled=true}
-function draw(){const a=arr();$('list').innerHTML=a.map((x,i)=>'<div class="entry"><div><b>'+esc(x.title||x.name||'Sin título')+'</b><small>'+esc(x.place||x.province||x.category||x.date||'')+'</small></div><div class="actions"><button class="btn alt" data-edit="'+i+'">Editar</button><button class="btn red" data-delete="'+i+'">Borrar</button></div></div>').join('')||'<p class="muted">Todavía no hay contenido. Añade el primero.</p>';$('count').textContent=a.length+' elemento(s)';$('bodyWrap').classList.toggle('hide',!['articles','guides','resources','activities','faqs'].includes(type));$('videoUploadWrap').classList.toggle('hide',type!=='videos');$('dateWrap').classList.toggle('hide',!['grants','videos','articles'].includes(type));$('weeklyWrap').classList.toggle('hide',type!=='articles');$('placeLabel').classList.toggle('hide',!['associations','professionals'].includes(type));$('mapsLinkWrap').classList.toggle('hide',type!=='associations');$('mapPickerWrap').classList.toggle('hide',type!=='associations');$('placeHint').classList.toggle('hide',type!=='associations');$('grantScopeWrap').classList.toggle('hide',type!=='grants');if(type==='associations'){setTimeout(()=>{ensureAssociationMap();if(associationMap)associationMap.invalidateSize()},80)}['contactWrap','priceWrap','ratingWrap','reviewsWrap','roleWrap'].forEach(id=>$(id).classList.toggle('hide',type!=='professionals'));$('formHeading').textContent=(selected<0?'Añadir ':'Editar ')+labels[type]}
-function switchType(t){type=t;clear();document.querySelectorAll('[data-type]').forEach(b=>b.classList.toggle('active',b.dataset.type===t));draw()}
-function edit(i){const x=arr()[i];selected=i;draftBodyFormat=x.bodyFormat||'';$('title').value=x.title||x.name||'';$('place').value=x.place||'';$('mapsUrl').value=x.mapsUrl||'';$('grantScope').value=Array.from($('grantScope').options).some(o=>o.value===(x.province||x.scope))?(x.province||x.scope):'Toda España';geoCoords=null;if(associationMarker&&associationMap){associationMap.removeLayer(associationMarker);associationMarker=null}if(type==='associations'&&Number.isFinite(Number(x.latitude))&&Number.isFinite(Number(x.longitude))){geoCoords={latitude:Number(x.latitude),longitude:Number(x.longitude),address:$('place').value};setTimeout(()=>{ensureAssociationMap();if(associationMap){associationMap.setView([geoCoords.latitude,geoCoords.longitude],16);associationMarker=L.marker([geoCoords.latitude,geoCoords.longitude]).addTo(associationMap)}},100)}if($('geoStatus'))$('geoStatus').textContent='Busca la ciudad y haz clic en el mapa para colocar o cambiar el marcador.';$('summary').value=x.summary||x.description||'';$('url').value=x.url||'';$('imageUrl').value=x.image||'';$('videoUrl').value=x.video||'';$('body').value=x.body||x.content||'';$('date').value=x.date||x.validity||'';$('weekly').checked=!!x.weekly;$('contact').value=x.contact||'';$('price').value=x.price||'';$('rating').value=x.rating??'';$('reviews').value=x.reviews??'';$('role').value=x.role||'';$('save').textContent='Guardar cambios';$('remove').disabled=false;$('formHeading').textContent='Editar '+labels[type]}
-
-function showSection(which){const analytics=which==='analytics';$('editorPanel').classList.toggle('hide',analytics);$('publishPanel').classList.toggle('hide',analytics);$('analyticsPanel').classList.toggle('hide',!analytics);$('showEditor').classList.toggle('alt',analytics);$('showAnalytics').classList.toggle('alt',!analytics);if(analytics)loadAnalytics()}
-$('showEditor').onclick=()=>showSection('editor');$('showAnalytics').onclick=()=>showSection('analytics');
-function durationText(v){v=Math.max(0,Math.round(Number(v)||0));const m=Math.floor(v/60),s=v%60;return m?m+' min '+s+' s':s+' s'}
-function statCard(label,value,note){return '<div class="panel" style="margin:0;padding:16px"><div class="muted">'+label+'</div><div style="font-size:26px;font-weight:800;color:#16485c;margin:8px 0">'+value+'</div><div class="muted">'+note+'</div></div>'}
-function miniList(rows,field){if(!rows||!rows.length)return '<p class="muted">Todavía no hay datos disponibles.</p>';return rows.map(r=>'<div class="entry"><div style="overflow-wrap:anywhere"><b>'+esc(r.label||'(sin nombre)')+'</b></div><b>'+Number(r.value||0).toLocaleString('es-ES')+'</b></div>').join('')}
-function drawAnalyticsChart(rows){const el=$('analyticsChart');if(!rows||!rows.length){el.innerHTML='<p class="muted">Todavía no hay datos suficientes para dibujar la gráfica.</p>';return}const vals=rows.map(r=>Number(r.sessions)||0),max=Math.max(1,...vals),w=680,h=220,p=26,step=(w-p*2)/Math.max(1,vals.length-1);const pts=vals.map((v,i)=>(p+i*step)+','+(h-p-(v/max)*(h-p*2))).join(' ');const labels=rows.filter((r,i)=>i===0||i===rows.length-1||i%Math.ceil(rows.length/5)===0).map(r=>'<span>'+esc(r.label)+'</span>').join('');el.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Gráfica de sesiones por día" style="width:100%;height:auto"><line x1="'+p+'" y1="'+(h-p)+'" x2="'+(w-p)+'" y2="'+(h-p)+'" stroke="#dbe5e9"/><polyline points="'+pts+'" fill="none" stroke="#1299ae" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>'+vals.map((v,i)=>'<circle cx="'+(p+i*step)+'" cy="'+(h-p-(v/max)*(h-p*2))+'" r="3" fill="#1299ae"><title>'+esc(rows[i].label)+': '+v+' sesiones</title></circle>').join('')+'</svg><div style="display:flex;justify-content:space-between;gap:8px" class="muted">'+labels+'</div>'}
-async function loadAnalytics(){const status=$('analyticsStatus');status.textContent='Consultando Google Analytics…';status.style.color='#607783';$('analyticsResults').classList.add('hide');try{const days=$('analyticsPeriod').value;const r=await fetch('/api/admin-analytics',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({days})});const out=await r.json();if(!r.ok)throw Error(out.error||'No se pudieron cargar las estadísticas.');const o=out.overview||{};$('analyticsCards').innerHTML=statCard('Sesiones',Number(o.sessions||0).toLocaleString('es-ES'),'Visitas durante el periodo')+statCard('Usuarios',Number(o.users||0).toLocaleString('es-ES'),'Usuarios activos')+statCard('Tiempo medio',durationText(o.avgDuration),'Por sesión')+statCard('Páginas por sesión',Number(o.pagesPerSession||0).toLocaleString('es-ES',{maximumFractionDigits:2}),'Profundidad de navegación');drawAnalyticsChart(out.trend||[]);$('analyticsPages').innerHTML=miniList(out.pages,'screenPageViews');$('analyticsChannels').innerHTML=miniList(out.channels,'sessions');const best=(out.pages||[])[0];$('analyticsSummary').textContent='En los últimos '+days+' días se registraron '+Number(o.sessions||0).toLocaleString('es-ES')+' sesiones y '+Number(o.users||0).toLocaleString('es-ES')+' usuarios. El tiempo medio por sesión fue '+durationText(o.avgDuration)+'. '+(best?'La página más vista fue «'+best.label+'», con '+Number(best.value||0).toLocaleString('es-ES')+' vistas.':'Aún no hay páginas destacadas disponibles.');$('analyticsResults').classList.remove('hide');status.textContent='Estadísticas actualizadas correctamente.';status.style.color='#167045'}catch(e){status.textContent=e.message||'Error al consultar Google Analytics.';status.style.color='#a52c2c'}}
-$('refreshAnalytics').onclick=loadAnalytics;$('analyticsPeriod').onchange=loadAnalytics;
-
-$('tabs').onclick=e=>{const b=e.target.closest('[data-type]');if(b)switchType(b.dataset.type)};
-async function searchMapPlace(query){
- const url='https://photon.komoot.io/api/?limit=5&lang=es&countrycode=ES&q='+encodeURIComponent(query);
- const r=await fetch(url,{headers:{'Accept':'application/json'}});if(!r.ok)throw Error('El buscador de mapas no responde');
- const j=await r.json();const f=(j.features||[]).find(x=>x.geometry&&x.geometry.coordinates);
- if(f)return {lat:Number(f.geometry.coordinates[1]),lon:Number(f.geometry.coordinates[0]),label:[f.properties.name,f.properties.city,f.properties.state].filter(Boolean).join(', ')||query};
- const nr=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=es&q='+encodeURIComponent(query),{headers:{'Accept-Language':'es'}});if(!nr.ok)throw Error('No se encontró ese lugar');
- const ns=await nr.json();if(ns[0])return {lat:Number(ns[0].lat),lon:Number(ns[0].lon),label:ns[0].display_name||query};
- throw Error('No se encontró ese lugar. Prueba con ciudad y país.');
+(()=>{
+const $=id=>document.getElementById(id);
+let data={articles:[]},sha='',connected=false,selected=-1,coverPath='';
+const say=(id,msg,ok=false)=>{const el=$(id);el.textContent=msg;el.style.color=ok?'#167045':'#a52c2c'};
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(payload){
+ const r=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+ const j=await r.json();if(!r.ok)throw new Error(j.error||'No se pudo completar la operación.');return j;
 }
-// La dirección escrita no dispara búsquedas automáticas: evita pines incorrectos y peticiones repetidas.
-function coordsFromMapsUrl(raw){
- try{
-  const u=new URL(raw);
-  const text=decodeURIComponent(u.href);
-  let m=text.match(/@(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)/)||text.match(/!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/)||text.match(/[?&](?:q|query|ll|center)=(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)/);
-  if(!m)return null;
-  const lat=Number(m[1]),lon=Number(m[2]);
-  if(!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)return null;
-  return {lat,lon};
- }catch(e){return null}
+async function load(){
+ try{const r=await api({action:'getContent'});data=r.data||{};if(!Array.isArray(data.articles))data.articles=[];sha=r.sha;connected=true;drawList();}
+ catch(e){connected=false;say('editorStatus',e.message)}
 }
-$('useMapsLink').onclick=()=>{
- const raw=$('mapsUrl').value.trim();
- if(!raw){$('geoStatus').textContent='Pega primero un enlace de Google Maps.';return}
- const coords=coordsFromMapsUrl(raw);
- if(!coords){$('geoStatus').textContent='Este enlace no incluye coordenadas legibles (suele pasar con enlaces cortos). Busca la zona y haz clic en el punto exacto del mapa; el enlace también se guardará.';$('geoStatus').style.color='#a52c2c';return}
- ensureAssociationMap();if(!associationMap)return;
- const point=[coords.lat,coords.lon];associationMap.setView(point,17);
- if(associationMarker)associationMarker.setLatLng(point);else associationMarker=L.marker(point).addTo(associationMap);
- geoCoords={latitude:coords.lat,longitude:coords.lon,address:$('place').value.trim()};
- $('geoStatus').textContent='✓ Pin extraído del enlace. Guarda el elemento y después pulsa «Publicar en la web».';$('geoStatus').style.color='#167045';
-};
-function ensureAssociationMap(){
- if(associationMap||!window.L||!$('associationMap'))return;
- associationMap=L.map('associationMap').setView([40.4168,-3.7038],6);
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(associationMap);
- associationMap.on('click',async e=>{
-  const lat=e.latlng.lat,lon=e.latlng.lng;
-  geoCoords={latitude:lat,longitude:lon,address:''};
-  if(associationMarker)associationMarker.setLatLng(e.latlng);else associationMarker=L.marker(e.latlng).addTo(associationMap);
-  $('geoStatus').textContent='Punto seleccionado. Obteniendo una dirección aproximada…';$('geoStatus').style.color='#607783';
-  let label='';
-  try{const r=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+lat+'&lon='+lon+'&zoom=18&addressdetails=1',{headers:{'Accept-Language':'es'}});if(r.ok){const j=await r.json();label=j.display_name||''}}catch(e){console.warn('No se pudo obtener la dirección del punto',e)}
-  if(label){$('place').value=label;geoCoords.address=label}
-  else{const labelCoords='Punto del mapa ('+lat.toFixed(6)+', '+lon.toFixed(6)+')';$('place').value=labelCoords;geoCoords.address=labelCoords}
-  $('geoStatus').textContent='✓ Punto seleccionado. Guarda el elemento y después pulsa «Publicar en la web».';$('geoStatus').style.color='#167045';
- });
+function drawList(){
+ const list=$('articleList'),articles=data.articles||[];
+ if(!articles.length){list.innerHTML='<p class="muted">Todavía no hay artículos.</p>';return}
+ list.innerHTML=articles.map((a,i)=>'<div class="article-item"><strong>'+esc(a.title||'Sin título')+'</strong><small>'+(a.weekly?'Artículo de la semana · ':'')+'Artículo '+(i+1)+'</small><div class="actions"><button class="btn secondary" type="button" data-edit="'+i+'">Editar</button></div></div>').join('');
+ list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>edit(Number(b.dataset.edit))));
 }
-$('mapSearchButton').onclick=async()=>{
- const query=$('mapSearch').value.trim();if(!query){$('geoStatus').textContent='Escribe una ciudad o lugar, por ejemplo Madrid.';return}
- const b=$('mapSearchButton');b.disabled=true;$('geoStatus').textContent='Buscando lugar…';$('geoStatus').style.color='#607783';
- try{const found=await searchMapPlace(query);ensureAssociationMap();associationMap.setView([found.lat,found.lon],Math.max(12,associationMap.getZoom()));$('geoStatus').textContent='Encontrado: '+found.label+'. Ahora haz clic en el mapa para elegir el punto exacto.';$('geoStatus').style.color='#167045'}
- catch(e){$('geoStatus').textContent=e.message||'No se pudo buscar el lugar.';$('geoStatus').style.color='#a52c2c'}
- finally{b.disabled=false}
-};
-$('mapSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('mapSearchButton').click()}});
-$('list').onclick=e=>{const b=e.target.closest('[data-edit]');if(b){edit(Number(b.dataset.edit));return}const d=e.target.closest('[data-delete]');if(d&&confirm('¿Borrar este elemento del borrador? Tendrás que pulsar «Publicar en la web» para guardar el borrado en GitHub.')){arr().splice(Number(d.dataset.delete),1);clear();draw();say('status','Elemento borrado del borrador. Pulsa «Publicar en la web» para confirmar el cambio.',true)}};$('clear').onclick=clear;
-$('save').onclick=()=>{const title=$('title').value.trim();if(!title){say('status','Escribe un nombre o título antes de guardar.');return}const prev=selected>=0?arr()[selected]:{};const placeValue=type==='associations'?$('place').value.trim():type==='grants'?$('grantScope').value:'';const x={...prev,id:prev.id||type+'-'+Date.now(),title,name:title,place:placeValue,province:placeValue,mapsUrl:type==='associations'?$('mapsUrl').value.trim():'',category:(type==='associations'||type==='grants')?placeValue:(prev.category||''),summary:$('summary').value.trim(),description:$('summary').value.trim(),url:$('url').value.trim(),image:$('imageUrl').value.trim(),video:$('videoUrl').value.trim(),body:$('body').value.trim(),bodyFormat:(draftBodyFormat||prev.bodyFormat||undefined),date:$('date').value.trim()};if(type==='associations'&&geoCoords){x.latitude=geoCoords.latitude;x.longitude=geoCoords.longitude;x.geocodedAddress=placeValue||('Punto del mapa ('+geoCoords.latitude.toFixed(6)+', '+geoCoords.longitude.toFixed(6)+')');x.place=x.geocodedAddress;x.province=x.place;x.category=x.place}else if(type==='associations'){delete x.latitude;delete x.longitude;delete x.geocodedAddress}if(type!=='associations'&&type!=='grants'){delete x.mapsUrl;delete x.place;delete x.province;delete x.latitude;delete x.longitude;delete x.geocodedAddress}delete x.isDemo;if(type==='articles'){x.weekly=$('weekly').checked;if(x.weekly)arr().forEach((item,i)=>{if(i!==selected)item.weekly=false})}if(type==='professionals'){x.name=title;x.role=$('role').value.trim();x.contact=$('contact').value.trim();x.price=$('price').value.trim();x.rating=$('rating').value===''?'':Number($('rating').value);x.reviews=$('reviews').value===''?'':Number($('reviews').value);x.description=x.summary;x.place=x.place;x.category=x.role}if(selected>=0)arr()[selected]=x;else arr().push(x);clear();draw();say('status','Guardado en el borrador. Pulsa «Publicar en la web» para que aparezca públicamente.',true)};
-$('remove').onclick=()=>{if(selected>=0&&confirm('¿Eliminar este elemento?')){arr().splice(selected,1);clear();draw()}};
-async function uploadAsset(file,kind){
- if(!file){say(kind==='image'?'imageStatus':'videoStatus','Selecciona primero un archivo.');return}
- const max=3*1024*1024;
- if(file.size>max){say(kind==='image'?'imageStatus':'videoStatus','El archivo supera el límite de 3 MB. Para vídeos, es preferible pegar un enlace de YouTube.');return}
- const status=kind==='image'?'imageStatus':'videoStatus';
- try{
-  say(status,'Subiendo archivo a GitHub…');
-  const ext=(file.name.split('.').pop()||(kind==='image'?'jpg':'mp4')).toLowerCase().replace(/[^a-z0-9]/g,'')||'bin';
-  const base=(file.name.replace(/\.[^.]+$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,45)||kind);
-  const filePath='uploads/'+kind+'-'+Date.now()+'-'+base+'.'+ext;
-  const raw=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('No se pudo leer el archivo.'));reader.readAsDataURL(file)});
-  const response=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'upload',filePath,content:raw,kind})});
-  const result=await response.json();if(!response.ok)throw new Error(result.error||'No se pudo subir el archivo.');
-  if(kind==='image')$('imageUrl').value=filePath;else $('videoUrl').value=filePath;
-  say(status,'Archivo subido. Ruta guardada en el formulario: '+filePath,true);
- }catch(e){say(status,e.message||'No se pudo subir el archivo.')}
+function plainSummary(html){
+ const box=document.createElement('div');box.innerHTML=html;return (box.textContent||'').replace(/\s+/g,' ').trim().slice(0,220);
 }
-$('importDriveText').onclick=async()=>{const url=$('driveTextUrl').value.trim();if(!url){say('status','Pega un enlace público de Google Docs.');return}if(!['articles','guides','resources','activities','faqs'].includes(type)){say('status','Primero selecciona Artículos, Guías y documentos, Actividades o Preguntas frecuentes.');return}const b=$('importDriveText');b.disabled=true;b.textContent='Importando artículo…';try{const r=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'importDriveText',url})});const out=await r.json();if(!r.ok)throw Error(out.error||'No se pudo importar el texto.');if(out.title)$('title').value=out.title.slice(0,150);$('summary').value=(out.summary||'').slice(0,4000);$('body').value=out.body||out.text||'';draftBodyFormat='plain';say('status','Documento importado: título, resumen y artículo completo rellenados. Revisa los campos, pulsa «Añadir elemento» o «Guardar cambios» y después «Publicar en la web».',true)}catch(e){say('status',e.message||'No se pudo importar el texto.')}finally{b.disabled=false;b.textContent='Importar texto del documento'}};
-$('importDriveImage').onclick=async()=>{const url=$('driveImageUrl').value.trim();if(!url){say('imageStatus','Pega un enlace público de Google Drive.');return}const b=$('importDriveImage');b.disabled=true;b.textContent='Importando imagen…';try{const r=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'importDriveImage',url})});const out=await r.json();if(!r.ok)throw Error(out.error||'No se pudo importar la imagen.');$('imageUrl').value=out.path;say('imageStatus','Imagen importada y copiada a la web: '+out.path,true)}catch(e){say('imageStatus',e.message||'No se pudo importar la imagen.')}finally{b.disabled=false;b.textContent='Importar foto de Drive a la web'}};
-$('uploadImage').onclick=()=>uploadAsset($('imageFile').files[0],'image');
-$('uploadVideo').onclick=()=>uploadAsset($('videoFile').files[0],'video');
-async function loadGithubContent(){try{const r=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'getContent'})});const f=await r.json();if(!r.ok)throw Error(f.error||'No se pudo cargar el contenido.');sha=f.sha;data=f.data||{};for(const k of ['associations','grants','videos','articles','guides','professionals','resources','activities','faqs'])if(!Array.isArray(data[k]))data[k]=[];connected=true;contentLoaded=true;draw();say('connection','Conectado. Se ha cargado el contenido actual de GitHub.',true)}catch(e){connected=false;say('connection',e.message||'Error al cargar GitHub.')}}
-$('publish').onclick=async()=>{if(!connected){say('status','No hay conexión con GitHub. Recarga la página o vuelve a iniciar sesión.');await loadGithubContent();if(!connected)return}if(!confirm('¿Publicar los cambios para que aparezcan en la web?'))return;try{const r=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'publish',data,sha})});const out=await r.json();if(!r.ok)throw Error(out.error||'No se pudo publicar');sha=out.sha;say('status','¡Publicado! La web puede tardar unos minutos en actualizarse.',true)}catch(e){say('status',e.message)}};
-$('backup').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='autismo-familiar-content.json';a.click();URL.revokeObjectURL(a.href)};
-$('loginForm').onsubmit=async e=>{e.preventDefault();const p=$('adminPassword').value;const out=$('loginStatus');out.textContent='Comprobando contraseña…';try{const r=await fetch('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})});const j=await r.json();if(!r.ok)throw Error(j.error||'No se pudo iniciar sesión');$('loginGate').classList.add('hide');$('adminApp').classList.remove('hide');await loadGithubContent()}catch(err){out.textContent=err.message||'No se pudo iniciar sesión';out.style.color='#a52c2c'}};
-$('logout').onclick=async()=>{await fetch('/api/admin-login',{method:'DELETE'});$('adminApp').classList.add('hide');$('loginGate').classList.remove('hide');$('adminPassword').value='';$('loginStatus').textContent='Sesión cerrada.';connected=false};
-async function checkSession(){try{const r=await fetch('/api/admin-login',{cache:'no-store'});if(r.ok){$('loginGate').classList.add('hide');$('adminApp').classList.remove('hide');await loadGithubContent()}}catch(e){}}
-switchType('articles');checkSession();})();
-</script><script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDuf0Bh8fardbpzy0Zkg7prUdeHPxen9HA",
-  authDomain: "autismo-familiar.firebaseapp.com",
-  projectId: "autismo-familiar",
-  storageBucket: "autismo-familiar.firebasestorage.app",
-  messagingSenderId: "108409469790",
-  appId: "1:108409469790:web:ec3d5559d8ca013ec2edcf",
-  measurementId: "G-H6JQ7FX2FQ"
-};
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const auth = getAuth(app), db = getFirestore(app);
-const ADMIN_EMAIL = "autismofamiliar@autismofamiliar.com";
-const $ = id => document.getElementById(id);
-const safe = v => String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function status(msg,ok=false){$("reviewStatus").textContent=msg;$("reviewStatus").style.color=ok?"#167045":"#a52c2c";}
-$("showReviews").onclick=()=>{$("reviewPanel").classList.remove("hide");$("editorPanel").classList.add("hide");$("publishPanel").classList.add("hide");$("analyticsPanel").classList.add("hide");$("showReviews").classList.remove("alt");$("showEditor").classList.add("alt");$("showAnalytics").classList.add("alt");};
-$("showEditor").addEventListener("click",()=>$("reviewPanel").classList.add("hide"));
-$("showAnalytics").addEventListener("click",()=>$("reviewPanel").classList.add("hide"));
-$("refreshReviews").onclick=loadReviews;
-$("reviewLoginForm").onsubmit=async e=>{
- e.preventDefault();
- const email=$("reviewEmail").value.trim().toLowerCase(),password=$("reviewPassword").value;
- if(email!==ADMIN_EMAIL){status("Utiliza el correo administrador de Autismo Familiar.");return;}
- const button=e.submitter; if(button)button.disabled=true;
- status("Comprobando acceso…");
- try{
-  await signInWithEmailAndPassword(auth,email,password);
-  $("reviewLogin").classList.add("hide");$("reviewSigned").classList.remove("hide");
-  $("reviewPassword").value="";
-  await loadReviews();
- }catch(err){
-  const code=err?.code||"";
-  status(code.includes("invalid-credential")||code.includes("wrong-password")||code.includes("user-not-found")?"Correo o contraseña incorrectos.":code.includes("too-many-requests")?"Demasiados intentos. Espera un momento y vuelve a intentarlo.":err.message||"No se pudo iniciar sesión.");
- }finally{if(button)button.disabled=false;}
-};
-async function loadReviews(){
- const host=$("reviewList");host.innerHTML="";status("Cargando solicitudes…");
- if(!auth.currentUser){$("reviewLogin").classList.remove("hide");$("reviewSigned").classList.add("hide");status("Inicia sesión para continuar.");return;}
- try{
-  const snap=await getDocs(collection(db,"profiles"));
-  const rows=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
-   const p=x=>x.status==="approved"?1:x.status==="rejected"?2:0;
-   const time=x=>x.updatedAt?.seconds||x.createdAt?.seconds||0;
-   return p(a)-p(b)||time(b)-time(a);
-  });
-  if(!rows.length){host.innerHTML='<p class="muted">Todavía no hay anuncios.</p>';status("No hay solicitudes.",true);return;}
-  host.innerHTML=rows.map(p=>{
-   const state=p.status==="approved"?"Aprobado":p.status==="rejected"?"Denegado":"Pendiente";
-   return '<article class="panel" style="border-left:5px solid '+(p.status==="approved"?"#238653":p.status==="rejected"?"#b42318":"#d39a28")+'"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><h3 style="margin:0">'+safe(p.name||"Anuncio sin título")+'</h3><b>'+state+'</b></div><p class="muted">'+safe(p.profileType==="professional"?"Profesional / cuidador":"Familia que busca apoyo")+' · '+safe(p.location||"Sin zona")+'</p><p>'+safe(p.description||"")+'</p><p class="muted">Correo: '+safe(p.contactEmail||"—")+' · Teléfono: '+safe(p.contact||"—")+'</p>'+(p.rejectionReason?'<div class="notice"><b>Motivo de denegación:</b> '+safe(p.rejectionReason)+'</div>':'')+'<div class="actions"><button class="btn" data-review="approve" data-id="'+safe(p.id)+'" '+(p.status==="approved"?"disabled":"")+'>Aprobar y publicar</button><button class="btn red" data-review="reject" data-id="'+safe(p.id)+'">Denegar</button></div></article>';
-  }).join("");
-  status("Solicitudes cargadas: "+rows.length+".",true);
- }catch(err){status(err.code==="permission-denied"?"Firebase no permite consultar las solicitudes. Comprueba las reglas de Firestore y el correo administrador.":err.message||"No se pudieron cargar las solicitudes.");}
+function clearForm(){
+ selected=-1;coverPath='';$('title').value='';$('summary').value='';$('bodyEditor').innerHTML='';$('weekly').checked=false;$('coverFile').value='';$('coverPreview').style.display='none';$('coverPreview').removeAttribute('src');$('formHeading').textContent='Escribir un artículo';$('saveArticle').textContent='Guardar artículo';$('deleteArticle').disabled=true;say('editorStatus','');
 }
-$("reviewList").onclick=async e=>{
- const b=e.target.closest("button[data-review]");if(!b)return;
- const id=b.dataset.id,action=b.dataset.review;let reason="";
- if(action==="reject"){reason=prompt("Escribe el motivo de la denegación. La persona podrá verlo en su cuenta:");if(reason===null)return;reason=reason.trim();if(!reason){alert("El motivo es obligatorio para denegar.");return;}}
- if(action==="approve"&&!confirm("¿Aprobar este anuncio y hacerlo visible en el directorio público?"))return;
- b.disabled=true;
- try{
-  await updateDoc(doc(db,"profiles",id),{status:action==="approve"?"approved":"rejected",reviewedAt:serverTimestamp(),reviewedBy:auth.currentUser.email,rejectionReason:action==="reject"?reason:""});
-  status(action==="approve"?"Anuncio aprobado y publicado.":"Anuncio denegado. El motivo ya está guardado.",true);
-  await loadReviews();
- }catch(err){status(err.code==="permission-denied"?"No tienes permiso para modificar este anuncio. Revisa las reglas de Firestore.":err.message||"No se pudo guardar la decisión.");b.disabled=false;}
+function edit(i){
+ const a=data.articles[i];if(!a)return;selected=i;coverPath=a.image||'';
+ $('title').value=a.title||a.name||'';$('summary').value=a.summary||'';$('bodyEditor').innerHTML=a.body||a.content||'';
+ $('weekly').checked=!!a.weekly;$('coverFile').value='';
+ $('coverPreview').style.display=coverPath?'block':'none';if(coverPath)$('coverPreview').src=coverPath.startsWith('http')?coverPath:'/'+coverPath.replace(/^\//,'');
+ $('formHeading').textContent='Editar artículo';$('saveArticle').textContent='Guardar cambios';$('deleteArticle').disabled=false;say('editorStatus','Artículo cargado para editar.',true);
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+async function uploadImage(file,insertInline){
+ if(!file)return null;
+ if(!file.type.startsWith('image/'))throw new Error('Selecciona un archivo de imagen.');
+ if(file.size>3*1024*1024)throw new Error('La imagen supera los 3 MB. Elige una más pequeña.');
+ const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+ const base=(file.name.replace(/\.[^.]+$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'foto');
+ const filePath='uploads/image-'+Date.now()+'-'+base+'.'+ext;
+ const raw=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('No se pudo leer la foto.'));reader.readAsDataURL(file)});
+ await api({action:'upload',filePath,content:raw,kind:'image'});
+ if(insertInline){
+  $('bodyEditor').focus();document.execCommand('insertHTML',false,'<p><img src="/'+filePath+'" alt="'+esc(file.name)+'" style="max-width:100%;height:auto;border-radius:10px"></p><p><br></p>');
+ }else{
+  coverPath=filePath;$('coverPreview').src='/'+filePath;$('coverPreview').style.display='block';
+ }
+ return filePath;
+}
+document.querySelectorAll('[data-cmd]').forEach(b=>b.addEventListener('click',()=>{
+ $('bodyEditor').focus();const cmd=b.dataset.cmd,val=b.dataset.value;
+ if(cmd==='formatBlock')document.execCommand(cmd,false,val);else document.execCommand(cmd,false,null);
+}));
+$('addInlineImage').onclick=()=>$('inlineImageFile').click();
+$('inlineImageFile').onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{say('editorStatus','Subiendo foto…');await uploadImage(f,true);say('editorStatus','Foto insertada en el artículo.',true)}
+ catch(err){say('editorStatus',err.message)}finally{e.target.value=''}
 };
-window.addEventListener("beforeunload",()=>{if(auth.currentUser)signOut(auth).catch(()=>{});});
-</script></body>
+$('coverFile').onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{say('editorStatus','Subiendo foto principal…');await uploadImage(f,false);say('editorStatus','Foto principal añadida.',true)}
+ catch(err){say('editorStatus',err.message);e.target.value=''}
+};
+$('saveArticle').onclick=()=>{
+ const title=$('title').value.trim(),body=$('bodyEditor').innerHTML.trim();
+ if(!title){say('editorStatus','Escribe un título antes de guardar.');$('title').focus();return}
+ if(!body||!plainSummary(body)){say('editorStatus','Escribe el contenido del artículo.');$('bodyEditor').focus();return}
+ const old=selected>=0?data.articles[selected]:{};
+ const summary=$('summary').value.trim()||plainSummary(body);
+ const article={...old,id:old.id||('article-'+Date.now()),title,name:title,summary,description:summary,body,bodyFormat:'html',image:coverPath,url:old.url||'',video:old.video||'',date:old.date||'',weekly:$('weekly').checked};
+ if(article.weekly)data.articles.forEach((a,i)=>{if(i!==selected)a.weekly=false});
+ if(selected>=0)data.articles[selected]=article;else data.articles.unshift(article);
+ clearForm();drawList();say('editorStatus','Artículo guardado. Ahora pulsa «Publicar cambios» para mostrarlo en la web.',true);
+};
+$('newArticle').onclick=clearForm;
+$('deleteArticle').onclick=()=>{
+ if(selected<0)return;
+ if(!confirm('¿Eliminar este artículo?'))return;
+ data.articles.splice(selected,1);clearForm();drawList();say('editorStatus','Artículo eliminado del borrador. Pulsa «Publicar cambios» para confirmar el cambio.',true);
+};
+$('publish').onclick=async()=>{
+ if(!connected){say('publishStatus','No hay conexión. Recarga e inicia sesión de nuevo.');return}
+ if(!confirm('¿Publicar los cambios y actualizar los artículos de la web?'))return;
+ try{say('publishStatus','Publicando…');const out=await api({action:'publish',data,sha});sha=out.sha;say('publishStatus','¡Publicado! Los artículos ya están enviados a la web. Puede tardar unos minutos en actualizarse.',true)}
+ catch(e){say('publishStatus',e.message)}
+};
+$('loginForm').onsubmit=async e=>{
+ e.preventDefault();say('loginStatus','Comprobando contraseña…');
+ try{const r=await fetch('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('adminPassword').value})});const j=await r.json();if(!r.ok)throw new Error(j.error||'No se pudo iniciar sesión');$('loginGate').classList.add('hide');$('adminApp').classList.remove('hide');await load()}
+ catch(err){say('loginStatus',err.message)}
+};
+$('logout').onclick=async()=>{await fetch('/api/admin-login',{method:'DELETE'});$('adminApp').classList.add('hide');$('loginGate').classList.remove('hide');$('adminPassword').value='';connected=false};
+async function checkSession(){
+ try{const r=await fetch('/api/admin-login',{cache:'no-store'});if(r.ok){$('loginGate').classList.add('hide');$('adminApp').classList.remove('hide');await load()}}
+ catch(e){}
+}
+checkSession();
+})();
+</script>
+</body>
+</html>
