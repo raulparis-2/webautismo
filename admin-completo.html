@@ -107,26 +107,26 @@ async function ensureMammoth(){
  }
  throw new Error('No se pudo cargar el lector de Word. Comprueba la conexión e inténtalo otra vez.');
 }
-$('importWordFile').onclick=async()=>{
- const file=$('wordFile').files[0];if(!file){say('status','Selecciona primero un documento Word .docx.');return}
- if(!/\\.docx$/i.test(file.name)){say('status','Este lector admite documentos Word .docx. Si tu archivo es .doc, guárdalo como .docx desde Word.');return}
+$('importWordFile').addEventListener('click',async()=>{
+ const file=$('wordFile').files[0];
+ if(!file){say('status','Primero selecciona un archivo .docx en el botón de elegir archivo.');return}
+ if(!/\.docx$/i.test(file.name)){say('status','El archivo debe ser .docx. Abre el documento en Word y guárdalo como Documento de Word (.docx).');return}
  if(file.size>10*1024*1024){say('status','El documento supera los 10 MB.');return}
  const b=$('importWordFile');b.disabled=true;b.textContent='Leyendo documento…';
  try{
   const reader=await ensureMammoth();
   const result=await reader.extractRawText({arrayBuffer:await file.arrayBuffer()});
-  const lines=result.value.replace(/\\r/g,'').split('\\n').map(x=>x.trim()).filter(Boolean);
-  if(!lines.length)throw new Error('No se ha encontrado texto. Comprueba que el .docx no esté vacío o protegido.');
-  const heading=lines.shift();
-  const body=lines.join('\\n\\n');
+  const lines=result.value.replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean);
+  if(!lines.length)throw new Error('No se ha encontrado texto en el documento.');
+  const heading=lines.shift(),body=lines.join('\n\n');
   $('title').value=heading.slice(0,150);
   $('body').value=body.slice(0,25000);
-  $('summary').value=body.replace(/\\s+/g,' ').slice(0,4000);
+  $('summary').value=body.replace(/\s+/g,' ').slice(0,4000);
   draftBodyFormat='plain';
-  say('status',body?'Documento cargado correctamente. Revisa el título y el contenido y pulsa «Añadir elemento» y después «Publicar en la web».':'Documento leído. Solo tenía una línea de texto, que se ha colocado como título.',true);
+  say('status','Documento cargado correctamente. Revisa los campos y pulsa «Añadir elemento» y después «Publicar en la web».',true);
  }catch(e){say('status',e.message||'No se pudo leer el documento Word.')}
  finally{b.disabled=false;b.textContent='Cargar documento Word'}
-};
+});
 $('uploadImage').onclick=()=>uploadAsset($('imageFile').files[0],'image');
 $('uploadVideo').onclick=()=>uploadAsset($('videoFile').files[0],'video');
 function updateFontPreview(font,save=true){const allowed=['Nunito','Poppins','Inter','Montserrat','Lato','Roboto','Open Sans','Merriweather'];if(!allowed.includes(font))font='Nunito';$('siteFont').value=font;$('siteFontPreview').style.fontFamily='"'+font+'",Arial,sans-serif';$('siteFontPreview').style.fontWeight='600';if(save){if(!data.settings||typeof data.settings!=='object')data.settings={};data.settings.fontFamily=font;$('siteFontStatus').textContent='Vista previa: '+font+'. Pulsa «Publicar en la web» para aplicar la fuente a toda la web.'}}
