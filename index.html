@@ -1151,11 +1151,6 @@ document.addEventListener("click",async ev=>{
 <script id="af-plain-text-content-renderer">
 window.afRenderContentBody=function(item,fallback){
   const raw=item&&(item.body||item.content);
-  const allowedFonts=['Nunito','Quicksand','Poppins','Montserrat','Raleway','Inter','Roboto','Open Sans','Lato','Oswald','Merriweather','Lora','Playfair Display','Source Serif 4'];
-  const font=allowedFonts.includes(item&&item.fontFamily)?item.fontFamily:'Nunito';
-  const title=document.getElementById('articleTitle'),content=document.getElementById('articleContent');
-  if(title)title.style.fontFamily='"'+font+'",Arial,sans-serif';
-  if(content)content.style.fontFamily='"'+font+'",Arial,sans-serif';
   if(item&&item.bodyFormat==='plain'&&raw){
     const escapeHtml=value=>String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     return String(raw).replace(/\r\n?/g,'\n').split(/\n\s*\n/).map(part=>part.trim()).filter(Boolean).map(part=>'<p>'+escapeHtml(part).replace(/\n/g,'<br>')+'</p>').join('');
