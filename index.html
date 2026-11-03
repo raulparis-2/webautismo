@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://autismofamiliar.com/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lato:wght@400;700;900&family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800;900&family=Open+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lato:wght@400;700;900&family=Lora:wght@400;500;600;700&family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800;900&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=Raleway:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700;900&family=Source+Serif+4:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#16485c;--cyan:#0da0b5;--cyan2:#dff5f8;--text:#315865;--muted:#718b93;--bg:#fff;--line:#dcecee}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#fff;color:var(--text);font-family:var(--site-font, Nunito, Arial, sans-serif)}
@@ -1151,7 +1151,7 @@ document.addEventListener("click",async ev=>{
 <script id="af-plain-text-content-renderer">
 window.afRenderContentBody=function(item,fallback){
   const raw=item&&(item.body||item.content);
-  const allowedFonts=['Nunito','Poppins','Inter','Montserrat','Lato','Roboto','Open Sans','Merriweather'];
+  const allowedFonts=['Nunito','Quicksand','Poppins','Montserrat','Raleway','Inter','Roboto','Open Sans','Lato','Oswald','Merriweather','Lora','Playfair Display','Source Serif 4'];
   const font=allowedFonts.includes(item&&item.fontFamily)?item.fontFamily:'Nunito';
   const title=document.getElementById('articleTitle'),content=document.getElementById('articleContent');
   if(title)title.style.fontFamily='"'+font+'",Arial,sans-serif';
