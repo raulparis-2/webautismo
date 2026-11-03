@@ -143,7 +143,7 @@ function clearForm(){
 }
 function edit(i){
  const a=data.articles[i];if(!a)return;selected=i;coverPath=a.image||'';
- $('title').value=a.title||a.name||'';$('summary').value=a.summary||'';$('bodyEditor').innerHTML=a.body||a.content||'';
+ $('title').value=a.title||a.name||'';const legacyText=String(a.summary||a.description||'');$('summary').value=legacyText.length>350?legacyText.slice(0,220).trim()+'…':legacyText;const savedBody=a.body||a.content||'';$('bodyEditor').innerHTML=savedBody||legacyText.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean).map(p=>'<p>'+esc(p).replace(/\n/g,'<br>')+'</p>').join('');
  $('weekly').checked=!!a.weekly;$('coverFile').value='';
  $('coverPreview').style.display=coverPath?'block':'none';if(coverPath)$('coverPreview').src=coverPath.startsWith('http')?coverPath:'/'+coverPath.replace(/^\//,'');
  $('formHeading').textContent='Editar artículo';$('saveArticle').textContent='Guardar cambios';$('deleteArticle').disabled=false;say('editorStatus','Artículo cargado para editar.',true);
