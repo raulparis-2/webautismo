@@ -11,10 +11,10 @@
 <meta property="og:url" content="https://autismofamiliar.com/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lato:wght@400;700;900&family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800;900&family=Open+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#16485c;--cyan:#0da0b5;--cyan2:#dff5f8;--text:#315865;--muted:#718b93;--bg:#fff;--line:#dcecee}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#fff;color:var(--text);font-family:Nunito,Arial,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#fff;color:var(--text);font-family:var(--site-font, Nunito, Arial, sans-serif)}
 a{text-decoration:none;color:inherit}button,input,select{font:inherit}.wrap{max-width:1180px;margin:auto;padding:0 24px}
 .header{height:76px;display:flex;align-items:center;justify-content:space-between;gap:25px;background:#fff}
 .brand{display:flex;align-items:center;gap:9px;min-width:225px}.brand-logo{width:226px;height:58px;display:block;flex:none}.brand-logo svg{display:block;width:100%;height:100%;overflow:visible}.brand b{display:block;color:#16485c;font-size:17px;line-height:1}.brand small{display:block;color:#71909a;font-size:8px;margin-top:4px}
@@ -793,6 +793,9 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let data;
  try{const res=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error('content');data=await res.json()}catch(e){return}
+ const availableFonts=['Nunito','Poppins','Inter','Montserrat','Lato','Roboto','Open Sans','Merriweather'];
+ const chosenFont=availableFonts.includes(data.settings?.fontFamily)?data.settings.fontFamily:'Nunito';
+ document.documentElement.style.setProperty('--site-font','"'+chosenFont+'", Arial, sans-serif');
  const weeklyArticle=(data.articles||[]).find(x=>x.weekly&&!x.isDemo);
  const latestArticleLink=document.getElementById('afLatestArticle');
  if(latestArticleLink){if(weeklyArticle){latestArticleLink.hidden=false;latestArticleLink.style.display="flex";latestArticleLink.innerHTML='<div><span class="tag tblue" style="margin:0 0 7px">ÚLTIMO ARTÍCULO PUBLICADO</span><b style="display:block">'+esc(weeklyArticle.title)+'</b><span>'+esc(weeklyArticle.summary||'')+'</span><strong style="display:block;margin-top:7px;font-size:11px;color:#1491a4">Ver más →</strong></div>';latestArticleLink.onclick=e=>{e.preventDefault();closeApp();setTimeout(()=>showArticle(weeklyArticle),80)}}else{latestArticleLink.hidden=true;latestArticleLink.style.display="none";latestArticleLink.innerHTML=''}}
