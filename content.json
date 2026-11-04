@@ -48,6 +48,21 @@
       "fontFamily": "Quicksand",
       "date": "",
       "weekly": false
+    },
+    {
+      "id": "articles-1793822875092",
+      "title": "Sugerencia de ruta para diagnóstico del autismo",
+      "name": "Sugerencia de ruta para diagnóstico del autismo",
+      "category": "",
+      "summary": "Prueba",
+      "description": "Prueba",
+      "url": "",
+      "image": "uploads/image-1793822838372-17075.jpg",
+      "video": "",
+      "body": "Guía para padres ante un diagnóstico&nbsp;",
+      "bodyFormat": "html",
+      "date": "",
+      "weekly": false
     }
   ],
   "guides": [
