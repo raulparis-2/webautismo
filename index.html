@@ -1146,6 +1146,10 @@ document.addEventListener("click",async ev=>{
 
 <script id="af-plain-text-content-renderer">
 window.afRenderContentBody=function(item,fallback){
+  if(item&&typeof item.pdfUrl==='string'&&/^uploads\\/pdf-[a-z0-9._-]+\\.pdf$/i.test(item.pdfUrl)){
+    const url='/'+item.pdfUrl;
+    return '<p><a href="'+url+'" target="_blank" rel="noopener">Abrir PDF en otra pestaña</a></p><iframe title="Documento PDF" src="'+url+'#toolbar=1" style="display:block;width:100%;height:75vh;min-height:450px;border:1px solid #dce7ea;border-radius:10px;background:#fff" loading="lazy"></iframe>';
+  }
   const raw=item&&(item.body||item.content);
   if(item&&item.bodyFormat==='plain'&&raw){
     const escapeHtml=value=>String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
@@ -1470,7 +1474,7 @@ window.afRenderContentBody=function(item,fallback){
   if(!m){m=document.createElement('div');m.id='afContentModal';m.className='modal';m.style.cssText='display:none;position:fixed;inset:0;z-index:100001;background:#102f3dcc;align-items:center;justify-content:center;padding:16px;overflow:auto';m.innerHTML='<div style="background:#fff;border-radius:16px;padding:24px;max-width:760px;width:100%;max-height:90vh;overflow:auto"><button type="button" id="afContentModalClose" style="float:right;border:0;border-radius:50%;width:34px;height:34px;background:#e8f4f5;color:#16485c;font-size:22px;cursor:pointer">×</button><h2 id="afContentModalTitle" style="color:#16485c;margin-top:5px"></h2><div id="afContentModalBody" style="color:#526d76;line-height:1.7"></div></div>';document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m)m.style.display='none'});m.querySelector('#afContentModalClose').onclick=()=>m.style.display='none'}
   m.querySelector('#afContentModalTitle').textContent=title;m.querySelector('#afContentModalBody').innerHTML=body;m.style.display='flex';
  }
- function openItem(item,title){modal(item.title||title||'Recurso',item.body||item.content||('<p>'+esc(item.summary||item.description||'')+'</p>')+(item.url?'<p><a href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer">Abrir recurso ↗</a></p>':''))}
+ function openItem(item,title){modal(item.title||title||'Recurso',window.afRenderContentBody(item,'<p>'+esc(item.summary||item.description||'')+'</p>')+(item.url?'<p><a href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer">Abrir recurso ↗</a></p>':''))}
  function render(){
   const list=document.querySelector('#app-articles .content-list');
   const articles=(data.articles||[]).filter(a=>a&&!a.isDemo);
