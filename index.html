@@ -1148,15 +1148,51 @@ document.addEventListener("click",async ev=>{
 window.afRenderContentBody=function(item,fallback){
   if(item&&typeof item.pdfUrl==='string'&&/^uploads\\/pdf-[a-z0-9._-]+\\.pdf$/i.test(item.pdfUrl)){
     const url='/'+item.pdfUrl;
-    return '<p><a href="'+url+'" target="_blank" rel="noopener">Abrir PDF en otra pestaña</a></p><iframe title="Documento PDF" src="'+url+'#toolbar=1" style="display:block;width:100%;height:75vh;min-height:450px;border:1px solid #dce7ea;border-radius:10px;background:#fff" loading="lazy"></iframe>';
+    return '<div class="af-pdf-document" data-pdf-url="'+url+'"><p class="af-pdf-loading">Cargando documento completo…</p><div class="af-pdf-pages"></div><p><a href="'+url+'" target="_blank" rel="noopener">Abrir o descargar PDF</a></p></div>';
   }
   const raw=item&&(item.body||item.content);
   if(item&&item.bodyFormat==='plain'&&raw){
     const escapeHtml=value=>String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-    return String(raw).replace(/\r\n?/g,'\n').split(/\n\s*\n/).map(part=>part.trim()).filter(Boolean).map(part=>'<p>'+escapeHtml(part).replace(/\n/g,'<br>')+'</p>').join('');
+    return String(raw).replace(/\\r\\n?/g,'\\n').split(/\\n\\s*\\n/).map(part=>part.trim()).filter(Boolean).map(part=>'<p>'+escapeHtml(part).replace(/\\n/g,'<br>')+'</p>').join('');
   }
-  return raw||fallback||'';
+  return raw||fallback||'<p>Este artículo todavía no tiene contenido publicado.</p>';
 };
+(function(){
+  let pdfLibPromise;
+  async function renderPdf(el){
+    if(el.dataset.rendering)return;
+    el.dataset.rendering='1';
+    const status=el.querySelector('.af-pdf-loading'),pages=el.querySelector('.af-pdf-pages');
+    try{
+      pdfLibPromise ||= import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
+      const pdfjs=await pdfLibPromise;
+      pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+      const pdf=await pdfjs.getDocument({url:el.dataset.pdfUrl}).promise;
+      status.textContent='Documento de '+pdf.numPages+' página(s)';
+      for(let n=1;n<=pdf.numPages;n++){
+        if(!el.isConnected)break;
+        const page=await pdf.getPage(n);
+        const base=page.getViewport({scale:1});
+        const scale=Math.min(2,Math.max(1,(Math.min(el.clientWidth||650,850)-8)/base.width));
+        const viewport=page.getViewport({scale});
+        const canvas=document.createElement('canvas');
+        canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+        canvas.style.cssText='display:block;width:100%;height:auto;margin:12px auto;background:white;box-shadow:0 1px 8px #0002;border-radius:4px';
+        pages.appendChild(canvas);
+        await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+      }
+    }catch(e){
+      status.textContent='No se pudo mostrar el PDF aquí. Pulsa «Abrir o descargar PDF» para verlo completo.';
+      const iframe=document.createElement('iframe');
+      iframe.src=el.dataset.pdfUrl;iframe.title='Documento PDF';
+      iframe.style.cssText='width:100%;height:70vh;border:1px solid #ddd';
+      pages.appendChild(iframe);
+    }
+  }
+  const scan=()=>document.querySelectorAll('.af-pdf-document:not([data-rendering])').forEach(renderPdf);
+  new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan);else scan();
+})();
 </script>
 
 <style id="af-remove-automatic-article-photos">
