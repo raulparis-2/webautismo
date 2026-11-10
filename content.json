@@ -33,17 +33,18 @@
       "weekly": false
     },
     {
-      "id": "articles-1794344452417",
-      "title": "Prueba",
-      "name": "Prueba",
+      "id": "articles-1794345841480",
+      "title": "prueba.docx.pdf",
+      "name": "prueba.docx.pdf",
       "category": "",
       "summary": "",
       "description": "",
       "url": "",
-      "image": "uploads/image-1794344617808-1000058868.jpg",
+      "image": "",
       "video": "",
-      "body": "",
+      "body": "<p>Consulta el documento PDF completo, con su texto e imágenes, al abrir este artículo.</p>",
       "bodyFormat": "html",
+      "pdfUrl": "uploads/pdf-1794345829473-preba-docx-pd.pdf",
       "date": "",
       "weekly": false
     }
