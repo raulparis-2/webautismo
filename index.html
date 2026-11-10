@@ -1149,7 +1149,7 @@ document.addEventListener("click",async ev=>{
 window.afRenderContentBody=function(item,fallback){
   if(item&&typeof item.pdfUrl==='string'&&/^uploads\/pdf-[a-z0-9._-]+\.pdf$/i.test(item.pdfUrl)){
     const url='/'+item.pdfUrl;
-    return '<div class="af-pdf-document" data-pdf-url="'+url+'"><p class="af-pdf-loading">Cargando documento completo…</p><div class="af-pdf-pages"></div><p class="af-pdf-action-wrap"><a class="af-pdf-download-button" href="'+url+'" target="_blank" rel="noopener" download>⬇ Ver o descargar PDF</a></p></div>';
+    return '<div class="af-pdf-document" data-pdf-url="'+url+'"><p class="af-pdf-loading">Cargando documento completo…</p><div class="af-pdf-pages"></div><p class="af-pdf-action-wrap"><a class="af-pdf-download-button" href="'+url+'" target="_blank" rel="noopener" download>Ver PDF</a></p></div>';
   }
   const raw=item&&(item.body||item.content);
   if(item&&item.bodyFormat==='plain'&&raw){
