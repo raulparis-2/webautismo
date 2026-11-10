@@ -31,6 +31,22 @@
       "bodyFormat": "html",
       "date": "",
       "weekly": false
+    },
+    {
+      "id": "articles-1794346521325",
+      "title": "prueba.docx.pdf",
+      "name": "prueba.docx.pdf",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "body": "<p>Consulta el documento PDF completo, con su texto e imágenes, al abrir este artículo.</p>",
+      "bodyFormat": "html",
+      "pdfUrl": "uploads/pdf-1794346515926-preba-docx-pd.pdf",
+      "date": "",
+      "weekly": false
     }
   ],
   "guides": [
