@@ -61,16 +61,16 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ sha: out.content.sha });
     }
     if (body.action === 'upload') {
-      if (typeof body.filePath !== 'string' || !/^uploads\/(image|video)-\d+-[a-z0-9_-]+\.[a-z0-9]{1,8}$/.test(body.filePath)) {
+      if (typeof body.filePath !== 'string' || !/^uploads\/(image|video|pdf)-\d+-[a-z0-9_-]+\.[a-z0-9]{1,8}$/.test(body.filePath)) {
         return res.status(400).json({ error: 'Nombre de archivo no válido.' });
       }
-      if (typeof body.content !== 'string' || !body.content.length || body.content.length > 4 * 1024 * 1024) {
-        return res.status(413).json({ error: 'El archivo debe pesar como máximo 3 MB.' });
+      if (typeof body.content !== 'string' || !body.content.length || body.content.length > 6 * 1024 * 1024) {
+        return res.status(413).json({ error: 'El archivo debe pesar como máximo 4 MB.' });
       }
       const out = await githubFetch('/repos/' + REPO + '/contents/' + body.filePath.split('/').map(encodeURIComponent).join('/'), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Añadir ' + (body.kind === 'video' ? 'vídeo' : 'imagen') + ' desde el panel Autismo Familiar', content: body.content, branch: 'main' })
+        body: JSON.stringify({ message: 'Añadir ' + (body.kind === 'video' ? 'vídeo' : body.kind === 'pdf' ? 'PDF' : 'imagen') + ' desde el panel Autismo Familiar', content: body.content, branch: 'main' })
       });
       return res.status(200).json({ path: out.content.path, sha: out.content.sha });
     }
