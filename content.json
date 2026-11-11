@@ -31,6 +31,22 @@
       "bodyFormat": "html",
       "date": "",
       "weekly": false
+    },
+    {
+      "id": "articles-1794388745918",
+      "title": "Sugerencia de ruta para la detección del autismo",
+      "name": "Sugerencia de ruta para la detección del autismo",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "body": "<p>Consulta el documento PDF completo, con su texto e imágenes, al abrir este artículo.</p>",
+      "bodyFormat": "html",
+      "pdfUrl": "uploads/pdf-1794388697152-rta_diagnostico_atismo--pd.pdf",
+      "date": "",
+      "weekly": false
     }
   ],
   "guides": [
