@@ -80,6 +80,22 @@
       "pdfUrl": "uploads/pdf-1794595159910-atismo-de--a--anos-pd.pdf",
       "date": "",
       "weekly": false
+    },
+    {
+      "id": "articles-1794599194240",
+      "title": "Prueba video",
+      "name": "Prueba video",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "body": "",
+      "bodyFormat": "html",
+      "pdfUrl": "",
+      "date": "",
+      "weekly": false
     }
   ],
   "guides": [
