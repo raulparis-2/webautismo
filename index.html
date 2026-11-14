@@ -405,7 +405,7 @@ body{overflow-x:hidden}
 .af-content-search{margin:18px 0 24px;max-width:760px}.af-content-search label{display:block;font-size:14px;font-weight:800;color:#16485c;margin-bottom:9px}.af-content-search input{box-sizing:border-box;width:100%;padding:14px 16px;border:1px solid #cbdfe4;border-radius:12px;font:inherit;font-size:15px;background:#fff;color:#16485c}.af-content-search input:focus{outline:2px solid #1491a4;outline-offset:2px}#afContentResults:not(:empty){display:grid;gap:8px;margin-top:12px}.af-content-result{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid #d8e9ed;background:#fff;border-radius:10px;padding:12px 14px;cursor:pointer;color:#16485c;font:inherit}.af-content-result:hover{background:#edf9fb}.af-content-result span{font-size:12px;color:#117d90;font-weight:700;min-width:58px}.af-content-result strong{font-size:14px}.af-content-empty{font-size:14px;color:#667d85}
 </style><style>
 .af-library-search{margin:16px 0 22px}.af-library-search input{width:100%;max-width:650px;box-sizing:border-box;padding:13px 15px;border:1px solid #cbdfe4;border-radius:11px;background:#fff;color:#16485c;font:inherit;font-size:15px}.af-library-search input:focus{outline:2px solid #1491a4;outline-offset:2px}.af-video-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:15px;margin-bottom:24px}.af-video-card{background:#fff;border:1px solid #dce9ed;border-radius:14px;padding:18px;min-width:0}.af-video-card h3{font-size:17px;color:#16485c;margin:7px 0}.af-video-card p{font-size:13px;color:#607780;line-height:1.5}.af-video-card video{width:100%;border-radius:9px;max-height:240px}.af-video-card a{display:inline-block;margin-top:10px;color:#087f96;font-weight:700}.af-video-card .af-video-type{font-size:11px;color:#087f96;font-weight:800}.af-video-empty{font-size:14px;color:#667d85}
-</style></head>
+</style><style>.af-library-search label{display:block;font-size:14px;font-weight:800;color:#16485c;margin-bottom:9px}</style></head>
 <body>
 <header class="header wrap">
 <a class="brand" href="#inicio" aria-label="Autismo Familiar - Inicio">
@@ -488,7 +488,7 @@ body{overflow-x:hidden}
     </div>
     <div class="app-subpage" id="app-videos">
       <div class="subpage-head"><div><span class="label">CONTENIDO AUDIOVISUAL</span><h3>Vídeos de Autismo Familiar</h3><p>Explora todos los vídeos publicados.</p></div><button onclick="openAppSection('home')" type="button">← Inicio de la App</button></div>
-      <div class="af-library-search"><input id="afAppVideoSearch" type="search" placeholder="Escribe el título de un vídeo…" aria-label="Buscar vídeos"></div>
+      <div class="af-library-search"><label for="afAppVideoSearch">Buscar vídeos</label><input id="afAppVideoSearch" type="search" placeholder="Escribe el título de un vídeo…" aria-label="Buscar vídeos"></div>
       <div class="af-video-list" id="afAppVideoList" aria-live="polite"></div>
     </div>
     <div class="app-subpage" id="app-news">
@@ -513,7 +513,7 @@ body{overflow-x:hidden}
 <section class="section" id="articulos"><div class="section-title"><div><div class="label">INFORMACIÓN QUE ACOMPAÑA</div><h2>Artículos</h2></div><p>Consulta nuestros artículos y encuentra información útil.</p><a class="label" href="#app-articles" onclick="event.preventDefault();openAppSection('articles')">Ver todos los artículos →</a></div>
 <div class="af-content-search"><label for="afContentSearch">Buscar artículos</label><input id="afContentSearch" type="search" placeholder="Escribe el título de un artículo…" autocomplete="off" aria-controls="afContentResults"><div id="afContentResults" aria-live="polite"></div></div><div class="article-grid" aria-live="polite"></div></section>
 
-<section class="section" id="videos"><div class="section-title"><div><div class="label">CONTENIDO AUDIOVISUAL</div><h2>Vídeos</h2></div><p>Consulta los vídeos publicados.</p><a class="label" href="#app-videos" onclick="event.preventDefault();openAppSection('videos')">Ver todos los vídeos →</a></div><div class="af-library-search"><input id="afPublicVideoSearch" type="search" placeholder="Escribe el título de un vídeo…" aria-label="Buscar vídeos por título"></div><div class="af-video-list" id="afPublicVideoList" aria-live="polite"></div></section>
+<section class="section" id="videos"><div class="section-title"><div><div class="label">CONTENIDO AUDIOVISUAL</div><h2>Vídeos</h2></div><p>Consulta los vídeos publicados.</p><a class="label" href="#app-videos" onclick="event.preventDefault();openAppSection('videos')">Ver todos los vídeos →</a></div><div class="af-library-search"><label for="afPublicVideoSearch">Buscar vídeos</label><input id="afPublicVideoSearch" type="search" placeholder="Escribe el título de un vídeo…" aria-label="Buscar vídeos por título"></div><div class="af-video-list" id="afPublicVideoList" aria-live="polite"></div></section>
 <section class="section af-manual-directory" id="asociaciones-subvenciones">
   <div class="section-title"><div><div class="label">RECURSOS DE TU ZONA</div><h2>Asociaciones y subvenciones</h2></div><p>Información organizada manualmente para que las familias encuentren recursos útiles sin depender de un buscador externo.</p></div>
   <div class="af-manual-tabs" role="tablist" aria-label="Tipo de recurso">
