@@ -1,6 +1,25 @@
 {
   "associations": [],
-  "grants": [],
+  "grants": [
+    {
+      "id": "grants-1794685098758",
+      "title": "Ayudas PUA del 2026/2027",
+      "name": "Ayudas PUA del 2026/2027",
+      "place": "Toda España",
+      "province": "Toda España",
+      "mapsUrl": "",
+      "category": "Toda España",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "body": "<p>Consulta el documento PDF completo, con su texto e imágenes, al abrir este artículo.</p>",
+      "bodyFormat": "html",
+      "pdfUrl": "uploads/pdf-1794685085400-aydas__atismo_atalna-pd.pdf",
+      "date": ""
+    }
+  ],
   "videos": [
     {
       "id": "videos-1794652338853",
