@@ -883,6 +883,7 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
 // Pega aquí la configuración web de tu proyecto Firebase (Configuración del proyecto > Tus aplicaciones).
 const firebaseConfig = {
@@ -927,7 +928,8 @@ function profileForm(profile={},requestedType){
  '<label style="display:grid;gap:5px;font-weight:700">Correo de contacto *<input name="contactEmail" type="email" required maxlength="180" value="'+escHub(profile.contactEmail||currentUser.email||'')+'" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<label style="display:grid;gap:5px;font-weight:700">Teléfono de contacto (opcional)<input name="contact" maxlength="200" value="'+escHub(profile.contact||'')+'" placeholder="Teléfono para que contacten contigo" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label>'+
  '<input name="photo" type="hidden" value="'+escHub(profile.photo||'')+'"><label style="display:grid;gap:5px;font-weight:700">Foto opcional (desde tu ordenador)<input id="hubPhotoFile" type="file" accept="image/*" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label><p style="font-size:11px;color:#7b8b90;margin:0">Puedes subir una imagen desde tu ordenador. Por privacidad, evita fotos identificables de niños/as y no incluyas información médica.</p><img id="hubPhotoPreview" alt="Vista previa de la imagen" style="display:'+(hasPhoto?'block':'none')+';max-width:150px;max-height:130px;object-fit:cover;border-radius:10px" src="'+(hasPhoto?escHub(profile.photo):'')+'">'+
- '<label style="display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500"><input name="consent" type="checkbox" required style="margin-top:4px" '+(profile.consent?'checked':'')+'>Confirmo que tengo derecho a publicar estos datos y entiendo que el título, la zona, la descripción, la foto y los datos de contacto que añada al anuncio serán visibles públicamente para cualquier visitante. No incluiré direcciones exactas, datos médicos ni datos identificativos de menores.</label>'+
+ '<label style="display:grid;gap:6px;font-weight:700">Vídeo de presentación (opcional, máximo 4 minutos)<input id="hubVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/ogg" style="padding:10px;border:1px solid #ccdadd;border-radius:8px"></label><p style="font-size:12px;color:#617780;margin:0">Explica qué servicios ofreces o qué ayuda buscas. Máximo 4 minutos y 50 MB. No incluyas imágenes ni datos identificativos de menores.</p><video id="hubVideoPreview" controls playsinline style="display:none;width:100%;max-width:420px;border-radius:10px"></video><p id="hubVideoHint" style="font-size:12px;color:#617780;margin:0">'+(profile.videoUrl?'Ya tienes un vídeo guardado. Puedes sustituirlo seleccionando otro.':'')+'</p><input name="videoUrl" type="hidden" value="'+escHub(profile.videoUrl||'')+'">'+
+ '<label style="display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500"><input name="consent" type="checkbox" required style="margin-top:4px" '+(profile.consent?'checked':'')+'>Confirmo que tengo derecho a publicar estos datos y entiendo que el título, la zona, la descripción, la foto, el vídeo y los datos de contacto que añada al anuncio serán visibles públicamente para cualquier visitante. No incluiré direcciones exactas, datos médicos ni datos identificativos de menores.</label>'+
  '<div style="padding:12px;border-radius:10px;background:#f0f7f9;margin:10px 0;font-size:13px"><b>Estado de revisión: '+(profile.status==='approved'?'Aprobado':profile.status==='rejected'?'Denegado':'Pendiente de revisión')+'</b>'+(profile.status==='rejected'?'<p style="margin:7px 0 0;color:#9d3030"><b>Motivo:</b> '+escHub(profile.rejectionReason||'No se indicó un motivo.')+'</p><p style="margin:7px 0 0">Puedes corregir el anuncio y volver a enviarlo para revisión.</p>':profile.status==='approved'?'<p style="margin:7px 0 0">Tu anuncio está publicado en el directorio.</p>':'<p style="margin:7px 0 0">El equipo revisará tu anuncio antes de publicarlo.</p>')+'</div>'+ '<button type="submit" style="border:0;border-radius:10px;padding:13px;background:#164f61;color:#fff;font-weight:800;cursor:pointer">Publicar / guardar anuncio</button>'+
  '<button type="button" data-hub-action="delete-profile" style="border:1px solid #b42318;border-radius:10px;padding:11px;background:white;color:#b42318;cursor:pointer">Eliminar mi anuncio</button><p id="hubProfileStatus" role="status" aria-live="polite" style="font-size:13px;margin:0"></p>'+
  '<p style="font-size:11px;color:#7b8b90;margin:0">El anuncio quedará pendiente de revisión y solo aparecerá en el directorio cuando el equipo lo apruebe. Solo puedes tener uno por cuenta. Usa una zona aproximada, nunca la dirección de casa, y no incluyas el nombre completo ni datos identificativos de menores. El correo y el teléfono también se ven al abrir «Ver anuncio» o al pulsar «Contactar».</p></form>';
@@ -942,6 +944,18 @@ function profileForm(profile={},requestedType){
   if(descLabel&&descLabel.firstChild)descLabel.firstChild.textContent=pro?'¿Qué servicios ofreces y cuál es tu experiencia? *':'¿Qué tipo de ayuda y horario necesitas? *';
   const desc=document.querySelector('#hubProfileForm textarea[name="description"]');
   if(desc)desc.placeholder=pro?'Describe tus servicios, experiencia y disponibilidad. No incluyas datos personales de clientes.':'Describe las tareas de cuidado, días y horarios aproximados. Evita datos médicos o identificativos de menores.';
+ });
+ const videoInput=document.getElementById('hubVideoFile');
+ if(videoInput)videoInput.addEventListener('change',async()=>{
+  const f=videoInput.files?.[0],hint=document.getElementById('hubVideoHint'),preview=document.getElementById('hubVideoPreview');
+  if(!f)return;
+  if(!['video/mp4','video/webm','video/quicktime','video/ogg'].includes(f.type)||f.size>50*1024*1024){hint.textContent='Selecciona un vídeo MP4, WebM, MOV u OGG de hasta 50 MB.';videoInput.value='';return}
+  const url=URL.createObjectURL(f);preview.src=url;preview.style.display='block';
+  try{const duration=await new Promise((resolve,reject)=>{const probe=document.createElement('video');probe.preload='metadata';probe.onloadedmetadata=()=>resolve(probe.duration);probe.onerror=()=>reject(Error('No se puede leer el vídeo.'));probe.src=url});
+   if(!Number.isFinite(duration)||duration>240){hint.textContent='El vídeo no puede durar más de 4 minutos.';videoInput.value='';preview.removeAttribute('src');preview.style.display='none';return}
+   hint.textContent='Vídeo listo ('+Math.ceil(duration)+' segundos). Se subirá al guardar el anuncio.';
+  }catch(e){hint.textContent=e.message;videoInput.value='';preview.style.display='none'}
+  finally{setTimeout(()=>URL.revokeObjectURL(url),30000)}
  });
  const file=document.getElementById('hubPhotoFile');
  if(file)file.addEventListener('change',async()=>{
@@ -999,7 +1013,7 @@ function addProfileCard(p){
  card.dataset.profileType=p.profileType==="professional"?"professional":"family";card.dataset.zone=(p.location||"").trim().toLocaleLowerCase("es");card.dataset.province=getHubProvince(p.location).toLocaleLowerCase("es");card.dataset.search=[p.name,p.location,p.description].join(" ").toLowerCase();
  const photo=p.photo&&(p.photo.startsWith("http")||p.photo.startsWith("data:image/"))?'<img src="'+escHub(p.photo)+'" alt="" style="width:54px;height:54px;object-fit:cover;border-radius:50%">':'<div class="hub-avatar avatar-teal">'+escHub(initials)+'</div>';
  card.innerHTML='<div class="hub-profile-top">'+photo+'<span class="hub-pill">'+escHub(label)+'</span></div><h4>'+escHub(p.name)+'</h4><p class="hub-role">'+escHub(p.location)+'</p><p class="hub-description">'+escHub(p.description)+'</p><div class="hub-profile-actions"><button type="button" data-profile-action="view">Ver anuncio</button><button type="button" class="hub-contact" data-profile-action="contact">Contactar</button></div>';
- card.querySelector('[data-profile-action="view"]').addEventListener("click",()=>showHubDialog(p.name,'<p><strong>'+escHub(label)+'</strong></p><p>'+escHub(p.description)+'</p><p><strong>Zona:</strong> '+escHub(p.location)+'</p><p><strong>Contacto:</strong> '+escHub(p.contactEmail)+'</p>'+(p.contact?'<p><strong>Teléfono o web:</strong> '+escHub(p.contact)+'</p>':'')+(p.photo?'<p><img src="'+escHub(p.photo)+'" alt="" style="max-width:100%;max-height:240px;object-fit:contain;border-radius:10px"></p>':'')));
+ card.querySelector('[data-profile-action="view"]').addEventListener("click",()=>showHubDialog(p.name,'<p><strong>'+escHub(label)+'</strong></p><p>'+escHub(p.description)+'</p><p><strong>Zona:</strong> '+escHub(p.location)+'</p><p><strong>Contacto:</strong> '+escHub(p.contactEmail)+'</p>'+(p.contact?'<p><strong>Teléfono o web:</strong> '+escHub(p.contact)+'</p>':'')+(p.photo?'<p><img src="'+escHub(p.photo)+'" alt="" style="max-width:100%;max-height:240px;object-fit:contain;border-radius:10px"></p>':'')+(p.videoUrl&&/^https:\/\//i.test(p.videoUrl)?'<p><strong>Vídeo de presentación:</strong></p><video controls playsinline preload="metadata" src="'+escHub(p.videoUrl)+'" style="width:100%;max-height:360px;border-radius:12px"></video>':'')));
  card.querySelector('[data-profile-action="contact"]').addEventListener("click",()=>showHubDialog("Contactar con la familia",'<p>Correo: <a href="mailto:'+escHub(p.contactEmail)+'">'+escHub(p.contactEmail)+'</a></p>'+(p.contact?'<p>Teléfono o web: '+escHub(p.contact)+'</p>':'')));
  refreshHubZones();
  filterHubProfiles();}
@@ -1036,16 +1050,27 @@ document.addEventListener("submit",async ev=>{
   const form=ev.target;if(!ready||!currentUser){setStatus("hubProfileStatus","Inicia sesión para guardar el anuncio.");return;}
   const fd=new FormData(form),status=document.getElementById("hubProfileStatus");
   if(status)status.textContent="Publicando…";
-  const town=String(fd.get("town")||"").trim();if(town&&/\b(calle|rua|rúa|avenida|avda\.?|paseo|plaza|portal|piso|código postal)\b|\b\d{1,5}\b/i.test(town)){if(status)status.textContent="Por privacidad, indica solo una localidad o zona aproximada, no una calle, número ni dirección particular.";return;}const p={uid:currentUser.uid,profileType:String(fd.get("profileType")||"family"),name:String(fd.get("name")||"").trim(),specialty:"general",location:[String(fd.get("province")||"").trim(),town].filter(Boolean).join(" — "),description:String(fd.get("description")||"").trim(),contactEmail:String(fd.get("contactEmail")||"").trim(),contact:String(fd.get("contact")||"").trim(),photo:String(fd.get("photo")||"").trim(),consent:fd.get("consent")==="on",status:"pending",rejectionReason:"",reviewedAt:null,reviewedBy:"",updatedAt:serverTimestamp()};
+  const town=String(fd.get("town")||"").trim();if(town&&/\b(calle|rua|rúa|avenida|avda\.?|paseo|plaza|portal|piso|código postal)\b|\b\d{1,5}\b/i.test(town)){if(status)status.textContent="Por privacidad, indica solo una localidad o zona aproximada, no una calle, número ni dirección particular.";return;}const p={uid:currentUser.uid,profileType:String(fd.get("profileType")||"family"),name:String(fd.get("name")||"").trim(),specialty:"general",location:[String(fd.get("province")||"").trim(),town].filter(Boolean).join(" — "),description:String(fd.get("description")||"").trim(),contactEmail:String(fd.get("contactEmail")||"").trim(),contact:String(fd.get("contact")||"").trim(),photo:String(fd.get("photo")||"").trim(),videoUrl:String(fd.get("videoUrl")||"").trim(),consent:fd.get("consent")==="on",status:"pending",rejectionReason:"",reviewedAt:null,reviewedBy:"",updatedAt:serverTimestamp()};
   try{
    const ref=doc(db,"profiles",currentUser.uid);const snap=await getDoc(ref);
    if(!snap.exists()){p.createdAt=serverTimestamp();}
+   const videoFile=document.getElementById('hubVideoFile')?.files?.[0];
+   if(videoFile){
+    if(videoFile.size>50*1024*1024||!['video/mp4','video/webm','video/quicktime','video/ogg'].includes(videoFile.type))throw Error('Formato o tamaño de vídeo no permitido.');
+    const videoDuration=await new Promise((resolve,reject)=>{const v=document.createElement('video'),u=URL.createObjectURL(videoFile);v.preload='metadata';v.onloadedmetadata=()=>{URL.revokeObjectURL(u);resolve(v.duration)};v.onerror=()=>{URL.revokeObjectURL(u);reject(Error('No se puede leer la duración del vídeo.'))};v.src=u});
+    if(!Number.isFinite(videoDuration)||videoDuration>240)throw Error('El vídeo supera el máximo de 4 minutos.');
+    if(status)status.textContent='Subiendo vídeo…';
+    const ext=videoFile.type==='video/webm'?'webm':videoFile.type==='video/ogg'?'ogg':videoFile.type==='video/quicktime'?'mov':'mp4';
+    const path='profile-videos/'+currentUser.uid+'/presentation.'+ext;
+    const uploaded=await uploadBytes(storageRef(getStorage(),path),videoFile,{contentType:videoFile.type});
+    p.videoUrl=await getDownloadURL(uploaded.ref);
+   }
    await setDoc(ref,p,{merge:true});
    document.getElementById("hub-user-"+currentUser.uid)?.remove();
    try{const token=await currentUser.getIdToken();await fetch("/api/notify-profile",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({name:p.name,profileType:p.profileType,location:p.location,description:p.description,contactEmail:p.contactEmail})});}catch(notifyError){console.warn("No se pudo enviar el aviso por correo:",notifyError);}
    window.firebaseHubRefreshRequestButton(currentUser);
    showHubDialog("¡Solicitud enviada!", '<div style="text-align:center;padding:8px 0 4px"><div style="width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:#e4f7ed;color:#16834a;display:grid;place-items:center;font-size:34px;font-weight:900" aria-hidden="true">✓</div><p style="font-size:16px;font-weight:900;color:#16485c;margin:0 0 10px">Tu anuncio está pendiente de revisión.</p><p style="line-height:1.65;margin:0">Todavía no será visible en la web. El equipo de Autismo Familiar lo revisará y te avisaremos cuando haya sido revisado.</p></div>');
-  }catch(e){if(status)status.textContent=authError(e);}
+  }catch(e){if(status)status.textContent=e?.message||(e?.code?.includes("storage/")?"No se pudo subir el vídeo. Revisa los permisos de Firebase Storage.":authError(e));}
  }
 });
 document.addEventListener("click",async ev=>{
