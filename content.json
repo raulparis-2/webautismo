@@ -1,5 +1,27 @@
 {
-  "associations": [],
+  "associations": [
+    {
+      "id": "associations-1794685812743",
+      "title": "Asociación Guiot Domínguez",
+      "name": "Asociación Guiot Domínguez",
+      "place": "Carrer de l'Espígol, la Quintana, Sant Feliu de Codines, Vallés Oriental, Barcelona, Cataluña, 08182, España",
+      "province": "Carrer de l'Espígol, la Quintana, Sant Feliu de Codines, Vallés Oriental, Barcelona, Cataluña, 08182, España",
+      "mapsUrl": "",
+      "category": "Carrer de l'Espígol, la Quintana, Sant Feliu de Codines, Vallés Oriental, Barcelona, Cataluña, 08182, España",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "body": "",
+      "bodyFormat": "html",
+      "pdfUrl": "",
+      "date": "",
+      "latitude": 41.69077840424418,
+      "longitude": 2.159526944160462,
+      "geocodedAddress": "Carrer de l'Espígol, la Quintana, Sant Feliu de Codines, Vallés Oriental, Barcelona, Cataluña, 08182, España"
+    }
+  ],
   "grants": [
     {
       "id": "grants-1794685098758",
