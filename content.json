@@ -1,7 +1,23 @@
 {
   "associations": [],
   "grants": [],
-  "videos": [],
+  "videos": [
+    {
+      "id": "videos-1794652338853",
+      "title": "video de prueba",
+      "name": "video de prueba",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "body": "",
+      "bodyFormat": "html",
+      "pdfUrl": "",
+      "date": ""
+    }
+  ],
   "articles": [
     {
       "id": "articles-1792873230483",
