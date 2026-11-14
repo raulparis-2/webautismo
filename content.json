@@ -215,7 +215,23 @@
       "date": ""
     }
   ],
-  "faqs": [],
+  "faqs": [
+    {
+      "id": "faqs-1794680506969",
+      "title": "preguntas frecuentes sobre el autismo autismo familiar.pdf",
+      "name": "preguntas frecuentes sobre el autismo autismo familiar.pdf",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "body": "<p>Consulta el documento PDF completo, con su texto e imágenes, al abrir este artículo.</p>",
+      "bodyFormat": "html",
+      "pdfUrl": "uploads/pdf-1794680489490-pregntas_recentes_sobre_el_atismo_atismo_amil.pdf",
+      "date": ""
+    }
+  ],
   "settings": {
     "fontFamily": "Nunito"
   }
