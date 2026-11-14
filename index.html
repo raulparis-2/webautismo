@@ -484,11 +484,11 @@ body{overflow-x:hidden}
   <div class="app-subpages">
     <div class="app-subpage" id="app-articles">
       <div class="subpage-head"><div><span class="label">CONTENIDO SEMANAL</span><h3>Artículos de Autismo Familiar</h3><p>Un artículo nuevo cada semana, pensado para familias, cuidadores y profesionales.</p></div><button onclick="openAppSection('home')" type="button">← Inicio de la App</button></div>
-      <div class="af-library-search"><input id="afAppArticleSearch" type="search" placeholder="Buscar artículos por título…" aria-label="Buscar artículos por título"></div><div class="content-list" aria-live="polite"></div>
+      <div class="af-library-search"><input id="afAppArticleSearch" type="search" placeholder="Escribe el título de un artículo…" aria-label="Buscar artículos"></div><div class="content-list" aria-live="polite"></div>
     </div>
     <div class="app-subpage" id="app-videos">
       <div class="subpage-head"><div><span class="label">CONTENIDO AUDIOVISUAL</span><h3>Vídeos de Autismo Familiar</h3><p>Explora todos los vídeos publicados.</p></div><button onclick="openAppSection('home')" type="button">← Inicio de la App</button></div>
-      <div class="af-library-search"><input id="afAppVideoSearch" type="search" placeholder="Buscar vídeos por título…" aria-label="Buscar vídeos por título"></div>
+      <div class="af-library-search"><input id="afAppVideoSearch" type="search" placeholder="Escribe el título de un vídeo…" aria-label="Buscar vídeos"></div>
       <div class="af-video-list" id="afAppVideoList" aria-live="polite"></div>
     </div>
     <div class="app-subpage" id="app-news">
@@ -511,9 +511,9 @@ body{overflow-x:hidden}
 
 </section>
 <section class="section" id="articulos"><div class="section-title"><div><div class="label">INFORMACIÓN QUE ACOMPAÑA</div><h2>Artículos</h2></div><p>Consulta nuestros artículos y encuentra información útil.</p><a class="label" href="#app-articles" onclick="event.preventDefault();openAppSection('articles')">Ver todos los artículos →</a></div>
-<div class="af-content-search"><label for="afContentSearch">Buscar artículos y vídeos por título</label><input id="afContentSearch" type="search" placeholder="Escribe el título de un artículo o vídeo…" autocomplete="off" aria-controls="afContentResults"><div id="afContentResults" aria-live="polite"></div></div><div class="article-grid" aria-live="polite"></div></section>
+<div class="af-content-search"><label for="afContentSearch">Buscar artículos</label><input id="afContentSearch" type="search" placeholder="Escribe el título de un artículo…" autocomplete="off" aria-controls="afContentResults"><div id="afContentResults" aria-live="polite"></div></div><div class="article-grid" aria-live="polite"></div></section>
 
-<section class="section" id="videos"><div class="section-title"><div><div class="label">CONTENIDO AUDIOVISUAL</div><h2>Vídeos</h2></div><p>Consulta los vídeos publicados.</p><a class="label" href="#app-videos" onclick="event.preventDefault();openAppSection('videos')">Ver todos los vídeos →</a></div><div class="af-library-search"><input id="afPublicVideoSearch" type="search" placeholder="Buscar vídeos por título…" aria-label="Buscar vídeos por título"></div><div class="af-video-list" id="afPublicVideoList" aria-live="polite"></div></section>
+<section class="section" id="videos"><div class="section-title"><div><div class="label">CONTENIDO AUDIOVISUAL</div><h2>Vídeos</h2></div><p>Consulta los vídeos publicados.</p><a class="label" href="#app-videos" onclick="event.preventDefault();openAppSection('videos')">Ver todos los vídeos →</a></div><div class="af-library-search"><input id="afPublicVideoSearch" type="search" placeholder="Escribe el título de un vídeo…" aria-label="Buscar vídeos por título"></div><div class="af-video-list" id="afPublicVideoList" aria-live="polite"></div></section>
 <section class="section af-manual-directory" id="asociaciones-subvenciones">
   <div class="section-title"><div><div class="label">RECURSOS DE TU ZONA</div><h2>Asociaciones y subvenciones</h2></div><p>Información organizada manualmente para que las familias encuentren recursos útiles sin depender de un buscador externo.</p></div>
   <div class="af-manual-tabs" role="tablist" aria-label="Tipo de recurso">
