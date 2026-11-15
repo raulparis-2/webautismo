@@ -883,7 +883,7 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+
 
 // Pega aquí la configuración web de tu proyecto Firebase (Configuración del proyecto > Tus aplicaciones).
 const firebaseConfig = {
@@ -1066,14 +1066,28 @@ document.addEventListener("submit",async ev=>{
     };
     if(submit)submit.disabled=true;
     setUploadState('⏳ Subiendo vídeo: no cierres esta ventana ni salgas de la página (0 %).');
-    const ext=videoFile.type==='video/webm'?'webm':videoFile.type==='video/ogg'?'ogg':videoFile.type==='video/quicktime'?'mov':'mp4';
-    const path='profile-videos/'+currentUser.uid+'/presentation.'+ext;
-    const task=uploadBytesResumable(storageRef(getStorage(),path),videoFile,{contentType:videoFile.type});
-    const uploaded=await new Promise((resolve,reject)=>task.on('state_changed',snap=>{
-     const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
-     setUploadState('⏳ Subiendo vídeo: no cierres esta ventana ni salgas de la página ('+pct+' %).');
-    },reject,()=>resolve(task.snapshot)));
-    p.videoUrl=await getDownloadURL(uploaded.ref);
+    const token=await currentUser.getIdToken();
+    const signatureResponse=await fetch('/api/cloudinary-signature',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:'{}'});
+    const signatureData=await signatureResponse.json().catch(()=>({}));
+    if(!signatureResponse.ok)throw Error(signatureData.error||'No se pudo preparar la subida del vídeo.');
+    const uploadData=new FormData();
+    uploadData.append('file',videoFile);
+    uploadData.append('api_key',signatureData.apiKey);
+    uploadData.append('timestamp',String(signatureData.timestamp));
+    uploadData.append('folder',signatureData.folder);
+    uploadData.append('signature',signatureData.signature);
+    const cloudResult=await new Promise((resolve,reject)=>{
+     const xhr=new XMLHttpRequest();
+     xhr.open('POST','https://api.cloudinary.com/v1_1/'+encodeURIComponent(signatureData.cloudName)+'/video/upload');
+     xhr.upload.onprogress=e=>{if(e.lengthComputable){const pct=Math.round(e.loaded/e.total*100);setUploadState('⏳ Subiendo vídeo: no cierres esta ventana ni salgas de la página ('+pct+' %).')}};
+     xhr.onload=()=>{let data={};try{data=JSON.parse(xhr.responseText)}catch{};if(xhr.status>=200&&xhr.status<300)resolve(data);else reject(Error(data.error?.message||'Cloudinary no ha podido subir el vídeo (HTTP '+xhr.status+').'))};
+     xhr.onerror=()=>reject(Error('Error de conexión al subir el vídeo a Cloudinary.'));
+     xhr.ontimeout=()=>reject(Error('La subida ha tardado demasiado. Comprueba tu conexión e inténtalo de nuevo.'));
+     xhr.timeout=180000;
+     xhr.send(uploadData);
+    });
+    if(!cloudResult.secure_url)throw Error('Cloudinary no ha devuelto el enlace del vídeo.');
+    p.videoUrl=cloudResult.secure_url;
     setUploadState('✓ Vídeo subido correctamente. Terminando de publicar el anuncio…',true);
    }
    if(!videoFile&&status){status.style.color='#b42318';status.style.fontWeight='800';}
