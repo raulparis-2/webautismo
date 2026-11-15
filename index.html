@@ -1691,7 +1691,9 @@ function afNavigateResource(id){
   if(!resources)return;
   let target=document.getElementById(id);
   if(!target){target=document.createElement('div');target.id=id;target.className='af-content-items';resources.appendChild(target);}
+  const wasOpen=target.classList.contains('af-resource-open')&&target.style.display!=='none';
   resources.querySelectorAll('.af-content-items').forEach(el=>{el.classList.remove('af-resource-open');el.style.display='none';});
+  if(wasOpen){history.replaceState(null,'','#recursos');return;}
   target.classList.add('af-resource-open');target.style.display='grid';
   target.scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'','#recursos');
   if(target.dataset.loaded==='1')return;
