@@ -883,7 +883,7 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
 // Pega aquí la configuración web de tu proyecto Firebase (Configuración del proyecto > Tus aplicaciones).
 const firebaseConfig = {
@@ -1059,18 +1059,31 @@ document.addEventListener("submit",async ev=>{
     if(videoFile.size>50*1024*1024||!['video/mp4','video/webm','video/quicktime','video/ogg'].includes(videoFile.type))throw Error('Formato o tamaño de vídeo no permitido.');
     const videoDuration=await new Promise((resolve,reject)=>{const v=document.createElement('video'),u=URL.createObjectURL(videoFile);v.preload='metadata';v.onloadedmetadata=()=>{URL.revokeObjectURL(u);resolve(v.duration)};v.onerror=()=>{URL.revokeObjectURL(u);reject(Error('No se puede leer la duración del vídeo.'))};v.src=u});
     if(!Number.isFinite(videoDuration)||videoDuration>240)throw Error('El vídeo supera el máximo de 4 minutos.');
-    if(status)status.textContent='Subiendo vídeo…';
+    const hint=document.getElementById('hubVideoHint'),submit=form.querySelector('button[type="submit"]');
+    const setUploadState=(message,readyState=false)=>{
+     if(status){status.textContent=message;status.style.color=readyState?'#16834a':'#b42318';status.style.fontWeight='800';}
+     if(hint){hint.textContent=message;hint.style.color=readyState?'#16834a':'#b42318';hint.style.fontWeight='800';}
+    };
+    if(submit)submit.disabled=true;
+    setUploadState('⏳ Subiendo vídeo: no cierres esta ventana ni salgas de la página (0 %).');
     const ext=videoFile.type==='video/webm'?'webm':videoFile.type==='video/ogg'?'ogg':videoFile.type==='video/quicktime'?'mov':'mp4';
     const path='profile-videos/'+currentUser.uid+'/presentation.'+ext;
-    const uploaded=await uploadBytes(storageRef(getStorage(),path),videoFile,{contentType:videoFile.type});
+    const task=uploadBytesResumable(storageRef(getStorage(),path),videoFile,{contentType:videoFile.type});
+    const uploaded=await new Promise((resolve,reject)=>task.on('state_changed',snap=>{
+     const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
+     setUploadState('⏳ Subiendo vídeo: no cierres esta ventana ni salgas de la página ('+pct+' %).');
+    },reject,()=>resolve(task.snapshot)));
     p.videoUrl=await getDownloadURL(uploaded.ref);
+    setUploadState('✓ Vídeo subido correctamente. Terminando de publicar el anuncio…',true);
    }
+   if(!videoFile&&status){status.style.color='#b42318';status.style.fontWeight='800';}
    await setDoc(ref,p,{merge:true});
+   if(status){status.textContent='✓ Anuncio enviado correctamente. Todo está listo.';status.style.color='#16834a';status.style.fontWeight='800';}
    document.getElementById("hub-user-"+currentUser.uid)?.remove();
    try{const token=await currentUser.getIdToken();await fetch("/api/notify-profile",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({name:p.name,profileType:p.profileType,location:p.location,description:p.description,contactEmail:p.contactEmail})});}catch(notifyError){console.warn("No se pudo enviar el aviso por correo:",notifyError);}
    window.firebaseHubRefreshRequestButton(currentUser);
    showHubDialog("¡Solicitud enviada!", '<div style="text-align:center;padding:8px 0 4px"><div style="width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:#e4f7ed;color:#16834a;display:grid;place-items:center;font-size:34px;font-weight:900" aria-hidden="true">✓</div><p style="font-size:16px;font-weight:900;color:#16485c;margin:0 0 10px">Tu anuncio está pendiente de revisión.</p><p style="line-height:1.65;margin:0">Todavía no será visible en la web. El equipo de Autismo Familiar lo revisará y te avisaremos cuando haya sido revisado.</p></div>');
-  }catch(e){if(status)status.textContent=e?.message||(e?.code?.includes("storage/")?"No se pudo subir el vídeo. Revisa los permisos de Firebase Storage.":authError(e));}
+  }catch(e){if(status){status.textContent=e?.message||(e?.code?.includes("storage/")?"No se pudo subir el vídeo. Revisa los permisos de Firebase Storage.":authError(e));status.style.color="#b42318";status.style.fontWeight="800";}const submit=form.querySelector('button[type="submit"]');if(submit)submit.disabled=false;}
  }
 });
 document.addEventListener("click",async ev=>{
