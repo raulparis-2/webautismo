@@ -548,14 +548,8 @@ body{overflow-x:hidden}
 
 <!-- SECCIÓN DE INFORMACIÓN SEMANAL: editar aquí el vídeo y el artículo de cada semana -->
 <section class="section af-weekly" id="informacion-semanal">
-  <div class="section-title"><div><div class="label">ACTUALIZACIÓN SEMANAL</div><h2>Información para acompañarte</h2></div><p>Un vídeo y un artículo nuevo cada semana.</p></div>
+  <div class="section-title"><div><div class="label">ACTUALIZACIÓN SEMANAL</div><h2>Información para acompañarte</h2></div><p>Un artículo nuevo cada semana.</p></div>
   <div class="af-week-grid">
-    <article class="af-week-card af-week-video">
-      <div class="af-week-icon">▶</div><div class="label">VÍDEO DE LA SEMANA</div>
-      <h3>Un espacio para aprender y compartir</h3>
-      <p>En este espacio se publicará el vídeo semanal seleccionado para las familias.</p>
-      <span class="af-week-placeholder">Vídeo pendiente de añadir</span>
-    </article>
     <article class="af-week-card">
       <div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div>
       <h3>Consejos y recursos para el día a día</h3>
@@ -809,8 +803,7 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
  const weekly=document.querySelector('#informacion-semanal');
  if(weekly){
   const cards=weekly.querySelectorAll('.af-week-card');
-  if(cards[0])cards[0].innerHTML='<div class="af-week-icon">▶</div><div class="label">VÍDEO DE LA SEMANA</div>'+(weeklyVideo?'<h3>'+esc(weeklyVideo.title)+'</h3><p>'+esc(weeklyVideo.summary||weeklyVideo.description||'')+'</p>'+(safeUrl(weeklyVideo.video)?'<video class="af-week-local-video" controls preload="metadata" src="'+esc(safeUrl(weeklyVideo.video))+'"></video>':(safeUrl(weeklyVideo.url)?'<a class="af-week-placeholder" href="'+esc(safeUrl(weeklyVideo.url))+'" target="_blank" rel="noopener noreferrer">Ver vídeo ↗</a>':'<span class="af-week-placeholder">Vídeo pendiente de añadir</span>')):'<h3>Vídeo de la semana</h3><p>Aquí aparecerá el vídeo semanal seleccionado para las familias.</p><span class="af-week-placeholder">Vídeo pendiente de añadir</span>');
-  if(cards[1])cards[1].innerHTML='<div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div>'+(weeklyArticle?'<h3>'+esc(weeklyArticle.title)+'</h3><p>'+esc(weeklyArticle.summary)+'</p><button type="button" class="af-week-placeholder" id="afOpenWeeklyArticle">Leer artículo →</button>':'<h3>Artículo de la semana</h3><p>Publicaremos aquí el artículo semanal para las familias.</p><span class="af-week-placeholder">Artículo pendiente de añadir</span>');
+  if(cards[0])cards[0].innerHTML='<div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div>'+(weeklyArticle?'<h3>'+esc(weeklyArticle.title)+'</h3><p>'+esc(weeklyArticle.summary)+'</p><button type="button" class="af-week-placeholder" id="afOpenWeeklyArticle">Leer artículo →</button>':'<h3>Artículo de la semana</h3><p>Publicaremos aquí el artículo semanal para las familias.</p><span class="af-week-placeholder">Artículo pendiente de añadir</span>');
   const b=document.getElementById('afOpenWeeklyArticle');if(b)b.onclick=()=>showArticle(weeklyArticle);
  }
  function showArticle(a){if(!a)return;document.getElementById('articleTitle').textContent=a.title;document.getElementById('articleContent').innerHTML=window.afRenderContentBody(a,'<p>'+esc(a.summary||'')+'</p>');const m=document.getElementById('articleModal');m.style.display='flex';m.classList.add('on');document.body.style.overflow='hidden'}
@@ -847,7 +840,7 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
   document.querySelectorAll('[data-af-tab]').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.afTab;document.querySelectorAll('[data-af-tab]').forEach(x=>x.classList.toggle('active',x===b));draw()}));document.getElementById('afManualSearch').addEventListener('input',draw);draw();
  }
  const weekly=document.querySelector('#informacion-semanal .af-week-grid');
- if(weekly){const v=(data.videos||[]).slice(-1)[0];const a=(data.articles||[]).find(x=>x.weekly)|| (data.articles||[]).slice(-1)[0];weekly.innerHTML='<article class="af-week-card af-week-video"><div class="af-week-icon">▶</div><div class="label">VÍDEO DE LA SEMANA</div><h3>'+esc(v?.title||'Vídeo de la semana')+'</h3><p>'+esc(v?.summary||v?.description||'El vídeo semanal aparecerá aquí cuando se publique.')+'</p>'+(safeUrl(v?.url)?'<a class="af-week-placeholder" href="'+esc(safeUrl(v.url))+'" target="_blank" rel="noopener noreferrer">Ver vídeo ↗</a>':'<span class="af-week-placeholder">Vídeo pendiente de añadir</span>')+'</article><article class="af-week-card"><div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div><h3>'+esc(a?.title||'Artículo de la semana')+'</h3><p>'+esc(a?.summary||'El artículo semanal aparecerá aquí cuando se publique.')+'</p>'+(a?'<button class="af-week-placeholder" id="afReadWeekly" type="button">Leer artículo →</button>':'<span class="af-week-placeholder">Artículo pendiente de añadir</span>')+'</article>';
+ if(weekly){const a=(data.articles||[]).find(x=>x.weekly)|| (data.articles||[]).slice(-1)[0];weekly.innerHTML='<article class="af-week-card"><div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div><h3>'+esc(a?.title||'Artículo de la semana')+'</h3><p>'+esc(a?.summary||'El artículo semanal aparecerá aquí cuando se publique.')+'</p>'+(a?'<button class="af-week-placeholder" id="afReadWeekly" type="button">Leer artículo →</button>':'<span class="af-week-placeholder">Artículo pendiente de añadir</span>')+'</article>';
   const read=document.getElementById('afReadWeekly');if(read)read.onclick=()=>showArticle(a);
  }
  function showArticle(a){const modal=document.getElementById('articleModal');if(!modal)return;document.getElementById('articleTitle').textContent=a.title||'Artículo';document.getElementById('articleContent').innerHTML=window.afRenderContentBody(a,'<p>'+esc(a.summary||'')+'</p>');modal.style.display='flex';modal.classList.add('on');document.body.style.overflow='hidden'}
