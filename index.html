@@ -1690,28 +1690,24 @@ function afNavigateResource(id){
   const resources=document.getElementById('recursos');
   if(!resources)return;
   let target=document.getElementById(id);
-  if(!target){
-    target=document.createElement('div');
-    target.id=id;
-    target.className='af-content-items';
-    resources.appendChild(target);
-  }
-  resources.querySelectorAll('.af-content-items').forEach(el=>{
-    el.classList.remove('af-resource-open');
-    el.style.display='none';
-  });
-  target.classList.add('af-resource-open');
-  target.style.display='grid';
-  target.scrollIntoView({behavior:'smooth',block:'start'});
-  history.replaceState(null,'','#recursos');
-  if(!target.dataset.loading){
-    target.dataset.loading='1';
-    const key=id.replace('af-list-','');
-    fetch('content.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():{}).then(data=>{
-      const items=(data[key]||[]).filter(x=>!x.isDemo);
-      const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-      target.innerHTML=items.length?items.map((x,i)=>'<article class="af-content-item"><h4>'+esc(x.title||'Recurso')+'</h4><p>'+esc(x.summary||x.description||'')+'</p>'+(x.url?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">Consultar recurso ↗</a>':'')+'</article>').join(''):'<p class="muted">Todavía no hay recursos publicados en este apartado.</p>';
-    }).catch(()=>{target.innerHTML='<p class="muted">No se pudieron cargar los recursos. Inténtalo de nuevo.</p>';delete target.dataset.loading;});
-  }
+  if(!target){target=document.createElement('div');target.id=id;target.className='af-content-items';resources.appendChild(target);}
+  resources.querySelectorAll('.af-content-items').forEach(el=>{el.classList.remove('af-resource-open');el.style.display='none';});
+  target.classList.add('af-resource-open');target.style.display='grid';
+  target.scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'','#recursos');
+  if(target.dataset.loaded==='1')return;
+  target.innerHTML='<p class="muted">Cargando documentos…</p>';
+  const key=id==='af-list-resources'?'guides':id.replace('af-list-','');
+  fetch('content.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(data=>{
+    const items=(data[key]||[]).filter(x=>!x.isDemo);
+    const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    target.innerHTML=items.length?items.map((x,i)=>{
+      const image=/^https?:\/\//i.test(x.image||'')||/^uploads\/[a-z0-9._-]+$/i.test(x.image||'')?'<img src="'+esc(x.image)+'" alt="" loading="lazy" style="max-width:100%;max-height:180px;object-fit:contain;border-radius:9px;margin-bottom:10px">':'';
+      const body=x.body?'<details style="margin-top:10px"><summary style="cursor:pointer;color:#087f96;font-weight:800">Leer guía o documento</summary><div style="margin-top:12px;line-height:1.65">'+(typeof window.afRenderContentBody==='function'?window.afRenderContentBody(x,'<p>'+esc(x.summary||x.description||'')+'</p>'):esc(x.summary||x.description||''))+'</div></details>':'';
+      const pdf=x.pdfUrl&&/^https?:\/\//i.test(x.pdfUrl)?'<a href="'+esc(x.pdfUrl)+'" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px">Ver o descargar PDF ↗</a>':'';
+      const url=x.url&&/^https?:\/\//i.test(x.url)?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin:10px 0 0 12px">Abrir enlace ↗</a>':'';
+      return '<article class="af-content-item">'+image+'<h4>'+esc(x.title||x.name||'Guía o documento')+'</h4><p>'+esc(x.summary||x.description||'')+'</p>'+body+pdf+url+'</article>';
+    }).join(''):'<p class="muted">Todavía no hay guías o documentos publicados en este apartado.</p>';
+    target.dataset.loaded='1';
+  }).catch(()=>{target.innerHTML='<p class="muted">No se pudieron cargar los documentos. Inténtalo de nuevo.</p>';});
 }
 </script>
