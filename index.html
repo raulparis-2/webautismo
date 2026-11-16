@@ -1170,8 +1170,8 @@ document.addEventListener("click",async ev=>{
    }
    if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
    const marker=L.marker([lat,lon]).addTo(map);
-   const mapsLink='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((a.title||a.name||'')+', '+address);
-   marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':'')+'<br><a class="af-map-action" href="'+escMap(mapsLink)+'" target="_blank" rel="noopener noreferrer">Abrir este lugar en Google Maps ↗</a>');
+   const mapsLink='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(lat+','+lon)+'&travelmode=driving';
+   marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':'')+'<br><a class="af-map-action" href="'+escMap(mapsLink)+'" target="_blank" rel="noopener noreferrer">Cómo llegar a este punto ↗</a>');
    bounds.push([lat,lon]);count++;
   }catch(e){console.warn('No se pudo ubicar asociación por su dirección',address,e)}
  }
