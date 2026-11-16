@@ -523,7 +523,7 @@ body{overflow-x:hidden}
   <div class="af-manual-search"><label for="afManualSearch">Filtrar por nombre, provincia o tema</label><input id="afManualSearch" type="search" placeholder="Ej. A Coruña, apoyo familiar, dependencia…"><label id="afGrantProvinceWrap" hidden for="afGrantProvince">Ámbito</label><select id="afGrantProvince" hidden aria-label="Filtrar subvenciones por comunidad autónoma o ámbito"><option value="">Todos los ámbitos</option></select></div>
   <details class="af-associations-dropdown" id="afAssociationsDropdown"><summary><span>Ver asociaciones</span><span class="af-dropdown-hint">Consultar entidades y datos de contacto</span></summary><div id="afManualItems" class="af-manual-grid"></div></details>
   <div id="afAssociationMapWrap" class="af-map-wrap">
-    <div class="af-map-heading"><div><div class="label">DIRECTORIO LOCALIZABLE</div><h3>Asociaciones en el mapa</h3><p>Las asociaciones con una dirección en el panel aparecerán aquí. Al añadir una nueva, publícala para actualizar el mapa.</p></div><a id="afOpenMap" href="https://www.google.com/maps/search/asociaciones+autismo+España" target="_blank" rel="noopener noreferrer">Abrir en Google Maps ↗</a></div>
+    <div class="af-map-heading"><div><div class="label">DIRECTORIO LOCALIZABLE</div><h3>Asociaciones en el mapa</h3><p>Las asociaciones con una dirección en el panel aparecerán aquí. Al añadir una nueva, publícala para actualizar el mapa.</p></div></div>
     <div id="afAssociationMap" role="region" aria-label="Mapa de asociaciones" style="width:100%;height:360px;border-radius:11px;background:#edf5f5"></div><p id="afMapStatus" class="af-manual-note">Cargando ubicaciones de asociaciones…</p>
   </div>
   <p id="afManualEmpty" class="af-manual-empty">Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.</p>
@@ -1170,13 +1170,14 @@ document.addEventListener("click",async ev=>{
    }
    if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
    const marker=L.marker([lat,lon]).addTo(map);
-   marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':'')+(a.mapsUrl?'<br><a href="'+escMap(a.mapsUrl)+'" target="_blank" rel="noopener noreferrer">Abrir en Google Maps ↗</a>':''));
+   const mapsLink='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((a.title||a.name||'')+', '+address);
+   marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':'')+'<br><a class="af-map-action" href="'+escMap(mapsLink)+'" target="_blank" rel="noopener noreferrer">Abrir este lugar en Google Maps ↗</a>');
    bounds.push([lat,lon]);count++;
   }catch(e){console.warn('No se pudo ubicar asociación por su dirección',address,e)}
  }
  if(bounds.length)map.fitBounds(bounds,{padding:[24,24],maxZoom:12});if(status)status.textContent=count?count+' asociación(es) ubicadas en el mapa. Para añadir más, introduce su dirección en el panel y publica los cambios.':'No se han podido localizar direcciones todavía. Añade la dirección completa en el panel de edición.';
  }catch(e){if(status)status.textContent='No se pudo cargar el mapa ahora mismo. Puedes consultar las direcciones desde las fichas de asociaciones.';console.warn(e)}}
- init();document.addEventListener('click',function(event){const button=event.target.closest('[data-af-map-query]');if(!button)return;const query=button.getAttribute('data-af-map-query')||'';const link=document.getElementById('afOpenMap');if(link)link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(query);document.getElementById('afAssociationMapWrap')?.scrollIntoView({behavior:'smooth',block:'center'});if(map){const markersOnMap=map._layers;for(const key in markersOnMap){const layer=markersOnMap[key];if(layer instanceof L.Marker&&layer.getPopup()?.getContent()?.includes(escMap(query.split(',')[0])))layer.openPopup()}}});
+ init();document.addEventListener('click',function(event){const button=event.target.closest('[data-af-map-query]');if(!button)return;const query=button.getAttribute('data-af-map-query')||'';document.getElementById('afAssociationMapWrap')?.scrollIntoView({behavior:'smooth',block:'center'});if(map){const markersOnMap=map._layers;for(const key in markersOnMap){const layer=markersOnMap[key];if(layer instanceof L.Marker&&layer.getPopup()?.getContent()?.includes(escMap(query.split(',')[0])))layer.openPopup()}}});
 })();
 </script>
 
