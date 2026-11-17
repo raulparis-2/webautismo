@@ -59,6 +59,23 @@
       "date": "",
       "videoFile": "",
       "videoLink": ""
+    },
+    {
+      "id": "videos-1794936915502",
+      "title": "PRUEBA",
+      "name": "PRUEBA",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "https://res.cloudinary.com/txrgrc9o/video/upload/v1794936912/autismo-familiar/site-videos/kkuqchs8mnthltemdyif.mp4",
+      "videoFile": "https://res.cloudinary.com/txrgrc9o/video/upload/v1794936912/autismo-familiar/site-videos/kkuqchs8mnthltemdyif.mp4",
+      "videoLink": "",
+      "body": "",
+      "bodyFormat": "html",
+      "pdfUrl": "",
+      "date": ""
     }
   ],
   "articles": [
