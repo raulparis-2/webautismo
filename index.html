@@ -511,7 +511,7 @@ body{overflow-x:hidden}
 
 </section>
 <section class="section" id="articulos"><div class="section-title"><div><div class="label">INFORMACIÓN QUE ACOMPAÑA</div><h2>Artículos</h2></div><p>Consulta nuestros artículos y encuentra información útil.</p><a class="label" href="#app-articles" onclick="event.preventDefault();openAppSection('articles')">Ver todos los artículos →</a></div>
-<div class="af-content-search"><label for="afContentSearch">Buscar artículos</label><input id="afContentSearch" type="search" placeholder="Escribe el título de un artículo…" autocomplete="off" aria-controls="afContentResults"><div id="afContentResults" aria-live="polite"></div></div><div class="article-grid" aria-live="polite"></div></section>
+<div class="af-content-search"><label for="afContentSearch">Buscar artículos</label><input id="afContentSearch" type="search" placeholder="Escribe el título de un artículo…" autocomplete="off" aria-controls="afContentResults"><div id="afContentResults" aria-live="polite"></div></div><div class="article-grid" aria-live="polite"></div><button type="button" class="af-show-more" id="afHomeAllArticles" onclick="openAppSection('articles')">Ver todos los artículos →</button></section>
 
 <section class="section" id="videos"><div class="section-title"><div><div class="label">CONTENIDO AUDIOVISUAL</div><h2>Vídeos</h2></div><p>Consulta los vídeos publicados.</p><a class="label" href="#app-videos" onclick="event.preventDefault();openAppSection('videos')">Ver todos los vídeos →</a></div><div class="af-library-search"><label for="afPublicVideoSearch">Buscar vídeos</label><input id="afPublicVideoSearch" type="search" placeholder="Escribe el título de un vídeo…" aria-label="Buscar vídeos por título"></div><div class="af-video-list" id="afPublicVideoList" aria-live="polite"></div></section>
 <section class="section af-manual-directory" id="asociaciones-subvenciones">
@@ -1689,6 +1689,20 @@ window.afRenderContentBody=function(item,fallback){
 #articulos .article-grid .article.af-final-article small{display:inline-flex!important;align-self:flex-start!important;visibility:visible!important;opacity:1!important;color:#fff!important;background:#164f61!important;border-radius:8px!important;padding:8px 11px!important;margin: auto 13px 13px!important;font-size:12px!important;font-weight:800!important}
 #articulos .article-grid{align-items:stretch!important}
 </style>
+<style id="af-home-article-limit">
+#articulos:not(.af-article-searching) .article-grid > article:nth-child(n+3){display:none!important}
+#articulos #afHomeAllArticles{display:block!important}
+</style>
+<script id="af-home-article-limit-script">
+(function(){
+ const section=document.getElementById('articulos');
+ const search=document.getElementById('afPublicArticleSearch')||section?.querySelector('input[type="search"]');
+ if(!section)return;
+ const update=()=>section.classList.toggle('af-article-searching',!!search?.value.trim());
+ search?.addEventListener('input',update);
+ update();
+})();
+</script>
 <style id="af-resource-lists-hidden-until-click">
 #recursos .af-content-items{display:none}
 #recursos .af-content-items.af-resource-open{display:block;margin-top:18px}
