@@ -260,27 +260,7 @@
   ],
   "professionals": [],
   "resources": [],
-  "activities": [
-    {
-      "id": "activities-1794938463640",
-      "title": "PRUEBA",
-      "name": "PRUEBA",
-      "category": "",
-      "summary": "",
-      "description": "",
-      "url": "",
-      "image": "",
-      "video": "",
-      "videoFile": "",
-      "videoLink": "",
-      "body": "",
-      "bodyFormat": "html",
-      "pdfUrl": "",
-      "date": "",
-      "activityCategory": "indoor",
-      "activitySubcategory": "leisure"
-    }
-  ],
+  "activities": [],
   "faqs": [
     {
       "id": "faqs-1794680506969",
