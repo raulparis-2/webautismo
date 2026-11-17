@@ -1777,10 +1777,10 @@ function afNavigateResource(id){
         buttons.forEach(b=>{const active=b.dataset.afFilter===filter;b.setAttribute('aria-pressed',String(active));b.style.cssText='padding:10px 16px;border:1px solid #087f96;border-radius:9px;cursor:pointer;font-weight:700;background:'+(active?'#087f96':'#fff')+';color:'+(active?'#fff':'#075d6c')});
         const filtered=items.filter(x=>filter==='all'||(x.activityCategory==='indoor'?'indoor':'outdoor')===filter).filter(x=>filter!=='indoor'||subfilter==='all'||(x.activitySubcategory==='leisure'?'leisure':'didactic')===subfilter);
         results.innerHTML=filtered.length?filtered.map(x=>{
-          const image=/^https?:\\/\\//i.test(x.image||'')||/^uploads\\/[a-z0-9._-]+$/i.test(x.image||'')?'<img src="'+esc(x.image)+'" alt="" loading="lazy" style="max-width:100%;max-height:180px;object-fit:contain;border-radius:9px;margin-bottom:10px">':'';
+          const image=/^https?:\/\//i.test(x.image||'')||/^uploads\/[a-z0-9._-]+$/i.test(x.image||'')?'<img src="'+esc(x.image)+'" alt="" loading="lazy" style="max-width:100%;max-height:180px;object-fit:contain;border-radius:9px;margin-bottom:10px">':'';
           const body=x.body?'<details style="margin-top:10px"><summary style="cursor:pointer;color:#087f96;font-weight:800">Ver actividad completa</summary><div style="margin-top:12px;line-height:1.65">'+(typeof window.afRenderContentBody==='function'?window.afRenderContentBody(x,'<p>'+esc(x.summary||x.description||'')+'</p>'):esc(x.summary||x.description||''))+'</div></details>':'';
           const pdf=x.pdfUrl?'<a href="'+esc(x.pdfUrl)+'" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px">Ver o descargar PDF</a>':'';
-          const url=x.url&&/^https?:\\/\\//i.test(x.url)?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px">Abrir enlace</a>':'';
+          const url=x.url&&/^https?:\/\//i.test(x.url)?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px">Abrir enlace</a>':'';
           return '<article class="af-content-item">'+image+'<h4>'+esc(x.title||x.name||'Actividad')+'</h4><p>'+esc(x.summary||x.description||'')+'</p>'+body+pdf+url+'</article>';
         }).join(''):'<p class="muted">No hay actividades en esta categoría.</p>';
       };
