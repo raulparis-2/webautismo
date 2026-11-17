@@ -277,7 +277,8 @@
       "bodyFormat": "html",
       "pdfUrl": "",
       "date": "",
-      "activityCategory": "outdoor"
+      "activityCategory": "indoor",
+      "activitySubcategory": "leisure"
     }
   ],
   "faqs": [
