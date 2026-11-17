@@ -1714,7 +1714,7 @@ window.afRenderContentBody=function(item,fallback){
  const input=document.getElementById('afContentSearch');
  const grid=section?.querySelector('.article-grid');
  if(!section||!input||!grid)return;
- const normalize=s=>String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim();
+ const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
  let empty=document.getElementById('afHomeSearchEmpty');
  if(!empty){empty=document.createElement('p');empty.id='afHomeSearchEmpty';empty.className='af-video-empty';grid.insertAdjacentElement('afterend',empty);}
  const apply=()=>{
