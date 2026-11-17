@@ -42,38 +42,7 @@
       "date": ""
     }
   ],
-  "videos": [
-    {
-      "id": "videos-1794854609123",
-      "title": "Sacri, una madre de dos jóvenes con autismo",
-      "name": "Sacri, una madre de dos jóvenes con autismo",
-      "category": "",
-      "summary": "",
-      "description": "",
-      "url": "",
-      "image": "",
-      "video": "https://youtu.be/F4XKoE6btkY?is=wWgy7bYv77R_PDqE",
-      "body": "",
-      "bodyFormat": "html",
-      "pdfUrl": "",
-      "date": ""
-    },
-    {
-      "id": "videos-1794899442590",
-      "title": "Sacri, una madre de dos jóvenes con autismo",
-      "name": "Sacri, una madre de dos jóvenes con autismo",
-      "category": "",
-      "summary": "",
-      "description": "",
-      "url": "",
-      "image": "",
-      "video": "",
-      "body": "",
-      "bodyFormat": "html",
-      "pdfUrl": "",
-      "date": ""
-    }
-  ],
+  "videos": [],
   "articles": [
     {
       "id": "articles-1792873230483",
