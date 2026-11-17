@@ -1704,6 +1704,8 @@ window.afRenderContentBody=function(item,fallback){
 })();
 </script>
 <style id="af-live-home-search-style">
+#articulos.af-article-searching .article-grid > article.article.af-final-article[hidden],
+#articulos.af-article-searching .article-grid > article.article.af-final-article.af-live-nomatch,
 #articulos.af-article-searching .article-grid > article[hidden],
 #articulos.af-article-searching .article-grid > article.af-live-nomatch{display:none!important}
 #articulos.af-article-searching #afHomeAllArticles{display:none!important}
@@ -1720,6 +1722,7 @@ window.afRenderContentBody=function(item,fallback){
  const apply=()=>{
   const q=normalize(input.value);
   section.classList.toggle('af-article-searching',!!q);
+  const oldResults=document.getElementById('afContentResults');if(oldResults)oldResults.style.display=q?'none':'';
   let count=0;
   grid.querySelectorAll('article').forEach(card=>{
    const title=card.querySelector('h3,h4')?.textContent||'';
