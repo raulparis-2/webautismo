@@ -757,7 +757,7 @@ function filterHubProfiles(){
  document.querySelectorAll('#hubProfiles .hub-profile').forEach(card=>{
    const match=(card.dataset.profileType||'family')===type&&(!q||(card.dataset.search+' '+card.innerText).toLowerCase().includes(q))&&(!zone||card.dataset.province===zone);
    if(match)visible++;
-   card.hidden=!match||(!expanded&&visible>2);
+   card.hidden=!match||(!expanded&&visible>2);card.style.display=card.hidden?'none':'';
  });
  const host=document.getElementById('hubProfiles');
  let more=document.getElementById('hubShowMore');
@@ -1310,7 +1310,7 @@ window.afRenderContentBody=function(item,fallback){
   const matches=videos.filter(v=>norm(v.title||v.name).includes(norm(input.value)));
   const expanded=list.dataset.expanded==='true';
   const shown=expanded?matches:matches.slice(0,2);
-  list.innerHTML=shown.length?shown.map(v=>{const url=safe(v.video)||safe(v.url);const local=url&&(/\/uploads\//.test(url)||/\.(mp4|webm|ogg)(\?|$)/i.test(url));return '<article class="af-video-card"><span class="af-video-type">VÍDEO</span><h3>'+esc(v.title||v.name||'Vídeo')+'</h3><p>'+esc(v.summary||v.description||'')+'</p>'+(local?'<video controls playsinline preload="metadata" src="'+esc(url)+'"></video>':url?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Ver vídeo ↗</a>':'<p>Vídeo sin archivo o enlace. Añádelo desde el panel de edición.</p>')+'</article>'}).join(''):'<p class="af-video-empty">'+(input.value?'No hay vídeos con ese título.':'Todavía no hay vídeos publicados.')+'</p>';
+  list.innerHTML=shown.length?shown.map(v=>{const url=safe(v.video)||safe(v.videoUrl)||safe(v.url);const local=url&&(/\/uploads\//.test(url)||/\.(mp4|webm|ogg)(\?|$)/i.test(url));return '<article class="af-video-card"><span class="af-video-type">VÍDEO</span><h3>'+esc(v.title||v.name||'Vídeo')+'</h3><p>'+esc(v.summary||v.description||'')+'</p>'+(local?'<video controls playsinline preload="metadata" src="'+esc(url)+'"></video>':url?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Ver vídeo ↗</a>':'<p>Vídeo sin archivo o enlace. Añádelo desde el panel de edición.</p>')+'</article>'}).join(''):'<p class="af-video-empty">'+(input.value?'No hay vídeos con ese título.':'Todavía no hay vídeos publicados.')+'</p>';
   let more=document.getElementById(listId+'More');
   if(!more){more=document.createElement('button');more.id=listId+'More';more.className='af-show-more';more.type='button';list.insertAdjacentElement('afterend',more);more.addEventListener('click',()=>{list.dataset.expanded=list.dataset.expanded==='true'?'false':'true';renderVideo(listId,searchId);});}
   more.hidden=matches.length<=2;more.textContent=expanded?'Ver menos ↑':'Ver más vídeos ('+(matches.length-2)+') ↓';
@@ -1691,6 +1691,11 @@ window.afRenderContentBody=function(item,fallback){
 <style id="af-resource-lists-hidden-until-click">
 #recursos .af-content-items{display:none}
 #recursos .af-content-items.af-resource-open{display:block;margin-top:18px}
+</style>
+<style id="af-expand-buttons-css">
+#hubProfiles .hub-profile[hidden]{display:none!important}
+.af-show-more{display:block;margin:16px auto 24px;padding:12px 25px;border:1px solid #087f96;border-radius:10px;background:#e8f6f7;color:#075d6c;font:inherit;font-weight:800;cursor:pointer}
+.af-show-more[hidden]{display:none!important}
 </style>
 <script id="af-resource-navigation-fix">
 function afNavigateResource(id){
