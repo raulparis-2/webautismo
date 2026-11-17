@@ -100,17 +100,20 @@ async function uploadAsset(file,kind){
  const max=(kind==='video'?20:3)*1024*1024;
  if(file.size>max){say(kind==='image'?'imageStatus':'videoStatus','El archivo supera el límite permitido (20 MB para vídeos cortos y 3 MB para imágenes).');return}
  const status=kind==='image'?'imageStatus':'videoStatus';
+ const button=$(kind==='video'?'uploadVideo':'uploadImage');if(button?.disabled)return;
+ if(button)button.disabled=true;
  try{
-  say(status,'Subiendo archivo a GitHub…');
+  say(status,kind==='video'?'Preparando subida del vídeo…':'Subiendo imagen a GitHub…');
   const ext=(file.name.split('.').pop()||(kind==='image'?'jpg':'mp4')).toLowerCase().replace(/[^a-z0-9]/g,'')||'bin';
   const base=(file.name.replace(/\.[^.]+$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,45)||kind);
   const filePath='uploads/'+kind+'-'+Date.now()+'-'+base+'.'+ext;
   let uploadedPath=filePath;
   if(kind==='video'){
-   const signResponse=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signVideoUpload'})});
+   const signResponse=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signVideoUpload'}),signal:AbortSignal.timeout(20000)});
    const sign=await signResponse.json();if(!signResponse.ok)throw Error(sign.error||'No se pudo preparar la subida.');
    const form=new FormData();form.append('file',file);form.append('api_key',sign.apiKey);form.append('timestamp',String(sign.timestamp));form.append('folder',sign.folder);form.append('signature',sign.signature);
-   const result=await new Promise((resolve,reject)=>{const xhr=new XMLHttpRequest();xhr.open('POST','https://api.cloudinary.com/v1_1/'+encodeURIComponent(sign.cloudName)+'/video/upload');xhr.timeout=180000;xhr.onload=()=>{let data={};try{data=JSON.parse(xhr.responseText)}catch{};xhr.status>=200&&xhr.status<300?resolve(data):reject(Error(data.error?.message||'No se pudo subir el vídeo.'))};xhr.onerror=()=>reject(Error('Error de conexión al subir el vídeo.'));xhr.ontimeout=()=>reject(Error('La subida tardó demasiado.'));xhr.send(form)});
+   say(status,'Subiendo vídeo… 0 %');
+   const result=await new Promise((resolve,reject)=>{const xhr=new XMLHttpRequest();xhr.open('POST','https://api.cloudinary.com/v1_1/'+encodeURIComponent(sign.cloudName)+'/video/upload');xhr.timeout=180000;xhr.upload.onprogress=e=>{if(e.lengthComputable)say(status,'Subiendo vídeo… '+Math.min(99,Math.round(e.loaded/e.total*100))+' %')};xhr.onload=()=>{let data={};try{data=JSON.parse(xhr.responseText)}catch{};xhr.status>=200&&xhr.status<300?resolve(data):reject(Error(data.error?.message||'No se pudo subir el vídeo.'))};xhr.onerror=()=>reject(Error('Error de conexión al subir el vídeo.'));xhr.ontimeout=()=>reject(Error('La subida tardó demasiado.'));xhr.send(form)});
    if(!result.secure_url)throw Error('El servidor no devolvió el enlace del vídeo.');
    uploadedPath=result.secure_url;
   }else{
@@ -120,7 +123,8 @@ async function uploadAsset(file,kind){
   }
   if(kind==='image')$('imageUrl').value=uploadedPath;else $('uploadedVideoPath').value=uploadedPath;
   say(status,'Archivo subido. Ruta guardada en el formulario: '+uploadedPath,true);if(kind==='video')afRenderVideoPreview();
- }catch(e){say(status,e.message||'No se pudo subir el archivo.')}
+ }catch(e){say(status,e.name==='TimeoutError'?'La conexión ha tardado demasiado. Vuelve a intentarlo.':e.message||'No se pudo subir el archivo.')}
+ finally{if(button)button.disabled=false}
 }
 $('importWordFile').addEventListener('click',async()=>{
  const file=$('wordFile').files[0];
