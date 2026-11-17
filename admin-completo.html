@@ -147,6 +147,7 @@ const afVideoWrap=$('videoUploadWrap');
 if(afVideoWrap&&$('summary'))$('summary').before(afVideoWrap);
 function afUpdateVideoMode(){
  const active=type==='videos';
+ const summaryField=$('summary')?.closest('label');if(summaryField)summaryField.style.display=active?'none':'';
  if(afPdfPanel)afPdfPanel.style.display=active?'none':'';
  if(afVideoWrap)afVideoWrap.classList.toggle('hide',!active);
 }
