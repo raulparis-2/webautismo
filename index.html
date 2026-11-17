@@ -1308,12 +1308,13 @@ window.afRenderContentBody=function(item,fallback){
  function renderVideo(listId,searchId){
   const list=document.getElementById(listId),input=document.getElementById(searchId);if(!list||!input)return;
   const matches=videos.filter(v=>norm(v.title||v.name).includes(norm(input.value)));
-  const expanded=list.dataset.expanded==='true';
-  const shown=expanded?matches:matches.slice(0,2);
+  const isHome=listId==='afPublicVideoList';
+  const expanded=!isHome;
+  const shown=isHome?matches.slice(0,2):matches;
   list.innerHTML=shown.length?shown.map(v=>{const url=safe(v.video)||safe(v.videoUrl)||safe(v.url);const local=url&&(/\/uploads\//.test(url)||/\.(mp4|webm|ogg)(\?|$)/i.test(url));return '<article class="af-video-card"><span class="af-video-type">VÍDEO</span><h3>'+esc(v.title||v.name||'Vídeo')+'</h3><p>'+esc(v.summary||v.description||'')+'</p>'+(local?'<video controls playsinline preload="metadata" src="'+esc(url)+'"></video>':url?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Ver vídeo ↗</a>':'<p>Vídeo sin archivo o enlace. Añádelo desde el panel de edición.</p>')+'</article>'}).join(''):'<p class="af-video-empty">'+(input.value?'No hay vídeos con ese título.':'Todavía no hay vídeos publicados.')+'</p>';
   let more=document.getElementById(listId+'More');
-  if(!more){more=document.createElement('button');more.id=listId+'More';more.className='af-show-more';more.type='button';list.insertAdjacentElement('afterend',more);more.addEventListener('click',()=>{list.dataset.expanded=list.dataset.expanded==='true'?'false':'true';renderVideo(listId,searchId);});}
-  more.hidden=matches.length<=2;more.textContent=expanded?'Ver menos ↑':'Ver más vídeos ('+(matches.length-2)+') ↓';
+  if(!more){more=document.createElement('button');more.id=listId+'More';more.className='af-show-more';more.type='button';list.insertAdjacentElement('afterend',more);}
+  more.hidden=!isHome||matches.length<=2;more.textContent='Ver todos los vídeos ('+matches.length+') →';more.onclick=()=>{if(typeof openAppSection==='function')openAppSection('videos');else location.hash='app-videos';};
  }
  function filterArticles(){const input=document.getElementById('afAppArticleSearch'),list=document.querySelector('#app-articles .content-list');if(!input||!list)return;const q=norm(input.value);let shown=0;list.querySelectorAll('article').forEach(a=>{const title=a.querySelector('h4,h3')?.textContent||'';const match=norm(title).includes(q);a.hidden=!match;a.style.display=match?'':'none';if(match)shown++});let empty=document.getElementById('afArticleSearchEmpty');if(!empty){empty=document.createElement('p');empty.id='afArticleSearchEmpty';empty.className='af-video-empty';list.after(empty)}empty.textContent='No hay artículos con ese título.';empty.hidden=!q||shown>0}
  async function load(){try{const r=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(r.ok){const d=await r.json();videos=(d.videos||[]).filter(x=>x&&!x.isDemo);renderVideo('afPublicVideoList','afPublicVideoSearch');renderVideo('afAppVideoList','afAppVideoSearch')}}catch(e){console.warn('No se pudieron cargar los vídeos',e)}}
