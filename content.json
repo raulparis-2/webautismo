@@ -61,9 +61,9 @@
       "videoLink": ""
     },
     {
-      "id": "videos-1795025532246",
-      "title": "Las vivencias de Mª jose y sus dos hijos con tea",
-      "name": "Las vivencias de Mª jose y sus dos hijos con tea",
+      "id": "videos-1795025881854",
+      "title": "Las vivencias de MªJose y sus dos hijos con TEA",
+      "name": "Las vivencias de MªJose y sus dos hijos con TEA",
       "category": "",
       "summary": "",
       "description": "",
@@ -75,24 +75,8 @@
       "body": "",
       "bodyFormat": "html",
       "pdfUrl": "",
-      "date": ""
-    },
-    {
-      "id": "videos-1795025603189",
-      "title": "Las vivencias de Mªjose y sus dos hijos con TEA",
-      "name": "Las vivencias de Mªjose y sus dos hijos con TEA",
-      "category": "",
-      "summary": "",
-      "description": "",
-      "url": "",
-      "image": "",
-      "video": "",
-      "videoFile": "",
-      "videoLink": "",
-      "body": "",
-      "bodyFormat": "html",
-      "pdfUrl": "",
-      "date": ""
+      "date": "",
+      "videoAudience": "families"
     }
   ],
   "articles": [
