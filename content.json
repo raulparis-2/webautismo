@@ -178,8 +178,8 @@
     },
     {
       "id": "articles-1794764041429",
-      "title": "autismo de 0 a 3 años.pdf",
-      "name": "autismo de 0 a 3 años.pdf",
+      "title": "Autismo de 0 a 3 años.pdf",
+      "name": "Autismo de 0 a 3 años.pdf",
       "category": "",
       "summary": "",
       "description": "",
@@ -190,7 +190,9 @@
       "bodyFormat": "html",
       "pdfUrl": "uploads/pdf-1794764129150-atismo_de__a__an-os-pd.pdf",
       "date": "",
-      "weekly": false
+      "weekly": false,
+      "videoFile": "",
+      "videoLink": ""
     },
     {
       "id": "articles-1794764397862",
