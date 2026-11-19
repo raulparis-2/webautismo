@@ -74,8 +74,8 @@ module.exports = async function handler(req, res) {
       if (typeof body.filePath !== 'string' || !/^uploads\/(image|video|pdf)-\d+-[a-z0-9_-]+\.[a-z0-9]{1,8}$/.test(body.filePath)) {
         return res.status(400).json({ error: 'Nombre de archivo no válido.' });
       }
-      if (typeof body.content !== 'string' || !body.content.length || body.content.length > 6 * 1024 * 1024) {
-        return res.status(413).json({ error: 'El archivo debe pesar como máximo 4 MB.' });
+      if (typeof body.content !== 'string' || !body.content.length) {
+        return res.status(413).json({ error: 'El contenido del archivo no es válido.' });
       }
       const out = await githubFetch('/repos/' + REPO + '/contents/' + body.filePath.split('/').map(encodeURIComponent).join('/'), {
         method: 'PUT',
