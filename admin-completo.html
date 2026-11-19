@@ -134,12 +134,23 @@ $('importWordFile').addEventListener('click',async()=>{
  try{
   const base=(file.name.replace(/\\.[^.]+$/,'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,45)||'documento');
   const ext=isPdf?'pdf':file.name.split('.').pop().toLowerCase();const filePath='uploads/pdf-'+Date.now()+'-'+base+'.'+ext;
-  const raw=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('No se pudo leer el archivo.'));reader.readAsDataURL(file)});
-  const response=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'upload',filePath,content:raw,kind:'pdf'})});
-  const result=await response.json();if(!response.ok)throw new Error(result.error||'No se pudo subir el archivo.');
+  let uploadedUrl=filePath;
+  if(isImage){
+   const signed=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signImageUpload'})});
+   const sign=await signed.json();if(!signed.ok)throw Error(sign.error||'No se pudo preparar la imagen.');
+   const form=new FormData();form.append('file',file);form.append('api_key',sign.apiKey);form.append('timestamp',String(sign.timestamp));form.append('folder',sign.folder);form.append('signature',sign.signature);
+   const uploaded=await fetch('https://api.cloudinary.com/v1_1/'+encodeURIComponent(sign.cloudName)+'/image/upload',{method:'POST',body:form});
+   const result=await uploaded.json();if(!uploaded.ok||!result.secure_url)throw Error(result.error?.message||'No se pudo subir la imagen.');
+   uploadedUrl=result.secure_url;
+  }else{
+   const raw=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('No se pudo leer el archivo.'));reader.readAsDataURL(file)});
+   const response=await fetch('/api/admin-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'upload',filePath,content:raw,kind:'pdf'})});
+   let result;try{result=await response.json()}catch{throw Error('No se pudo subir el PDF. Comprueba el tamaño admitido por Vercel.')}
+   if(!response.ok)throw Error(result.error||'No se pudo subir el PDF.');
+  }
   $('title').value=$('title').value||file.name.replace(/\\.pdf$/i,'').replace(/[_-]+/g,' ').slice(0,150);
   $('body').innerHTML='<p>Consulta el archivo completo al abrir este contenido.</p>';
-  $('body').dataset.pdfUrl=filePath;
+  $('body').dataset.pdfUrl=uploadedUrl;
   draftBodyFormat='html';
   say('status','Archivo subido. Pulsa «Añadir elemento» y «Publicar en la web».',true);
  }catch(e){say('status',e.message||'No se pudo subir el archivo.')}
