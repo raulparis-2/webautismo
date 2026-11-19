@@ -45,13 +45,13 @@ module.exports = async function handler(req, res) {
   if (!validSession(req)) return res.status(401).json({ error: 'La sesión ha caducado. Vuelve a iniciar sesión.' });
   try {
     const body = req.body || {};
-    if (body.action === 'signVideoUpload') {
+    if (body.action === 'signVideoUpload' || body.action === 'signImageUpload') {
       const cloud = process.env.CLOUDINARY_CLOUD_NAME;
       const key = process.env.CLOUDINARY_API_KEY;
       const secret = process.env.CLOUDINARY_API_SECRET;
       if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
       const timestamp = Math.floor(Date.now() / 1000);
-      const folder = 'autismo-familiar/site-videos';
+      const folder = body.action === 'signImageUpload' ? 'autismo-familiar/site-documents' : 'autismo-familiar/site-videos';
       const signature = crypto.createHash('sha1').update('folder=' + folder + '&timestamp=' + timestamp + secret).digest('hex');
       return res.status(200).json({ cloudName: cloud, apiKey: key, timestamp, folder, signature });
     }
