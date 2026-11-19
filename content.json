@@ -261,6 +261,24 @@
       "pdfUrl": "",
       "date": "",
       "weekly": false
+    },
+    {
+      "id": "articles-1795116466390",
+      "title": "5 1.jpeg",
+      "name": "5 1.jpeg",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "videoFile": "",
+      "videoLink": "",
+      "body": "<p>Consulta el archivo completo al abrir este contenido.</p>",
+      "bodyFormat": "html",
+      "pdfUrl": "uploads/pdf-1795116463166-jpeg.jpeg",
+      "date": "",
+      "weekly": false
     }
   ],
   "guides": [
