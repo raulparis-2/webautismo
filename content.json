@@ -146,8 +146,8 @@
     },
     {
       "id": "articles-1794510321168",
-      "title": "Quien cuida al cuidador en el autismo 2.pdf",
-      "name": "Quien cuida al cuidador en el autismo 2.pdf",
+      "title": "Quien cuida al cuidador en el autismo",
+      "name": "Quien cuida al cuidador en el autismo",
       "category": "",
       "summary": "",
       "description": "",
@@ -158,7 +158,9 @@
       "bodyFormat": "html",
       "pdfUrl": "uploads/pdf-1794510305745-ien_cida_al_cidador_en_el_atismo--pd.pdf",
       "date": "",
-      "weekly": false
+      "weekly": false,
+      "videoFile": "",
+      "videoLink": ""
     },
     {
       "id": "articles-1794595360062",
