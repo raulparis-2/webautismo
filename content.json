@@ -355,7 +355,27 @@
   ],
   "professionals": [],
   "resources": [],
-  "activities": [],
+  "activities": [
+    {
+      "id": "activities-1795282464428",
+      "title": "Actividades para hacer en casa para personas con autismo",
+      "name": "Actividades para hacer en casa para personas con autismo",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "videoFile": "",
+      "videoLink": "",
+      "body": "<p>Consulta el archivo completo al abrir este contenido.</p>",
+      "bodyFormat": "html",
+      "pdfUrl": "https://res.cloudinary.com/txrgrc9o/image/upload/v1795282459/autismo-familiar/site-documents/cyc1cxjs8gzjf6y0fty0.jpg",
+      "date": "",
+      "activityCategory": "indoor",
+      "activitySubcategory": "didactic"
+    }
+  ],
   "faqs": [
     {
       "id": "faqs-1794680506969",
