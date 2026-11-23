@@ -1682,7 +1682,7 @@ window.afRenderContentBody=function(item,fallback){
   const articles=(data.articles||[]).filter(a=>a&&!a.isDemo);
   if(list){
    list.innerHTML=articles.length?articles.map((a,i)=>'<article class="app-article-card"><span class="tag tblue">Artículo</span><h4>'+esc(a.title||a.name||'Artículo')+'</h4><p>'+esc(a.summary||a.description||'')+'</p><button type="button" class="mini-btn" data-af-article-index="'+i+'">Ver más →</button></article>').join(''):'<p class="muted">Todavía no hay artículos publicados.</p>';
-   list.querySelectorAll('[data-af-article-index]').forEach(b=>b.onclick=()=>openItem(articles[Number(b.dataset.afArticleIndex)],'Artículo'));
+   list.querySelectorAll('[data-af-article-index]').forEach(b=>b.onclick=()=>{const a=articles[Number(b.dataset.afArticleIndex)];if(!a)return;const modal=document.getElementById('articleModal');const title=document.getElementById('articleTitle');const content=document.getElementById('articleContent');if(!modal||!title||!content){openItem(a,'Artículo');return}title.textContent=a.title||a.name||'Artículo';content.innerHTML=window.afRenderContentBody(a,'<p>'+esc(a.summary||a.description||'')+'</p>');modal.style.display='flex';modal.classList.add('on');document.body.style.overflow='hidden';});
   }
   const grid=document.querySelector('.guide-grid');
   const guides=(data.guides||[]).filter(x=>!x.isDemo);
