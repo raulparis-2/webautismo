@@ -52,8 +52,10 @@ module.exports = async function handler(req, res) {
       if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
       const timestamp = Math.floor(Date.now() / 1000);
       const folder = body.action === 'signImageUpload' ? 'autismo-familiar/site-documents' : 'autismo-familiar/site-videos';
-      const signature = crypto.createHash('sha1').update('folder=' + folder + '&timestamp=' + timestamp + secret).digest('hex');
-      return res.status(200).json({ cloudName: cloud, apiKey: key, timestamp, folder, signature });
+      const publicId = String(body.publicId || '').replace(/[^a-zA-Z0-9_-]/g, '-').slice(0,100);
+      if (!publicId) return res.status(400).json({ error: 'Indica el nombre del profesional.' });
+      const signature = crypto.createHash('sha1').update('folder=' + folder + '&public_id=' + publicId + '&timestamp=' + timestamp + secret).digest('hex');
+      return res.status(200).json({ cloudName: cloud, apiKey: key, timestamp, folder, publicId, signature });
     }
     const cloud = process.env.CLOUDINARY_CLOUD_NAME;
     const key = process.env.CLOUDINARY_API_KEY;
