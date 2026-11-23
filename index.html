@@ -1242,6 +1242,7 @@ document.addEventListener("click",async ev=>{
 window.afRenderContentBody=function(item,fallback){
   if(item&&typeof item.pdfUrl==='string'&&/^https:\/\/res\.cloudinary\.com\/[a-z0-9_-]+\/image\/upload\//i.test(item.pdfUrl)){const url=item.pdfUrl.replace(/"/g,'%22');return '<div class="af-image-document"><img src="'+url+'" alt="Imagen del contenido" loading="lazy" style="display:block;width:100%;height:auto;border-radius:8px"><p><a href="'+url+'" target="_blank" rel="noopener noreferrer">Ver o descargar imagen</a></p></div>';}
   if(item&&typeof item.pdfUrl==='string'&&/^uploads\/pdf-[a-z0-9._-]+\.(jpg|jpeg|png|webp|gif)$/i.test(item.pdfUrl)){const url='/'+item.pdfUrl;return '<div class="af-image-document"><img src="'+url+'" alt="Imagen del contenido" loading="lazy" style="width:100%;height:auto;border-radius:8px"><p><a href="'+url+'" target="_blank" rel="noopener">Ver o descargar imagen</a></p></div>';}
+  if(item&&typeof item.pdfUrl==='string'&&/^https:\/\/res\.cloudinary\.com\/[a-z0-9_-]+\/raw\/upload\//i.test(item.pdfUrl)){const url=item.pdfUrl.replace(/"/g,'%22');return '<div class="af-pdf-document" data-pdf-url="'+url+'"><p class="af-pdf-loading">Cargando documento completo…</p><div class="af-pdf-pages"></div><p class="af-pdf-action-wrap"><a class="af-pdf-download-button" href="'+url+'" target="_blank" rel="noopener">Descargar PDF (opcional)</a></p></div>';}
   if(item&&typeof item.pdfUrl==='string'&&/^uploads\/pdf-[a-z0-9._-]+\.pdf$/i.test(item.pdfUrl)){
     const url='/'+item.pdfUrl;
     return '<div class="af-pdf-document" data-pdf-url="'+url+'"><p class="af-pdf-loading">Cargando documento completo…</p><div class="af-pdf-pages"></div><p class="af-pdf-action-wrap"><a class="af-pdf-download-button" href="'+url+'" target="_blank" rel="noopener" download>Ver PDF</a></p></div>';
@@ -1265,6 +1266,11 @@ window.afRenderContentBody=function(item,fallback){
       pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
       const pdf=await pdfjs.getDocument({url:el.dataset.pdfUrl}).promise;
       status.textContent='Documento de '+pdf.numPages+' página(s)';
+      const extracted=[];
+      for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const tc=await page.getTextContent();extracted.push(tc.items.map(t=>t.str||'').join(' '));}
+      el.dataset.readableText=extracted.join('\n').trim();
+      const audioStatus=document.getElementById('afArticleAudioStatus');
+      if(audioStatus&&el.closest('#articleContent')&&!el.dataset.readableText)audioStatus.textContent='Este PDF es una imagen escaneada; necesita reconocimiento de texto para escucharlo.';
       for(let n=1;n<=pdf.numPages;n++){
         if(!el.isConnected)break;
         const page=await pdf.getPage(n);
@@ -1348,7 +1354,9 @@ window.afRenderContentBody=function(item,fallback){
   if(!controls){controls=document.createElement('div');controls.id='afArticleAudioControls';controls.innerHTML='<button type="button" id="afArticlePlay">▶ Escuchar artículo</button><button type="button" id="afArticleStop">■ Detener</button><span id="afArticleAudioStatus" role="status"></span>';content.before(controls);
    document.getElementById('afArticlePlay').onclick=()=>{
     stop();const title=document.getElementById('articleTitle')?.textContent||'';
-    const body=content.innerText||'';
+    const pdf=content.querySelector('.af-pdf-document');
+    if(pdf&&!pdf.dataset.readableText){document.getElementById('afArticleAudioStatus').textContent=pdf.dataset.rendering?'El PDF no tiene texto extraíble o aún se está procesando.':'Espera a que se cargue el PDF.';return}
+    const body=pdf?pdf.dataset.readableText:(content.innerText||'');
     const text=(title+'. '+body).trim();if(text.length<25){document.getElementById('afArticleAudioStatus').textContent='Este artículo no tiene texto disponible para leer.';return}
     const current=++token;const u=new SpeechSynthesisUtterance(text);utterance=u;u.lang='es-ES';u.rate=0.95;
     u.onend=()=>{if(current===token)document.getElementById('afArticleAudioStatus').textContent='Lectura finalizada'};
