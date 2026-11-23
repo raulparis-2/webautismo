@@ -1346,31 +1346,55 @@ window.afRenderContentBody=function(item,fallback){
 </style>
 <script id="af-article-audio">
 (function(){
- let utterance=null,token=0;
- function stop(){token++;if('speechSynthesis' in window)window.speechSynthesis.cancel();utterance=null;const status=document.getElementById('afArticleAudioStatus');if(status)status.textContent='Lectura detenida';}
+ const synth=window.speechSynthesis;
+ let generation=0,parts=[],index=0,active=false,utterance=null;
+ const status=()=>document.getElementById('afArticleAudioStatus');
+ const message=t=>{if(status())status().textContent=t};
+ function stop(silent=false){generation++;active=false;parts=[];index=0;utterance=null;if(synth)synth.cancel();if(!silent)message('Lectura detenida');}
+ function splitText(text){
+  const chunks=[];const sentences=text.replace(/\s+/g,' ').match(/[^.!?;:]+[.!?;:]?\s*/g)||[text];let chunk='';
+  for(const sentence of sentences){if((chunk+sentence).length>170&&chunk){chunks.push(chunk.trim());chunk='';}if(sentence.length>170){for(let i=0;i<sentence.length;i+=160){if(chunk){chunks.push(chunk.trim());chunk='';}chunks.push(sentence.slice(i,i+160).trim())}}else chunk+=sentence;}
+  if(chunk.trim())chunks.push(chunk.trim());return chunks.filter(Boolean);
+ }
+ function speakNext(id){
+  if(!active||id!==generation)return;
+  if(index>=parts.length){active=false;message('Lectura finalizada');return}
+  const u=new SpeechSynthesisUtterance(parts[index++]);utterance=u;u.lang='es-ES';u.rate=0.94;u.pitch=1;
+  const voices=synth.getVoices();u.voice=voices.find(v=>v.lang.toLowerCase()==='es-es'&&v.localService)||voices.find(v=>v.lang.toLowerCase().startsWith('es'))||null;
+  u.onstart=()=>{if(id===generation)message('Reproduciendo artículo…')};
+  u.onend=()=>{if(id===generation)speakNext(id)};
+  u.onerror=e=>{if(id!==generation)return;if(e.error==='interrupted'||e.error==='canceled')return;active=false;message('No se pudo reproducir la voz ('+(e.error||'error del dispositivo')+'). Comprueba que tienes instalada una voz en español.')};
+  try{synth.speak(u);if(synth.paused)synth.resume()}catch(e){active=false;message('No se pudo iniciar la voz: '+e.message)}
+ }
+ async function play(){
+  if(!synth||!window.SpeechSynthesisUtterance){message('Este navegador no permite lectura por voz. Prueba con Chrome.');return}
+  stop(true);
+  const content=document.getElementById('articleContent');if(!content)return;
+  const title=document.getElementById('articleTitle')?.textContent||'';
+  const pdf=content.querySelector('.af-pdf-document');
+  if(pdf&&!pdf.dataset.readableText){message('El PDF todavía se está cargando o no contiene texto seleccionable.');return}
+  const body=pdf?pdf.dataset.readableText:content.innerText||'';
+  const text=(title+'. '+body).trim();
+  if(text.length<15){message('Este artículo no tiene texto disponible para leer.');return}
+  parts=splitText(text);index=0;active=true;const id=generation;
+  message('Preparando voz…');
+  // Android/Chrome puede devolver la lista de voces después de la primera interacción.
+  try{synth.getVoices()}catch(e){}
+  speakNext(id);
+ }
  function addControls(){
-  const content=document.getElementById('articleContent');if(!content||!('speechSynthesis' in window))return;
+  const content=document.getElementById('articleContent');if(!content)return;
   let controls=document.getElementById('afArticleAudioControls');
   if(!controls){controls=document.createElement('div');controls.id='afArticleAudioControls';controls.innerHTML='<button type="button" id="afArticlePlay">▶ Escuchar artículo</button><button type="button" id="afArticleStop">■ Detener</button><span id="afArticleAudioStatus" role="status"></span>';content.before(controls);
-   document.getElementById('afArticlePlay').onclick=()=>{
-    stop();const title=document.getElementById('articleTitle')?.textContent||'';
-    const pdf=content.querySelector('.af-pdf-document');
-    if(pdf&&!pdf.dataset.readableText){document.getElementById('afArticleAudioStatus').textContent=pdf.dataset.rendering?'El PDF no tiene texto extraíble o aún se está procesando.':'Espera a que se cargue el PDF.';return}
-    const body=pdf?pdf.dataset.readableText:(content.innerText||'');
-    const text=(title+'. '+body).trim();if(text.length<25){document.getElementById('afArticleAudioStatus').textContent='Este artículo no tiene texto disponible para leer.';return}
-    const current=++token;const u=new SpeechSynthesisUtterance(text);utterance=u;u.lang='es-ES';u.rate=0.95;
-    u.onend=()=>{if(current===token)document.getElementById('afArticleAudioStatus').textContent='Lectura finalizada'};
-    u.onerror=()=>{if(current===token)document.getElementById('afArticleAudioStatus').textContent='No se pudo reproducir la voz'};
-    document.getElementById('afArticleAudioStatus').textContent='Reproduciendo artículo…';window.speechSynthesis.speak(u);
-   };
-   document.getElementById('afArticleStop').onclick=stop;
+   document.getElementById('afArticlePlay').addEventListener('click',play);
+   document.getElementById('afArticleStop').addEventListener('click',()=>stop());
   }
-  stop();document.getElementById('afArticleAudioStatus').textContent='';
+  stop(true);message('');
  }
- const observer=new MutationObserver(()=>{const modal=document.getElementById('articleModal');if(modal&&modal.classList.contains('on'))addControls();else if(utterance)stop()});
- const init=()=>{const modal=document.getElementById('articleModal');if(modal)observer.observe(modal,{attributes:true,attributeFilter:['class']});};
+ const observer=new MutationObserver(()=>{const modal=document.getElementById('articleModal');if(modal&&modal.classList.contains('on')){if(!document.getElementById('afArticleAudioControls'))addControls();else if(!modal.dataset.audioOpened){stop(true);message('');}modal.dataset.audioOpened='1'}else{if(modal)delete modal.dataset.audioOpened;if(active)stop(true)}});
+ const init=()=>{const modal=document.getElementById('articleModal');if(modal)observer.observe(modal,{attributes:true,attributeFilter:['class']})};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
- window.addEventListener('pagehide',stop);
+ window.addEventListener('pagehide',()=>stop(true));
 })();
 </script>
 </body>
