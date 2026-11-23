@@ -55,6 +55,51 @@ module.exports = async function handler(req, res) {
       const signature = crypto.createHash('sha1').update('folder=' + folder + '&timestamp=' + timestamp + secret).digest('hex');
       return res.status(200).json({ cloudName: cloud, apiKey: key, timestamp, folder, signature });
     }
+    const cloud = process.env.CLOUDINARY_CLOUD_NAME;
+    const key = process.env.CLOUDINARY_API_KEY;
+    const secret = process.env.CLOUDINARY_API_SECRET;
+    if (body.action === 'signConsentUpload') {
+      if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
+      const timestamp = Math.floor(Date.now() / 1000);
+      const folder = 'autismo-familiar/authorizations';
+      const signature = crypto.createHash('sha1').update('folder=' + folder + '&timestamp=' + timestamp + secret).digest('hex');
+      return res.status(200).json({ cloudName: cloud, apiKey: key, timestamp, folder, signature });
+    }
+    if (body.action === 'listConsents') {
+      if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
+      const auth = 'Basic ' + Buffer.from(key + ':' + secret).toString('base64');
+      const all = [];
+      for (const resourceType of ['raw', 'image']) {
+        const url = 'https://api.cloudinary.com/v1_1/' + cloud + '/resources/' + resourceType + '/authenticated?prefix=autismo-familiar/authorizations/&max_results=100';
+        const response = await fetch(url, { headers: { Authorization: auth } });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error?.message || 'No se pudieron consultar las autorizaciones.');
+        all.push(...(data.resources || []).map(x => ({ publicId:x.public_id, assetId:x.asset_id, resourceType, format:x.format, bytes:x.bytes, createdAt:x.created_at, filename:x.public_id.split('/').pop() })));
+      }
+      all.sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+      return res.status(200).json({ items: all });
+    }
+    if (body.action === 'downloadConsent') {
+      if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
+      if (typeof body.publicId !== 'string' || !/^autismo-familiar\/authorizations\/[a-zA-Z0-9_./-]+$/.test(body.publicId) || !['raw','image'].includes(body.resourceType)) return res.status(400).json({ error: 'Documento no válido.' });
+      const timestamp = Math.floor(Date.now()/1000), expiresAt = timestamp + 600, format = String(body.format || '').replace(/[^a-z0-9]/gi,'').toLowerCase();
+      const params = { expires_at: expiresAt, format, public_id: body.publicId, timestamp };
+      const serialized = Object.keys(params).sort().map(k=>k+'='+params[k]).join('&');
+      const signature = crypto.createHash('sha1').update(serialized+secret).digest('hex');
+      const url = 'https://api.cloudinary.com/v1_1/'+cloud+'/'+body.resourceType+'/download?'+serialized+'&signature='+signature+'&api_key='+key;
+      return res.status(200).json({ url, expiresAt });
+    }
+    if (body.action === 'deleteConsent') {
+      if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
+      if (typeof body.publicId !== 'string' || !/^autismo-familiar\/authorizations\/[a-zA-Z0-9_./-]+$/.test(body.publicId) || !['raw','image'].includes(body.resourceType)) return res.status(400).json({ error: 'Documento no válido.' });
+      const timestamp=Math.floor(Date.now()/1000), params={public_id:body.publicId,timestamp};
+      const serialized=Object.keys(params).sort().map(k=>k+'='+params[k]).join('&');
+      const signature=crypto.createHash('sha1').update(serialized+secret).digest('hex');
+      const response=await fetch('https://api.cloudinary.com/v1_1/'+cloud+'/'+body.resourceType+'/destroy',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({...params,api_key:key,signature})});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||data.result!=='ok')throw new Error(data.error?.message||'No se pudo eliminar el documento.');
+      return res.status(200).json({ok:true});
+    }
     if (body.action === 'getContent') {
       const file = await githubFetch('/repos/' + REPO + '/contents/content.json?ref=main');
       const decoded = Buffer.from(file.content.replace(/\n/g, ''), 'base64').toString('utf8');
