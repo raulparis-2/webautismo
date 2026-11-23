@@ -93,7 +93,7 @@
       "video": "",
       "body": "",
       "date": "",
-      "weekly": true
+      "weekly": false
     },
     {
       "id": "articles-1794392227431",
@@ -300,6 +300,24 @@
       "pdfUrl": "https://res.cloudinary.com/txrgrc9o/image/upload/v1795378082/autismo-familiar/site-documents/oslmkewu8llqwbr7iljh.png",
       "date": "",
       "weekly": false
+    },
+    {
+      "id": "articles-1795446005272",
+      "title": "el duelo al recibir el diagnostico de autismo",
+      "name": "el duelo al recibir el diagnostico de autismo",
+      "category": "",
+      "summary": "",
+      "description": "",
+      "url": "",
+      "image": "",
+      "video": "",
+      "videoFile": "",
+      "videoLink": "",
+      "body": "<p>Consulta el archivo completo al abrir este contenido.</p>",
+      "bodyFormat": "html",
+      "pdfUrl": "uploads/pdf-1795445988674-l_delo_al_recibir_el_diagnostico_de_atismo-pd.pdf",
+      "date": "",
+      "weekly": true
     }
   ],
   "guides": [
