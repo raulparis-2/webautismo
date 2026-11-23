@@ -1332,7 +1332,40 @@ window.afRenderContentBody=function(item,fallback){
  const list=document.querySelector('#app-articles .content-list');if(list)new MutationObserver(filterArticles).observe(list,{childList:true});
  load();
 })();
-</script></body>
+</script><style id="af-article-audio-style">
+#afArticleAudioControls{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:12px 0 20px}
+#afArticleAudioControls button{border:1px solid #087f96;border-radius:10px;padding:10px 16px;background:#e8f6f7;color:#075d6c;font:inherit;font-weight:700;cursor:pointer}
+#afArticleAudioControls button:disabled{opacity:.5;cursor:not-allowed}
+#afArticleAudioStatus{font-size:13px;color:#46616b}
+</style>
+<script id="af-article-audio">
+(function(){
+ let utterance=null,token=0;
+ function stop(){token++;if('speechSynthesis' in window)window.speechSynthesis.cancel();utterance=null;const status=document.getElementById('afArticleAudioStatus');if(status)status.textContent='Lectura detenida';}
+ function addControls(){
+  const content=document.getElementById('articleContent');if(!content||!('speechSynthesis' in window))return;
+  let controls=document.getElementById('afArticleAudioControls');
+  if(!controls){controls=document.createElement('div');controls.id='afArticleAudioControls';controls.innerHTML='<button type="button" id="afArticlePlay">▶ Escuchar artículo</button><button type="button" id="afArticleStop">■ Detener</button><span id="afArticleAudioStatus" role="status"></span>';content.before(controls);
+   document.getElementById('afArticlePlay').onclick=()=>{
+    stop();const title=document.getElementById('articleTitle')?.textContent||'';
+    const body=content.innerText||'';
+    const text=(title+'. '+body).trim();if(text.length<25){document.getElementById('afArticleAudioStatus').textContent='Este artículo no tiene texto disponible para leer.';return}
+    const current=++token;const u=new SpeechSynthesisUtterance(text);utterance=u;u.lang='es-ES';u.rate=0.95;
+    u.onend=()=>{if(current===token)document.getElementById('afArticleAudioStatus').textContent='Lectura finalizada'};
+    u.onerror=()=>{if(current===token)document.getElementById('afArticleAudioStatus').textContent='No se pudo reproducir la voz'};
+    document.getElementById('afArticleAudioStatus').textContent='Reproduciendo artículo…';window.speechSynthesis.speak(u);
+   };
+   document.getElementById('afArticleStop').onclick=stop;
+  }
+  stop();document.getElementById('afArticleAudioStatus').textContent='';
+ }
+ const observer=new MutationObserver(()=>{const modal=document.getElementById('articleModal');if(modal&&modal.classList.contains('on'))addControls();else if(utterance)stop()});
+ const init=()=>{const modal=document.getElementById('articleModal');if(modal)observer.observe(modal,{attributes:true,attributeFilter:['class']});};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+ window.addEventListener('pagehide',stop);
+})();
+</script>
+</body>
 </html>
 <style id="article-photo-fix">
 .cards{grid-template-columns:repeat(4,minmax(0,1fr))}
