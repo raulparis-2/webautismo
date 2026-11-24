@@ -1339,6 +1339,65 @@ window.afRenderContentBody=function(item,fallback){
  load();
 })();
 </script>
+<style id="af-article-audio-style">
+#afArticleAudioControls{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:12px 0 20px}
+#afArticleAudioControls button{border:1px solid #087f96;border-radius:10px;padding:10px 16px;background:#e8f6f7;color:#075d6c;font:inherit;font-weight:700;cursor:pointer}
+#afArticleAudioControls button:disabled{opacity:.5;cursor:not-allowed}
+#afArticleAudioStatus{font-size:13px;color:#46616b}
+</style>
+<script id="af-article-audio">
+(function(){
+ const synth=window.speechSynthesis;
+ let generation=0,parts=[],index=0,active=false,utterance=null;
+ const status=()=>document.getElementById('afArticleAudioStatus');
+ const message=t=>{if(status())status().textContent=t};
+ function stop(silent=false){generation++;active=false;parts=[];index=0;utterance=null;if(synth)synth.cancel();if(!silent)message('Lectura detenida');}
+ function splitText(text){
+  const chunks=[];const sentences=text.replace(/\s+/g,' ').match(/[^.!?;:]+[.!?;:]?\s*/g)||[text];let chunk='';
+  for(const sentence of sentences){if((chunk+sentence).length>170&&chunk){chunks.push(chunk.trim());chunk='';}if(sentence.length>170){for(let i=0;i<sentence.length;i+=160){if(chunk){chunks.push(chunk.trim());chunk='';}chunks.push(sentence.slice(i,i+160).trim())}}else chunk+=sentence;}
+  if(chunk.trim())chunks.push(chunk.trim());return chunks.filter(Boolean);
+ }
+ function speakNext(id){
+  if(!active||id!==generation)return;
+  if(index>=parts.length){active=false;message('Lectura finalizada');return}
+  const u=new SpeechSynthesisUtterance(parts[index++]);utterance=u;u.lang='es-ES';u.rate=0.94;u.pitch=1;
+  const voices=synth.getVoices();u.voice=voices.find(v=>v.lang.toLowerCase()==='es-es'&&v.localService)||voices.find(v=>v.lang.toLowerCase().startsWith('es'))||null;
+  u.onstart=()=>{if(id===generation)message('Reproduciendo artículo…')};
+  u.onend=()=>{if(id===generation)speakNext(id)};
+  u.onerror=e=>{if(id!==generation)return;if(e.error==='interrupted'||e.error==='canceled')return;active=false;message('No se pudo reproducir la voz ('+(e.error||'error del dispositivo')+'). Comprueba que tienes instalada una voz en español.')};
+  try{synth.speak(u);if(synth.paused)synth.resume()}catch(e){active=false;message('No se pudo iniciar la voz: '+e.message)}
+ }
+ async function play(){
+  if(!synth||!window.SpeechSynthesisUtterance){message('Este navegador no permite lectura por voz. Prueba con Chrome.');return}
+  stop(true);
+  const content=document.getElementById('articleContent');if(!content)return;
+  const title=document.getElementById('articleTitle')?.textContent||'';
+  const pdf=content.querySelector('.af-pdf-document');
+  if(pdf&&!pdf.dataset.readableText){message('El PDF todavía se está cargando o no contiene texto seleccionable.');return}
+  const body=pdf?pdf.dataset.readableText:content.innerText||'';
+  const text=(title+'. '+body).trim();
+  if(text.length<15){message('Este artículo no tiene texto disponible para leer.');return}
+  parts=splitText(text);index=0;active=true;const id=generation;
+  message('Preparando voz…');
+  // Android/Chrome puede devolver la lista de voces después de la primera interacción.
+  try{synth.getVoices()}catch(e){}
+  speakNext(id);
+ }
+ function addControls(){
+  const content=document.getElementById('articleContent');if(!content)return;
+  let controls=document.getElementById('afArticleAudioControls');
+  if(!controls){controls=document.createElement('div');controls.id='afArticleAudioControls';controls.innerHTML='<button type="button" id="afArticlePlay">▶ Escuchar artículo</button><button type="button" id="afArticleStop">■ Detener</button><span id="afArticleAudioStatus" role="status"></span>';content.before(controls);
+   document.getElementById('afArticlePlay').addEventListener('click',play);
+   document.getElementById('afArticleStop').addEventListener('click',()=>stop());
+  }
+  stop(true);message('');
+ }
+ const observer=new MutationObserver(()=>{const modal=document.getElementById('articleModal');if(modal&&modal.classList.contains('on')){if(!document.getElementById('afArticleAudioControls'))addControls();else if(!modal.dataset.audioOpened){stop(true);message('');}modal.dataset.audioOpened='1'}else{if(modal)delete modal.dataset.audioOpened;if(active)stop(true)}});
+ const init=()=>{const modal=document.getElementById('articleModal');if(modal)observer.observe(modal,{attributes:true,attributeFilter:['class']})};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+ window.addEventListener('pagehide',()=>stop(true));
+})();
+</script>
 </body>
 </html>
 <style id="article-photo-fix">
