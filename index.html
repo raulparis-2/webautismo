@@ -1363,10 +1363,12 @@ window.afRenderContentBody=function(item,fallback){
 <script id="af-article-audio">
 (function(){
  const synth=window.speechSynthesis;
- let generation=0,parts=[],index=0,active=false,utterance=null;
+ let generation=0,parts=[],index=0,active=false,utterance=null,paused=false,timer=null,offset=0,spokenStart=0;
  const status=()=>document.getElementById('afArticleAudioStatus');
  const message=t=>{if(status())status().textContent=t};
- function stop(silent=false){generation++;active=false;parts=[];index=0;utterance=null;if(synth)synth.cancel();if(!silent)message('Lectura detenida');}
+ function controls(){const p=document.getElementById('afArticlePause');if(p){p.disabled=!active;p.textContent=paused?'▶ Continuar':'Ⅱ Pausar'}}
+ function stop(silent=false){generation++;clearTimeout(timer);timer=null;active=false;paused=false;parts=[];index=0;offset=0;utterance=null;if(synth)synth.cancel();controls();if(!silent)message('Lectura detenida');}
+ function togglePause(){if(!active)return;if(paused){paused=false;controls();message('Continuando lectura…');speakNext(generation);return}paused=true;generation++;clearTimeout(timer);timer=null;utterance=null;synth.cancel();controls();message('Lectura en pausa');}
  function splitText(text){
   const chunks=[];
   for(const paragraph of text.split(/\n+/)){
@@ -1385,16 +1387,17 @@ window.afRenderContentBody=function(item,fallback){
   return synth.getVoices().filter(v=>/^es(?:[-_]|$)/i.test(v.lang)).sort((a,b)=>score(b)-score(a));
  }
  function speakNext(id,attempt=0){
-  if(!active||id!==generation)return;
-  if(index>=parts.length){active=false;message('Lectura finalizada');return}
-  const part=parts[index],u=new SpeechSynthesisUtterance(part.text);utterance=u;u.lang='es-ES';
+  if(!active||paused||id!==generation)return;
+  if(index>=parts.length){active=false;controls();message('Lectura finalizada');return}
+  const part=parts[index];spokenStart=offset;const u=new SpeechSynthesisUtterance(part.text.slice(offset));utterance=u;u.lang='es-ES';
   const question=/\?$/.test(part.text),exclamation=/!$/.test(part.text);
-  u.rate=question?0.93:0.91;u.pitch=question?1.05:exclamation?1.03:1.0;
-  const voices=preferredVoices();if(attempt<voices.length)u.voice=voices[attempt];
+  u.rate=question?0.96:exclamation?0.98:0.95;u.pitch=question?1.12:exclamation?1.09:1.02;
+  const voices=preferredVoices();const chosen=document.getElementById('afArticleVoice')?.value;const selected=voices.find(v=>v.voiceURI===chosen);if(selected){voices.splice(voices.indexOf(selected),1);voices.unshift(selected)}if(attempt<voices.length)u.voice=voices[attempt];
   u.onstart=()=>{if(id===generation)message('Reproduciendo artículo…')};
-  u.onend=()=>{if(id!==generation)return;index++;setTimeout(()=>speakNext(id),part.pause)};
-  u.onerror=e=>{if(id!==generation)return;if(e.error==='interrupted'||e.error==='canceled')return;if(attempt<Math.min(voices.length,3)){speakNext(id,attempt+1);return}active=false;message('No se pudo reproducir la voz ('+(e.error||'error del dispositivo')+'). Comprueba las voces en español del dispositivo.')};
-  try{synth.speak(u);if(synth.paused)synth.resume()}catch(e){active=false;message('No se pudo iniciar la voz: '+e.message)}
+  u.onboundary=e=>{if(id===generation&&Number.isFinite(e.charIndex))offset=spokenStart+e.charIndex};
+  u.onend=()=>{if(id!==generation)return;index++;offset=0;utterance=null;timer=setTimeout(()=>{timer=null;speakNext(id)},part.pause)};
+  u.onerror=e=>{if(id!==generation)return;if(e.error==='interrupted'||e.error==='canceled')return;if(attempt<Math.min(voices.length,3)){speakNext(id,attempt+1);return}active=false;controls();message('No se pudo reproducir la voz ('+(e.error||'error del dispositivo')+'). Comprueba las voces en español del dispositivo.')};
+  try{synth.speak(u);if(synth.paused)synth.resume()}catch(e){active=false;controls();message('No se pudo iniciar la voz: '+e.message)}
  }
  async function play(){
   if(!synth||!window.SpeechSynthesisUtterance){message('Este navegador no permite lectura por voz. Prueba con Chrome.');return}
@@ -1406,7 +1409,7 @@ window.afRenderContentBody=function(item,fallback){
   const body=pdf?pdf.dataset.readableText:content.innerText||'';
   const text=(title+'.\n'+body).trim();
   if(text.length<15){message('Este artículo no tiene texto disponible para leer.');return}
-  parts=splitText(text);index=0;active=true;const id=generation;
+  parts=splitText(text);index=0;offset=0;active=true;controls();const id=generation;
   message('Preparando voz…');
   // Android/Chrome puede devolver la lista de voces después de la primera interacción.
   try{synth.getVoices()}catch(e){}
@@ -1415,10 +1418,12 @@ window.afRenderContentBody=function(item,fallback){
  function addControls(){
   const content=document.getElementById('articleContent');if(!content)return;
   let controls=document.getElementById('afArticleAudioControls');
-  if(!controls){controls=document.createElement('div');controls.id='afArticleAudioControls';controls.innerHTML='<button type="button" id="afArticlePlay">▶ Escuchar artículo</button><button type="button" id="afArticleStop">■ Detener</button><span id="afArticleAudioStatus" role="status"></span>';content.before(controls);
+  if(!controls){controls=document.createElement('div');controls.id='afArticleAudioControls';controls.innerHTML='<button type="button" id="afArticlePlay">▶ Escuchar artículo</button><button type="button" id="afArticlePause" disabled>Ⅱ Pausar</button><button type="button" id="afArticleStop">■ Detener</button><label style="font-size:13px">Voz <select id="afArticleVoice" style="max-width:220px"><option value="">Automática (mejor disponible)</option></select></label><span id="afArticleAudioStatus" role="status"></span>';content.before(controls);
    document.getElementById('afArticlePlay').addEventListener('click',play);
+   document.getElementById('afArticlePause').addEventListener('click',togglePause);
    document.getElementById('afArticleStop').addEventListener('click',()=>stop());
   }
+  const select=document.getElementById('afArticleVoice');const fill=()=>{if(!synth||!select)return;const old=select.value;select.replaceChildren(new Option('Automática (mejor disponible)',''));for(const v of preferredVoices())select.add(new Option(v.name,v.voiceURI));if([...select.options].some(o=>o.value===old))select.value=old};fill();if(synth)synth.onvoiceschanged=fill;
   stop(true);message('');
  }
  const observer=new MutationObserver(()=>{const modal=document.getElementById('articleModal');if(modal&&modal.classList.contains('on')){if(!document.getElementById('afArticleAudioControls'))addControls();else if(!modal.dataset.audioOpened){stop(true);message('');}modal.dataset.audioOpened='1'}else{if(modal)delete modal.dataset.audioOpened;if(active)stop(true)}});
