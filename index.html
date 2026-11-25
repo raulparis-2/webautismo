@@ -1282,8 +1282,13 @@ window.afRenderContentBody=function(item,fallback){
       const pdf=await pdfjs.getDocument({url:el.dataset.pdfUrl}).promise;
       status.textContent='Documento de '+pdf.numPages+' página(s)';
       const extracted=[];
-      for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const tc=await page.getTextContent();extracted.push(tc.items.map(t=>t.str||'').join(' '));}
-      el.dataset.readableText=extracted.join('\n').trim();
+      for(let i=1;i<=pdf.numPages;i++){
+        const page=await pdf.getPage(i),tc=await page.getTextContent();let line='',lines=[];
+        for(const t of tc.items){if(typeof t.str!=='string')continue;line+=(line&&!/\s$/.test(line)&&! /^[,.;:!?)]/.test(t.str)?' ':'')+t.str;if(t.hasEOL){if(line.trim())lines.push(line.trim());line=''}}
+        if(line.trim())lines.push(line.trim());extracted.push(lines);
+      }
+      const repeated=new Map();for(const lines of extracted){for(const l of new Set([...lines.slice(0,2),...lines.slice(-2)])){if(l.length<100)repeated.set(l,(repeated.get(l)||0)+1)}}
+      el.dataset.readableText=extracted.map(lines=>lines.filter((l,i)=>!(/^(?:página\s*)?\d+(?:\s*\/\s*\d+)?$/i.test(l)||((i<2||i>=lines.length-2)&&extracted.length>2&&(repeated.get(l)||0)>=Math.ceil(extracted.length*.8)))).join('\n')).join('\n\n').trim();
       const audioStatus=document.getElementById('afArticleAudioStatus');
       if(audioStatus&&el.closest('#articleContent')&&!el.dataset.readableText)audioStatus.textContent='Este PDF es una imagen escaneada; necesita reconocimiento de texto para escucharlo.';
       for(let n=1;n<=pdf.numPages;n++){
@@ -1383,7 +1388,7 @@ window.afRenderContentBody=function(item,fallback){
   return chunks;
  }
  function preferredVoices(){
-  const score=v=>{const n=v.name.toLowerCase();return (v.lang.toLowerCase()==='es-es'?40:0)+(/natural|neural|premium|enhanced|mejorada|siri/.test(n)?100:0)+(/google/.test(n)?55:0)+(/elvira|alvaro|álvaro|helena|monica|mónica|paulina/.test(n)?15:0)+(v.localService?5:0)};
+  const score=v=>{const n=v.name.toLowerCase();return (v.lang.toLowerCase()==='es-es'?40:0)+(/natural|neural|premium|enhanced|mejorada|siri/.test(n)?250:0)+(/google/.test(n)?55:0)+(/elvira|alvaro|álvaro|helena|monica|mónica|paulina/.test(n)?15:0)+(v.localService?5:0)};
   return synth.getVoices().filter(v=>/^es(?:[-_]|$)/i.test(v.lang)).sort((a,b)=>score(b)-score(a));
  }
  function speakNext(id,attempt=0){
@@ -1391,7 +1396,7 @@ window.afRenderContentBody=function(item,fallback){
   if(index>=parts.length){active=false;controls();message('Lectura finalizada');return}
   const part=parts[index];spokenStart=offset;const u=new SpeechSynthesisUtterance(part.text.slice(offset));utterance=u;u.lang='es-ES';
   const question=/\?$/.test(part.text),exclamation=/!$/.test(part.text);
-  u.rate=question?0.96:exclamation?0.98:0.95;u.pitch=question?1.12:exclamation?1.09:1.02;
+  u.rate=question?0.96:exclamation?0.98:0.97;u.pitch=question?1.07:exclamation?1.05:1.0;
   const voices=preferredVoices();const chosen=document.getElementById('afArticleVoice')?.value;const selected=voices.find(v=>v.voiceURI===chosen);if(selected){voices.splice(voices.indexOf(selected),1);voices.unshift(selected)}if(attempt<voices.length)u.voice=voices[attempt];
   u.onstart=()=>{if(id===generation)message('Reproduciendo artículo…')};
   u.onboundary=e=>{if(id===generation&&Number.isFinite(e.charIndex))offset=spokenStart+e.charIndex};
@@ -1406,8 +1411,11 @@ window.afRenderContentBody=function(item,fallback){
   const title=document.getElementById('articleTitle')?.textContent||'';
   const pdf=content.querySelector('.af-pdf-document');
   if(pdf&&!pdf.dataset.readableText){message('El PDF todavía se está cargando o no contiene texto seleccionable.');return}
-  const body=pdf?pdf.dataset.readableText:content.innerText||'';
-  const text=(title+'.\n'+body).trim();
+  const copy=content.cloneNode(true);copy.querySelectorAll('button,nav,iframe,canvas,script,style,.af-pdf-loading,[aria-hidden="true"],[hidden],a[download]').forEach(n=>n.remove());
+  const clean=value=>String(value||'').normalize('NFKC').replace(/[\u00ad\u200b-\u200f\u202a-\u202e\ufeff]/g,'').replace(/(\p{L})-\s*\n\s*(\p{Ll})/gu,'$1$2').replace(/https?:\/\/[^\s]+/gi,'').replace(/^[ \t]*(?:Abrir o descargar PDF|Ver PDF|Descargar PDF|Documento de \d+ página\(s\)|Escuchar artículo|Reproduciendo artículo…)[ \t]*$/gim,'').replace(/[ \t]+/g,' ').replace(/ *\n(?!\n) */g,' ').replace(/\n{3,}/g,'\n\n').trim();
+  const body=clean(pdf?pdf.dataset.readableText:copy.textContent);
+  const heading=clean(title);
+  const text=(body.toLocaleLowerCase('es').startsWith(heading.toLocaleLowerCase('es'))?body:heading.replace(/[.!?]+$/,'')+'.\n\n'+body).trim();
   if(text.length<15){message('Este artículo no tiene texto disponible para leer.');return}
   parts=splitText(text);index=0;offset=0;active=true;controls();const id=generation;
   message('Preparando voz…');
