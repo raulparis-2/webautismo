@@ -61,11 +61,12 @@ module.exports = async function handler(req, res) {
     const key = process.env.CLOUDINARY_API_KEY;
     const secret = process.env.CLOUDINARY_API_SECRET;
     if (body.action === 'signConsentUpload') {
-      if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
-      const timestamp = Math.floor(Date.now() / 1000);
-      const folder = 'autismo-familiar/authorizations';
-      const signature = crypto.createHash('sha1').update('folder=' + folder + '&timestamp=' + timestamp + secret).digest('hex');
-      return res.status(200).json({ cloudName: cloud, apiKey: key, timestamp, folder, signature });
+      if (!cloud || !key || !secret) return res.status(503).json({error:'Falta configurar Cloudinary.'});
+      const timestamp=Math.floor(Date.now()/1000),folder='autismo-familiar/authorizations',publicId=String(body.publicId||'').replace(/[^a-zA-Z0-9_.-]/g,'-').slice(0,150);
+      if(!publicId)return res.status(400).json({error:'Nombre obligatorio.'});
+      const params={folder,public_id:publicId,timestamp,type:'authenticated'};
+      const signature=crypto.createHash('sha1').update(Object.keys(params).sort().map(k=>k+'='+params[k]).join('&')+secret).digest('hex');
+      return res.status(200).json({cloudName:cloud,apiKey:key,timestamp,folder,publicId,signature});
     }
     if (body.action === 'listConsents') {
       if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
@@ -85,7 +86,7 @@ module.exports = async function handler(req, res) {
       if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
       if (typeof body.publicId !== 'string' || !/^autismo-familiar\/authorizations\/[a-zA-Z0-9_./-]+$/.test(body.publicId) || !['raw','image'].includes(body.resourceType)) return res.status(400).json({ error: 'Documento no válido.' });
       const timestamp = Math.floor(Date.now()/1000), expiresAt = timestamp + 600, format = String(body.format || '').replace(/[^a-z0-9]/gi,'').toLowerCase();
-      const params = { expires_at: expiresAt, format, public_id: body.publicId, timestamp };
+      const params = { expires_at: expiresAt, public_id: body.publicId, timestamp, type:'authenticated', attachment:'true' }; if(body.resourceType==='image'&&format)params.format=format;
       const serialized = Object.keys(params).sort().map(k=>k+'='+params[k]).join('&');
       const signature = crypto.createHash('sha1').update(serialized+secret).digest('hex');
       const url = 'https://api.cloudinary.com/v1_1/'+cloud+'/'+body.resourceType+'/download?'+serialized+'&signature='+signature+'&api_key='+key;
@@ -94,7 +95,7 @@ module.exports = async function handler(req, res) {
     if (body.action === 'deleteConsent') {
       if (!cloud || !key || !secret) return res.status(503).json({ error: 'Falta configurar Cloudinary en Vercel.' });
       if (typeof body.publicId !== 'string' || !/^autismo-familiar\/authorizations\/[a-zA-Z0-9_./-]+$/.test(body.publicId) || !['raw','image'].includes(body.resourceType)) return res.status(400).json({ error: 'Documento no válido.' });
-      const timestamp=Math.floor(Date.now()/1000), params={public_id:body.publicId,timestamp};
+      const timestamp=Math.floor(Date.now()/1000), params={public_id:body.publicId,timestamp,type:'authenticated'};
       const serialized=Object.keys(params).sort().map(k=>k+'='+params[k]).join('&');
       const signature=crypto.createHash('sha1').update(serialized+secret).digest('hex');
       const response=await fetch('https://api.cloudinary.com/v1_1/'+cloud+'/'+body.resourceType+'/destroy',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({...params,api_key:key,signature})});
