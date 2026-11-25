@@ -73,11 +73,15 @@ module.exports = async function handler(req, res) {
       const auth = 'Basic ' + Buffer.from(key + ':' + secret).toString('base64');
       const all = [];
       for (const resourceType of ['raw', 'image']) {
-        const url = 'https://api.cloudinary.com/v1_1/' + cloud + '/resources/' + resourceType + '/authenticated?prefix=autismo-familiar/authorizations/&max_results=100';
-        const response = await fetch(url, { headers: { Authorization: auth } });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error?.message || 'No se pudieron consultar las autorizaciones.');
-        all.push(...(data.resources || []).map(x => ({ publicId:x.public_id, assetId:x.asset_id, resourceType, format:x.format, bytes:x.bytes, createdAt:x.created_at, filename:x.public_id.split('/').pop() })));
+        let cursor;
+        do {
+          const url = 'https://api.cloudinary.com/v1_1/' + cloud + '/resources/' + resourceType + '/authenticated?prefix=autismo-familiar/authorizations/&max_results=100'+(cursor?'&next_cursor='+encodeURIComponent(cursor):'');
+          const response = await fetch(url, { headers: { Authorization: auth } });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data.error?.message || 'No se pudieron consultar las autorizaciones.');
+          all.push(...(data.resources || []).map(x => ({ publicId:x.public_id, assetId:x.asset_id, resourceType, format:x.format, bytes:x.bytes, createdAt:x.created_at, filename:x.public_id.split('/').pop() })));
+          cursor=data.next_cursor;
+        } while(cursor);
       }
       all.sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
       return res.status(200).json({ items: all });
