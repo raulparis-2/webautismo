@@ -1353,18 +1353,32 @@ window.afRenderContentBody=function(item,fallback){
  const message=t=>{if(status())status().textContent=t};
  function stop(silent=false){generation++;active=false;parts=[];index=0;utterance=null;if(synth)synth.cancel();if(!silent)message('Lectura detenida');}
  function splitText(text){
-  const chunks=[];const sentences=text.replace(/\s+/g,' ').match(/[^.!?;:]+[.!?;:]?\s*/g)||[text];let chunk='';
-  for(const sentence of sentences){if((chunk+sentence).length>170&&chunk){chunks.push(chunk.trim());chunk='';}if(sentence.length>170){for(let i=0;i<sentence.length;i+=160){if(chunk){chunks.push(chunk.trim());chunk='';}chunks.push(sentence.slice(i,i+160).trim())}}else chunk+=sentence;}
-  if(chunk.trim())chunks.push(chunk.trim());return chunks.filter(Boolean);
+  const chunks=[];
+  for(const paragraph of text.split(/\n+/)){
+   const sentences=paragraph.trim().match(/[^.!?]+[.!?]+["»”]?|[^.!?]+$/g)||[];
+   for(const sentence of sentences){
+    let rest=sentence.trim();
+    while(rest.length>210){let cut=Math.max(rest.lastIndexOf(',',200),rest.lastIndexOf(';',200),rest.lastIndexOf(':',200));if(cut<70)cut=rest.lastIndexOf(' ',200);if(cut<1)cut=200;else if(/[,;:]/.test(rest[cut]))cut++;chunks.push({text:rest.slice(0,cut).trim(),pause:75});rest=rest.slice(cut).trim()}
+    if(rest)chunks.push({text:rest,pause:/[!?]$/.test(rest)?240:180});
+   }
+   if(chunks.length)chunks[chunks.length-1].pause=330;
+  }
+  return chunks;
  }
- function speakNext(id){
+ function preferredVoices(){
+  const score=v=>{const n=v.name.toLowerCase();return (v.lang.toLowerCase()==='es-es'?40:0)+(/natural|neural|premium|enhanced|mejorada|siri/.test(n)?100:0)+(/google/.test(n)?55:0)+(/elvira|alvaro|álvaro|helena|monica|mónica|paulina/.test(n)?15:0)+(v.localService?5:0)};
+  return synth.getVoices().filter(v=>/^es(?:[-_]|$)/i.test(v.lang)).sort((a,b)=>score(b)-score(a));
+ }
+ function speakNext(id,attempt=0){
   if(!active||id!==generation)return;
   if(index>=parts.length){active=false;message('Lectura finalizada');return}
-  const u=new SpeechSynthesisUtterance(parts[index++]);utterance=u;u.lang='es-ES';u.rate=0.94;u.pitch=1;
-  const voices=synth.getVoices();u.voice=voices.find(v=>v.lang.toLowerCase()==='es-es'&&v.localService)||voices.find(v=>v.lang.toLowerCase().startsWith('es'))||null;
+  const part=parts[index],u=new SpeechSynthesisUtterance(part.text);utterance=u;u.lang='es-ES';
+  const question=/\?$/.test(part.text),exclamation=/!$/.test(part.text);
+  u.rate=question?0.93:0.91;u.pitch=question?1.05:exclamation?1.03:1.0;
+  const voices=preferredVoices();if(attempt<voices.length)u.voice=voices[attempt];
   u.onstart=()=>{if(id===generation)message('Reproduciendo artículo…')};
-  u.onend=()=>{if(id===generation)speakNext(id)};
-  u.onerror=e=>{if(id!==generation)return;if(e.error==='interrupted'||e.error==='canceled')return;active=false;message('No se pudo reproducir la voz ('+(e.error||'error del dispositivo')+'). Comprueba que tienes instalada una voz en español.')};
+  u.onend=()=>{if(id!==generation)return;index++;setTimeout(()=>speakNext(id),part.pause)};
+  u.onerror=e=>{if(id!==generation)return;if(e.error==='interrupted'||e.error==='canceled')return;if(attempt<Math.min(voices.length,3)){speakNext(id,attempt+1);return}active=false;message('No se pudo reproducir la voz ('+(e.error||'error del dispositivo')+'). Comprueba las voces en español del dispositivo.')};
   try{synth.speak(u);if(synth.paused)synth.resume()}catch(e){active=false;message('No se pudo iniciar la voz: '+e.message)}
  }
  async function play(){
@@ -1375,7 +1389,7 @@ window.afRenderContentBody=function(item,fallback){
   const pdf=content.querySelector('.af-pdf-document');
   if(pdf&&!pdf.dataset.readableText){message('El PDF todavía se está cargando o no contiene texto seleccionable.');return}
   const body=pdf?pdf.dataset.readableText:content.innerText||'';
-  const text=(title+'. '+body).trim();
+  const text=(title+'.\n'+body).trim();
   if(text.length<15){message('Este artículo no tiene texto disponible para leer.');return}
   parts=splitText(text);index=0;active=true;const id=generation;
   message('Preparando voz…');
