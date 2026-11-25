@@ -1283,8 +1283,8 @@ window.afRenderContentBody=function(item,fallback){
       status.textContent='Documento de '+pdf.numPages+' página(s)';
       const extracted=[];
       for(let i=1;i<=pdf.numPages;i++){
-        const page=await pdf.getPage(i),tc=await page.getTextContent();let line='',lines=[];
-        for(const t of tc.items){if(typeof t.str!=='string')continue;line+=(line&&!/\s$/.test(line)&&! /^[,.;:!?)]/.test(t.str)?' ':'')+t.str;if(t.hasEOL){if(line.trim())lines.push(line.trim());line=''}}
+        const page=await pdf.getPage(i),tc=await page.getTextContent(),view=page.getViewport({scale:1});let line='',lines=[];
+        for(const t of tc.items){if(typeof t.str!=='string')continue;const point=t.transform?view.convertToViewportPoint(t.transform[4],t.transform[5]):null;if(point&&point[1]>view.height-Math.min(48,view.height*0.06)){if(line.trim())lines.push(line.trim());line='';continue;}line+=(line&&!/\s$/.test(line)&&! /^[,.;:!?)]/.test(t.str)?' ':'')+t.str;if(t.hasEOL){if(line.trim())lines.push(line.trim());line=''}}
         if(line.trim())lines.push(line.trim());extracted.push(lines);
       }
       const repeated=new Map();for(const lines of extracted){for(const l of new Set([...lines.slice(0,2),...lines.slice(-2)])){if(l.length<100)repeated.set(l,(repeated.get(l)||0)+1)}}
@@ -1412,7 +1412,7 @@ window.afRenderContentBody=function(item,fallback){
   const title=document.getElementById('articleTitle')?.textContent||'';
   const pdf=content.querySelector('.af-pdf-document');
   if(pdf&&!pdf.dataset.readableText){message('El PDF todavía se está cargando o no contiene texto seleccionable.');return}
-  const copy=content.cloneNode(true);copy.querySelectorAll('button,nav,iframe,canvas,script,style,.af-pdf-loading,[aria-hidden="true"],[hidden],a[download]').forEach(n=>n.remove());
+  const copy=content.cloneNode(true);copy.querySelectorAll('button,nav,footer,[role="contentinfo"],.footer,.page-footer,.article-footer,iframe,canvas,script,style,.af-pdf-loading,[aria-hidden="true"],[hidden],a[download]').forEach(n=>n.remove());
   const clean=value=>String(value||'').normalize('NFKC').replace(/[\u00ad\u200b-\u200f\u202a-\u202e\ufeff]/g,'').replace(/(\p{L})-\s*\n\s*(\p{Ll})/gu,'$1$2').replace(/https?:\/\/[^\s]+/gi,'').replace(/^[ \t]*(?:Abrir o descargar PDF|Ver PDF|Descargar PDF|Documento de \d+ página\(s\)|Escuchar artículo|Reproduciendo artículo…)[ \t]*$/gim,'').replace(/[ \t]+/g,' ').replace(/ *\n(?!\n) */g,' ').replace(/\n{3,}/g,'\n\n').trim();
   copy.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,br').forEach(n=>n.append(document.createTextNode('\n\n')));
   const pronounce=value=>value.replace(/\bTEA\b/g,'trastorno del espectro autista').replace(/\bTDAH\b/g,'trastorno por déficit de atención e hiperactividad').replace(/\bp\.\s*ej\./gi,'por ejemplo').replace(/\betc\./gi,'etcétera').replace(/\bEE\.\s*UU\./g,'Estados Unidos').replace(/(\d)\s*%/g,'$1 por ciento');
