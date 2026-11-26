@@ -567,6 +567,7 @@ body{overflow-x:hidden}
   }).join('');
   list.hidden=!associations.length;empty.hidden=!!associations.length;
  }catch(e){empty.hidden=false;empty.textContent='No se pudieron cargar los vídeos en este momento.'}}
+ document.querySelectorAll('[data-af-tab]').forEach(b=>b.addEventListener('click',()=>{const section=document.getElementById('afAssociationVideosSection');if(section)section.hidden=b.dataset.afTab!=='associations'}));
  load();
 })();
 </script>
