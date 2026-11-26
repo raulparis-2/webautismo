@@ -1530,6 +1530,14 @@ window.afRenderContentBody=function(item,fallback){
  window.addEventListener('hashchange',restoreArticlesRoute);
 })();
 </script>
+<script id="af-app-article-click-final">
+(function(){
+ let cache=null;
+ function getArticles(){if(cache)return Promise.resolve(cache);return fetch("/content.json?apparticle="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("No se pudo cargar content.json");return r.json()}).then(d=>(cache=(d.articles||[]).filter(a=>a&&!a.isDemo)));}
+ function show(a){const m=document.getElementById("articleModal"),t=document.getElementById("articleTitle"),c=document.getElementById("articleContent");if(!m||!t||!c)throw Error("No se encuentra el visor de artículos");t.textContent=a.title||"Artículo";let html="";if(typeof window.afRenderContentBody==="function")html=window.afRenderContentBody(a,"<p>"+String(a.summary||"")+"</p>");else html=a.body||a.content||a.summary||"";c.innerHTML=html||"<p>Este artículo no tiene contenido disponible.</p>";if(m.parentElement!==document.body)document.body.appendChild(m);m.classList.add("on");m.style.setProperty("display","flex","important");m.style.setProperty("z-index","2147483000","important");document.body.style.overflow="hidden";}
+ document.addEventListener("click",async function(e){const b=e.target.closest("#app-articles [data-app-article],#app-articles .app-article-card");if(!b)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();try{const list=await getArticles();const raw=b.getAttribute("data-app-article");const i=raw!==null?Number(raw):Array.from(b.parentElement.children).indexOf(b);const a=list[i];if(!a)throw Error("No se encontró el artículo seleccionado");show(a);}catch(err){console.error("Error al abrir artículo en la app:",err);}},true);
+})();
+</script>
 </body>
 </html>
 <style id="article-photo-fix">
