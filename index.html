@@ -1149,7 +1149,7 @@ document.addEventListener("click",async ev=>{
 (function(){
  let associations=[];
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const safe=s=>{try{const u=new URL(s,location.origin);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
+ const safe=s=>{try{const value=String(s??'').trim();if(!value||['0','null','undefined','false'].includes(value.toLowerCase()))return '';const u=new URL(value,location.origin);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
  function videoMarkup(a){
   const url=safe(a.videoFile)||safe(a.video)||safe(a.videoUrl)||safe(a.videoLink);
   if(!url)return '';
