@@ -855,7 +855,18 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
  if(weekly){const a=(data.articles||[]).find(x=>x.weekly)|| (data.articles||[]).slice(-1)[0];weekly.innerHTML='<article class="af-week-card"><div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div><h3>'+esc(a?.title||'Artículo de la semana')+'</h3><p>'+esc(a?.summary||'El artículo semanal aparecerá aquí cuando se publique.')+'</p>'+(a?'<button class="af-week-placeholder" id="afReadWeekly" type="button">Leer artículo →</button>':'<span class="af-week-placeholder">Artículo pendiente de añadir</span>')+'</article>';
   const read=document.getElementById('afReadWeekly');if(read)read.onclick=()=>showArticle(a);
  }
- function showArticle(a){const modal=document.getElementById('articleModal');if(!modal)return;document.getElementById('articleTitle').textContent=a.title||'Artículo';document.getElementById('articleContent').innerHTML=window.afRenderContentBody(a,'<p>'+esc(a.summary||'')+'</p>');modal.style.display='flex';modal.classList.add('on');document.body.style.overflow='hidden'}
+ function showArticle(a){
+  if(!a)return;
+  const modal=document.getElementById('articleModal'),title=document.getElementById('articleTitle'),content=document.getElementById('articleContent');
+  if(!modal||!title||!content){console.error('No se encuentra el modal de artículos');return}
+  title.textContent=a.title||'Artículo';
+  let html='';
+  try{html=typeof window.afRenderContentBody==='function'?window.afRenderContentBody(a,'<p>'+esc(a.summary||'')+'</p>'):(a.body||a.content||a.summary||'');}catch(err){console.error('Error renderizando el artículo',err);html=a.body||a.content||a.summary||''}
+  content.innerHTML=html||'<p>Este artículo no tiene contenido disponible.</p>';
+  if(modal.parentElement!==document.body)document.body.appendChild(modal);
+  modal.classList.add('on');modal.style.setProperty('display','flex','important');modal.style.setProperty('z-index','2147483000','important');
+  document.body.style.overflow='hidden';
+ }
 
  const contentSearch=document.getElementById('afContentSearch');
  const contentResults=document.getElementById('afContentResults');
