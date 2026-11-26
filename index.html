@@ -818,7 +818,17 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
   if(cards[0])cards[0].innerHTML='<div class="af-week-icon">▤</div><div class="label">ARTÍCULO DE LA SEMANA</div>'+(weeklyArticle?'<h3>'+esc(weeklyArticle.title)+'</h3><p>'+esc(weeklyArticle.summary)+'</p><button type="button" class="af-week-placeholder" id="afOpenWeeklyArticle">Leer artículo →</button>':'<h3>Artículo de la semana</h3><p>Publicaremos aquí el artículo semanal para las familias.</p><span class="af-week-placeholder">Artículo pendiente de añadir</span>');
   const b=document.getElementById('afOpenWeeklyArticle');if(b)b.onclick=()=>showArticle(weeklyArticle);
  }
- function showArticle(a){if(!a)return;document.getElementById('articleTitle').textContent=a.title;document.getElementById('articleContent').innerHTML=window.afRenderContentBody(a,'<p>'+esc(a.summary||'')+'</p>');const m=document.getElementById('articleModal');m.style.display='flex';m.classList.add('on');document.body.style.overflow='hidden'}
+ function showArticle(a){
+  if(!a)return;
+  const m=document.getElementById('articleModal'),t=document.getElementById('articleTitle'),c=document.getElementById('articleContent');
+  if(!m||!t||!c){console.error('No se encuentra el visor de artículos');return}
+  t.textContent=a.title||'Artículo';
+  let html='';try{html=window.afRenderContentBody(a,'<p>'+esc(a.summary||'')+'</p>')}catch(e){console.error(e)}
+  c.innerHTML=html||'<p>Este artículo no tiene contenido disponible.</p>';
+  if(m.parentElement!==document.body)document.body.appendChild(m);
+  m.classList.add('on');m.style.setProperty('display','flex','important');m.style.setProperty('z-index','2147483000','important');
+  document.body.style.overflow='hidden';
+ }
  window.openArticle=function(i){const a=(data.articles||[])[i];showArticle(a)};
  const articleGrid=document.querySelector('#articulos .article-grid');
  if(articleGrid){const articles=(data.articles||[]).filter(a=>!a.isDemo);const section=document.getElementById('articulos');if(!articles.length){articleGrid.innerHTML='';if(section)section.hidden=true;}else{if(section)section.hidden=false;articleGrid.innerHTML=articles.map((a,i)=>'<article class="article reveal-on-scroll" role="button" tabindex="0" data-content-article="'+i+'">'+(safeUrl(a.image)?'<img class="af-card-image" src="'+esc(safeUrl(a.image))+'" alt="" loading="lazy">':'<div class="pic '+(['','two','three','four'][i%4])+'"></div>')+'<span class="tag tblue">'+esc(a.category||'Artículo')+'</span><h3>'+esc(a.title)+'</h3><p>'+esc(a.summary)+'</p><small>Ver más →</small></article>').join('');articleGrid.querySelectorAll('[data-content-article]').forEach(el=>{const open=()=>showArticle(articles[Number(el.dataset.contentArticle)]);el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}})}const appArticleList=document.querySelector('#app-articles .content-list');if(appArticleList){const articles=(data.articles||[]).filter(a=>!a.isDemo);appArticleList.innerHTML=articles.map((a,i)=>'<article class="app-article-card reveal-on-scroll">'+(safeUrl(a.image)?'<img class="app-article-photo" src="'+esc(safeUrl(a.image))+'" alt="" loading="lazy">':'')+'<span class="tag tblue">'+esc(a.category||'Artículo')+'</span><h4>'+esc(a.title)+'</h4><p>'+esc(a.summary||'')+'</p><button type="button" class="mini-btn" data-app-article="'+i+'">Ver más →</button></article>').join('');appArticleList.querySelectorAll('[data-app-article]').forEach(el=>el.addEventListener('click',()=>showArticle(articles[Number(el.dataset.appArticle)])));if(!articles.length)document.getElementById('app-articles').hidden=true;}const guideGrid=document.querySelector('.guide-grid');
