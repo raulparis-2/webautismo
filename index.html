@@ -538,39 +538,7 @@ body{overflow-x:hidden}
     <div class="af-map-heading"><div><div class="label">DIRECTORIO LOCALIZABLE</div><h3>Asociaciones en el mapa</h3><p>Las asociaciones con una dirección en el panel aparecerán aquí. Al añadir una nueva, publícala para actualizar el mapa.</p></div></div>
     <div id="afAssociationMap" role="region" aria-label="Mapa de asociaciones" style="width:100%;height:360px;border-radius:11px;background:#edf5f5"></div><p id="afMapStatus" class="af-manual-note">Cargando ubicaciones de asociaciones…</p>
   </div>
-  <div id="afAssociationVideosSection" style="margin:30px 0 10px">
-    <div class="af-map-heading"><div><div class="label">ACTIVIDADES Y EVENTOS</div><h3>Vídeos de las asociaciones</h3><p>Conoce las actividades, talleres y eventos que organizan las asociaciones.</p></div></div>
-    <div id="afAssociationVideosList" class="af-manual-grid" aria-live="polite"></div>
-    <p id="afAssociationVideosEmpty" class="af-manual-empty" hidden>Todavía no hay vídeos publicados por las asociaciones.</p>
-  </div>
-  <p id="afManualEmpty" class="af-manual-empty">Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.</p>
-  <p class="af-manual-note">La información se añade y revisa manualmente; comprueba siempre los plazos, requisitos y datos de contacto con la entidad u organismo responsable.</p>
-</section>
 
-
-<script>
-(function(){
- const list=document.getElementById('afAssociationVideosList'),empty=document.getElementById('afAssociationVideosEmpty');
- if(!list||!empty)return;
- const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const safe=s=>{try{const u=new URL(s,location.origin);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
- async function load(){try{
-  const r=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error();const d=await r.json();
-  const associations=(d.associations||[]).filter(x=>!x.isDemo&&(x.videoFile||x.video||x.videoLink||x.videoUrl));
-  list.innerHTML=associations.map(x=>{
-   const url=safe(x.videoFile)||safe(x.video)||safe(x.videoUrl)||safe(x.videoLink);
-   const yt=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([a-zA-Z0-9_-]{11})/);
-   const vm=url.match(/vimeo\.com\/(\d+)/);
-   const embed=yt?'https://www.youtube-nocookie.com/embed/'+yt[1]:vm?'https://player.vimeo.com/video/'+vm[1]:'';
-   const player=embed?'<iframe src="'+esc(embed)+'" title="Vídeo de '+esc(x.title||'asociación')+'" loading="lazy" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px"></iframe>':url?'<video controls playsinline preload="metadata" style="width:100%;max-height:340px;border-radius:10px;background:#102e38" src="'+esc(url)+'"></video>':'';
-   return '<article class="af-manual-card">'+player+'<div class="af-manual-meta">ASOCIACIÓN</div><h3>'+esc(x.title||x.name||'Asociación')+'</h3><p>'+esc(x.summary||x.description||'')+'</p></article>';
-  }).join('');
-  list.hidden=!associations.length;empty.hidden=!!associations.length;
- }catch(e){empty.hidden=false;empty.textContent='No se pudieron cargar los vídeos en este momento.'}}
- document.querySelectorAll('[data-af-tab]').forEach(b=>b.addEventListener('click',()=>{const section=document.getElementById('afAssociationVideosSection');if(section)section.hidden=b.dataset.afTab!=='associations'}));
- load();
-})();
-</script>
 <section class="section directory" id="profesionales">
   <div class="directory-cover" id="directoryCover">
     <div class="cover-copy"><span class="cover-icon">⌕</span><div><strong>Busca un centro o profesional</strong><p>Indica qué necesitas y dónde. Te llevaremos directamente a los resultados.</p></div></div>
@@ -879,7 +847,7 @@ document.addEventListener('click',e=>{const d=document.getElementById('hubDialog
 
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const safeUrl=s=>{try{if(/^uploads\/[a-z0-9._-]+$/i.test(String(s||'')))return String(s);const u=new URL(s);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return /^uploads\/[a-z0-9._-]+$/i.test(String(s||''))?String(s):''}};
- const cards=(items,type)=>items.map(x=>'<article class="af-manual-card">'+(safeUrl(x.image)?'<img class="af-card-image" src="'+esc(safeUrl(x.image))+'" alt="" loading="lazy">':'')+'<div class="af-manual-meta">'+esc(x.place||x.province||x.category||x.date||'Recurso')+'</div><h3>'+esc(x.title||x.name)+'</h3><p>'+esc(x.summary||x.description)+'</p>'+(x.date?'<p><b>Vigencia:</b> '+esc(x.date)+'</p>':'')+(safeUrl(x.url)?'<a href="'+esc(safeUrl(x.url))+'" target="_blank" rel="noopener noreferrer">Consultar información ↗</a>':'')+'</article>').join('');
+ const cards=(items,type)=>items.map(x=>'<article class="af-manual-card">'+(safeUrl(x.image)?'<img class="af-card-image" src="'+esc(safeUrl(x.image))+'" alt="" loading="lazy">':'')+'<div class="af-manual-meta">'+esc(x.place||x.province||x.category||x.date||'Recurso')+'</div><h3>'+esc(x.title||x.name)+'</h3><p>'+esc(x.summary||x.description)+'</p>'+(x.date?'<p><b>Vigencia:</b> '+esc(x.date)+'</p>':'')+(type==='associations'?'<button type="button" class="af-map-action" data-af-open-association="'+esc(x.title||x.name)+'">Ver asociación y actividades</button>':'')+(safeUrl(x.url)?'<a href="'+esc(safeUrl(x.url))+'" target="_blank" rel="noopener noreferrer">Consultar información ↗</a>':'')+'</article>').join('');
  const manual=document.getElementById('afManualItems');
  if(manual){
   const all={associations:data.associations||[],grants:data.grants||[]};let active='associations';
@@ -1180,6 +1148,34 @@ document.addEventListener("click",async ev=>{
 @media(max-width:600px){.af-map-wrap{padding:12px}.af-map-heading{align-items:flex-start;flex-direction:column}#afAssociationMap{height:260px}}
 </style>
 
+<script id="af-association-detail-modal">
+(function(){
+ let associations=[];
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const safe=s=>{try{const u=new URL(s,location.origin);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
+ function videoMarkup(a){
+  const url=safe(a.videoFile)||safe(a.video)||safe(a.videoUrl)||safe(a.videoLink);
+  if(!url)return '';
+  const yt=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([a-zA-Z0-9_-]{11})/);
+  const vm=url.match(/vimeo\.com\/(\d+)/);
+  if(yt)return '<div style="margin-top:18px"><h3>Vídeos y actividades</h3><iframe src="https://www.youtube-nocookie.com/embed/'+yt[1]+'" title="Vídeo de '+esc(a.title||a.name)+'" loading="lazy" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px"></iframe></div>';
+  if(vm)return '<div style="margin-top:18px"><h3>Vídeos y actividades</h3><iframe src="https://player.vimeo.com/video/'+vm[1]+'" title="Vídeo de '+esc(a.title||a.name)+'" loading="lazy" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px"></iframe></div>';
+  return '<div style="margin-top:18px"><h3>Vídeos y actividades</h3><video controls playsinline preload="metadata" style="width:100%;max-height:420px;border-radius:12px;background:#102e38" src="'+esc(url)+'"></video></div>';
+ }
+ async function load(){try{const r=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(r.ok){const d=await r.json();associations=(d.associations||[]).filter(x=>!x.isDemo)}}catch(e){console.warn('No se pudieron cargar las fichas de asociaciones',e)}}
+ function open(title){
+  const a=associations.find(x=>String(x.title||x.name||'')===title);if(!a)return;
+  let modal=document.getElementById('afAssociationDetailModal');
+  if(!modal){modal=document.createElement('div');modal.id='afAssociationDetailModal';modal.style.cssText='position:fixed;inset:0;z-index:100001;background:#102f3dcc;display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto';document.body.appendChild(modal)}
+  modal.innerHTML='<div style="background:#fff;border-radius:18px;padding:26px;max-width:720px;width:100%;max-height:90vh;overflow:auto;position:relative"><button type="button" id="afAssociationDetailClose" aria-label="Cerrar" style="position:sticky;top:0;float:right;border:0;border-radius:50%;font-size:24px;width:38px;height:38px;cursor:pointer;background:#edf5f5">×</button><div class="label">ASOCIACIÓN</div><h2 style="margin:8px 0 12px">'+esc(a.title||a.name||'Asociación')+'</h2>'+(a.place?'<p><strong>Dirección:</strong> '+esc(a.place)+'</p>':'')+'<p style="line-height:1.7;color:#526d76">'+esc(a.summary||a.description||'')+'</p>'+(safe(a.url)?'<p><a href="'+esc(safe(a.url))+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a></p>':'')+videoMarkup(a)+'</div>';
+  modal.style.display='flex';document.body.style.overflow='hidden';
+  const close=()=>{modal.style.display='none';modal.innerHTML='';document.body.style.overflow=''};
+  modal.querySelector('#afAssociationDetailClose').onclick=close;modal.onclick=e=>{if(e.target===modal)close()};
+ }
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-af-open-association]');if(!b)return;e.preventDefault();open(b.getAttribute('data-af-open-association'))});
+ load();
+})();
+</script>
 <script id="af-map-interaction">
 (function(){
  const mapEl=document.getElementById('afAssociationMap');if(!mapEl)return;
@@ -1233,7 +1229,7 @@ document.addEventListener("click",async ev=>{
    if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
    const marker=L.marker([lat,lon]).addTo(map);
    const mapsLink='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(lat+','+lon)+'&travelmode=driving';
-   marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':'')+'<br><a class="af-map-action" href="'+escMap(mapsLink)+'" target="_blank" rel="noopener noreferrer">Cómo llegar a este punto ↗</a>');
+   marker.bindPopup('<strong>'+escMap(a.title||a.name)+'</strong><br>'+escMap(address)+'<br><button type="button" class="af-map-action" data-af-open-association="'+escMap(a.title||a.name)+'">Ver asociación y actividades</button>'+(a.url?'<br><a href="'+escMap(a.url)+'" target="_blank" rel="noopener noreferrer">Web de la asociación ↗</a>':'')+'<br><a class="af-map-action" href="'+escMap(mapsLink)+'" target="_blank" rel="noopener noreferrer">Cómo llegar a este punto ↗</a>');
    bounds.push([lat,lon]);count++;
   }catch(e){console.warn('No se pudo ubicar asociación por su dirección',address,e)}
  }
