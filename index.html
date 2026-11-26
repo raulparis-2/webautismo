@@ -528,6 +528,15 @@ body{overflow-x:hidden}
   <div class="af-manual-tabs" role="tablist" aria-label="Tipo de recurso">
     <button class="af-manual-tab active" type="button" data-af-tab="associations">Asociaciones</button>
     <button class="af-manual-tab" type="button" data-af-tab="grants">Subvenciones y ayudas</button>
+    <button class="af-manual-tab" type="button" id="afAssociationVideosTab">Vídeos de asociaciones</button>
+  </div>
+  <div id="afAssociationVideosPanel" hidden style="margin:18px 0 24px">
+    <div style="max-width:520px;margin-bottom:18px"><label for="afAssociationVideosSearch" style="display:block;font-size:13px;font-weight:800;margin-bottom:7px;color:#385665">Buscar vídeos de asociaciones</label><input id="afAssociationVideosSearch" type="search" placeholder="Buscar por título o actividad…" style="width:100%;border:1px solid #d9e3ea;border-radius:10px;padding:12px 14px;font:inherit;background:#fff"></div>
+    <div id="afAssociationVideosList" class="af-manual-grid" aria-live="polite"></div>
+    <p id="afAssociationVideosEmpty" class="af-manual-empty" hidden>Todavía no hay vídeos publicados por asociaciones.</p>
+  </div>
+    <button class="af-manual-tab active" type="button" data-af-tab="associations">Asociaciones</button>
+    <button class="af-manual-tab" type="button" data-af-tab="grants">Subvenciones y ayudas</button>
   </div>
   <div class="af-manual-search"><label for="afManualSearch">Filtrar por nombre, provincia o tema</label><input id="afManualSearch" type="search" placeholder="Ej. A Coruña, apoyo familiar, dependencia…"><label id="afGrantProvinceWrap" hidden for="afGrantProvince">Ámbito</label><select id="afGrantProvince" hidden aria-label="Filtrar subvenciones por comunidad autónoma o ámbito"><option value="">Todos los ámbitos</option></select></div>
   <details class="af-associations-dropdown" id="afAssociationsDropdown"><summary><span>Ver asociaciones</span><span class="af-dropdown-hint">Consultar entidades y datos de contacto</span></summary><div id="afManualItems" class="af-manual-grid"></div></details>
@@ -539,6 +548,48 @@ body{overflow-x:hidden}
   <p class="af-manual-note">La información se añade y revisa manualmente; comprueba siempre los plazos, requisitos y datos de contacto con la entidad u organismo responsable.</p>
 </section>
 
+<script>
+(function(){
+ const tab=document.getElementById('afAssociationVideosTab'),panel=document.getElementById('afAssociationVideosPanel');
+ if(!tab||!panel)return;
+ const regularTabs=[...document.querySelectorAll('[data-af-tab]')];
+ const search=document.getElementById('afAssociationVideosSearch'),list=document.getElementById('afAssociationVideosList'),empty=document.getElementById('afAssociationVideosEmpty');
+ let videos=[];
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const safe=s=>{try{const u=new URL(s,location.origin);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
+ function draw(){
+  const q=(search.value||'').trim().toLocaleLowerCase('es');
+  const found=videos.filter(v=>(v.videoAudience==='associations')&&[v.title,v.name,v.summary,v.description].join(' ').toLocaleLowerCase('es').includes(q));
+  list.innerHTML=found.map(v=>{
+   const url=safe(v.videoFileUrl)||safe(v.videoFile)||safe(v.video)||safe(v.videoUrl)||safe(v.videoLink);
+   const yt=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([a-zA-Z0-9_-]{11})/);
+   const vm=url.match(/vimeo\.com\/(\d+)/);
+   const embed=yt?'https://www.youtube-nocookie.com/embed/'+yt[1]:vm?'https://player.vimeo.com/video/'+vm[1]:'';
+   const player=embed?'<iframe src="'+esc(embed)+'" title="Vídeo de asociación" loading="lazy" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px"></iframe>':url?'<video controls playsinline preload="metadata" style="width:100%;max-height:340px;border-radius:10px;background:#102e38" src="'+esc(url)+'"></video>':'';
+   return '<article class="af-manual-card">'+player+'<div class="af-manual-meta">VÍDEO DE ASOCIACIÓN</div><h3>'+esc(v.title||v.name||'Actividad de asociación')+'</h3><p>'+esc(v.summary||v.description||'')+'</p></article>';
+  }).join('');
+  list.hidden=!found.length;empty.hidden=!!found.length;
+ }
+ async function load(){try{const r=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error();const d=await r.json();videos=(d.videos||[]).filter(v=>!v.isDemo);draw()}catch(e){empty.hidden=false;empty.textContent='No se pudieron cargar los vídeos en este momento.'}}
+ tab.addEventListener('click',()=>{
+  regularTabs.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});
+  tab.classList.add('active');tab.setAttribute('aria-selected','true');
+  document.getElementById('afManualSearch').closest('.af-manual-search').hidden=true;
+  document.getElementById('afAssociationsDropdown').hidden=true;
+  document.getElementById('afAssociationMapWrap').hidden=true;
+  document.getElementById('afManualEmpty').hidden=true;
+  panel.hidden=false;load();
+ });
+ regularTabs.forEach(b=>b.addEventListener('click',()=>{
+  panel.hidden=true;
+  document.getElementById('afManualSearch').closest('.af-manual-search').hidden=false;
+  document.getElementById('afAssociationsDropdown').hidden=false;
+  document.getElementById('afAssociationMapWrap').hidden=false;
+  tab.classList.remove('active');tab.setAttribute('aria-selected','false');
+ }));
+ search.addEventListener('input',draw);
+})();
+</script>
 <section class="section directory" id="profesionales">
   <div class="directory-cover" id="directoryCover">
     <div class="cover-copy"><span class="cover-icon">⌕</span><div><strong>Busca un centro o profesional</strong><p>Indica qué necesitas y dónde. Te llevaremos directamente a los resultados.</p></div></div>
