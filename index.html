@@ -1469,38 +1469,7 @@ window.afRenderContentBody=function(item,fallback){
  window.addEventListener('pagehide',()=>stop(true));
 })();
 </script>
-<script id="af-articles-click-repair">
-(function(){
- let articles=null;
- const load=()=>articles?Promise.resolve(articles):fetch('/content.json?articlefix='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No se pudo cargar content.json');return r.json()}).then(d=>(articles=(d.articles||[]).filter(a=>a&&!a.isDemo)));
- function show(a){
-  if(!a)return;
-  const modal=document.getElementById('articleModal');
-  const title=document.getElementById('articleTitle');
-  const content=document.getElementById('articleContent');
-  if(!modal||!title||!content){console.error('Falta el modal del artículo');return}
-  title.textContent=a.title||a.name||'Artículo';
-  content.innerHTML=typeof window.afRenderContentBody==='function'
-   ?window.afRenderContentBody(a,'<p>'+(a.summary||a.description||'')+'</p>')
-   :(a.body||a.content||'<p>Este artículo no tiene contenido disponible.</p>');
-  modal.style.cssText+=';display:flex!important;z-index:2147483000';
-  modal.classList.add('on');
-  document.body.style.overflow='hidden';
- }
- document.addEventListener('click',async function(e){
-  const card=e.target.closest('#articulos .article-grid .article, #app-articles .app-article-card, [data-search-article], #afReadWeekly, #afOpenWeeklyArticle, #afLatestArticle');
-  if(!card)return;
-  const indexAttr=card.dataset.contentArticle??card.dataset.appArticle??card.dataset.searchArticle;
-  const heading=card.querySelector('h3,h4')?.textContent?.trim();
-  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-  try{
-   const list=await load();
-   const a=(indexAttr!==undefined&&list[Number(indexAttr)])||list.find(x=>(x.title||'').trim()===heading);
-   if(a)show(a);else console.warn('No se encontró el artículo seleccionado',indexAttr,heading);
-  }catch(err){console.error('Error al abrir el artículo',err)}
- },true);
-})();
-</script>
+
 <script id="af-open-all-articles-fix">
 (function(){
  function openAllArticles(e){
@@ -1520,6 +1489,24 @@ window.afRenderContentBody=function(item,fallback){
   requestAnimationFrame(()=>{app.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>page.scrollIntoView({behavior:'smooth',block:'start'}),120)});
  }
  document.addEventListener('click',openAllArticles,true);
+})();
+</script>
+<script id="af-articles-deeplink-fix">
+(function(){
+ function restoreArticlesRoute(){
+  if(location.hash==='#app-articles'){
+   const main=document.getElementById('inicio'),app=document.querySelector('.app-panel'),page=document.getElementById('app-articles');
+   if(!main||!app||!page)return;
+   main.classList.add('app-open');
+   document.querySelectorAll('.app-subpage').forEach(x=>x.classList.remove('on'));
+   page.classList.add('on');
+   app.style.display='';
+   page.style.display='block';
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restoreArticlesRoute);
+ else restoreArticlesRoute();
+ window.addEventListener('hashchange',restoreArticlesRoute);
 })();
 </script>
 </body>
