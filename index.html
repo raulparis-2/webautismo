@@ -1469,6 +1469,38 @@ window.afRenderContentBody=function(item,fallback){
  window.addEventListener('pagehide',()=>stop(true));
 })();
 </script>
+<script id="af-articles-click-repair">
+(function(){
+ let articles=null;
+ const load=()=>articles?Promise.resolve(articles):fetch('/content.json?articlefix='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No se pudo cargar content.json');return r.json()}).then(d=>(articles=(d.articles||[]).filter(a=>a&&!a.isDemo)));
+ function show(a){
+  if(!a)return;
+  const modal=document.getElementById('articleModal');
+  const title=document.getElementById('articleTitle');
+  const content=document.getElementById('articleContent');
+  if(!modal||!title||!content){console.error('Falta el modal del artículo');return}
+  title.textContent=a.title||a.name||'Artículo';
+  content.innerHTML=typeof window.afRenderContentBody==='function'
+   ?window.afRenderContentBody(a,'<p>'+(a.summary||a.description||'')+'</p>')
+   :(a.body||a.content||'<p>Este artículo no tiene contenido disponible.</p>');
+  modal.style.cssText+=';display:flex!important;z-index:2147483000';
+  modal.classList.add('on');
+  document.body.style.overflow='hidden';
+ }
+ document.addEventListener('click',async function(e){
+  const card=e.target.closest('#articulos .article-grid .article, #app-articles .app-article-card, [data-search-article], #afReadWeekly, #afOpenWeeklyArticle, #afLatestArticle');
+  if(!card)return;
+  const indexAttr=card.dataset.contentArticle??card.dataset.appArticle??card.dataset.searchArticle;
+  const heading=card.querySelector('h3,h4')?.textContent?.trim();
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  try{
+   const list=await load();
+   const a=(indexAttr!==undefined&&list[Number(indexAttr)])||list.find(x=>(x.title||'').trim()===heading);
+   if(a)show(a);else console.warn('No se encontró el artículo seleccionado',indexAttr,heading);
+  }catch(err){console.error('Error al abrir el artículo',err)}
+ },true);
+})();
+</script>
 </body>
 </html>
 <style id="article-photo-fix">
@@ -1944,27 +1976,4 @@ function afNavigateResource(id){
   }).catch(()=>{target.innerHTML='<p class="muted">No se pudieron cargar los documentos. Inténtalo de nuevo.</p>';});
 }
 </script>
-<script id="af-articles-click-repair">
-(function(){
- let publishedArticles=[];
- const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- function open(item){
-  if(!item)return;
-  const modal=document.getElementById('articleModal'),title=document.getElementById('articleTitle'),content=document.getElementById('articleContent');
-  if(!modal||!title||!content)return;
-  title.textContent=item.title||item.name||'Artículo';
-  content.innerHTML=typeof window.afRenderContentBody==='function'?window.afRenderContentBody(item,'<p>'+esc(item.summary||item.description||'')+'</p>'):(item.body||item.content||'<p>'+esc(item.summary||item.description||'Este artículo todavía no tiene contenido publicado.')+'</p>');
-  modal.style.display='flex';modal.classList.add('on');document.body.style.overflow='hidden';
- }
- window.afOpenPublishedArticle=open;
- fetch('content.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('content.json');return r.json()}).then(d=>{publishedArticles=Array.isArray(d.articles)?d.articles.filter(a=>a&&!a.isDemo):[]}).catch(e=>console.warn('No se pudieron cargar los artículos',e));
- document.addEventListener('click',function(e){
-  const card=e.target.closest('#articulos [data-af-final-article],#articulos [data-content-article],#app-articles [data-app-article],#app-articles [data-af-article-index]');
-  const search=e.target.closest('[data-search-article]'),weekly=e.target.closest('.af-week-read-more');
-  if(!card&&!search&&!weekly)return;
-  const index=card?Number(card.dataset.afFinalArticle??card.dataset.contentArticle??card.dataset.appArticle??card.dataset.afArticleIndex):search?Number(search.dataset.searchArticle):0;
-  const article=publishedArticles[index];if(!article)return;
-  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open(article);
- },true);
-})();
-</script>
+
