@@ -1501,6 +1501,27 @@ window.afRenderContentBody=function(item,fallback){
  },true);
 })();
 </script>
+<script id="af-open-all-articles-fix">
+(function(){
+ function openAllArticles(e){
+  const trigger=e.target.closest('#afHomeAllArticles, #articulos .section-title a[href="#app-articles"]');
+  if(!trigger)return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  const main=document.getElementById('inicio');
+  const app=document.querySelector('.app-panel');
+  const page=document.getElementById('app-articles');
+  if(!main||!app||!page){console.error('No se encuentra la sección de artículos de la app');return}
+  main.classList.add('app-open');
+  document.querySelectorAll('.app-subpage').forEach(el=>{el.classList.remove('on');el.style.display='none'});
+  page.classList.add('on');
+  page.style.display='block';
+  app.style.display='block';
+  history.replaceState(null,'','#app-articles');
+  requestAnimationFrame(()=>{app.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>page.scrollIntoView({behavior:'smooth',block:'start'}),120)});
+ }
+ document.addEventListener('click',openAllArticles,true);
+})();
+</script>
 </body>
 </html>
 <style id="article-photo-fix">
