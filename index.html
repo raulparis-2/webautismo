@@ -528,12 +528,6 @@ body{overflow-x:hidden}
   <div class="af-manual-tabs" role="tablist" aria-label="Tipo de recurso">
     <button class="af-manual-tab active" type="button" data-af-tab="associations">Asociaciones</button>
     <button class="af-manual-tab" type="button" data-af-tab="grants">Subvenciones y ayudas</button>
-    <button class="af-manual-tab" type="button" id="afAssociationVideosTab">Vídeos de asociaciones</button>
-  </div>
-  <div id="afAssociationVideosPanel" hidden style="margin:18px 0 24px">
-    <div style="max-width:520px;margin-bottom:18px"><label for="afAssociationVideosSearch" style="display:block;font-size:13px;font-weight:800;margin-bottom:7px;color:#385665">Buscar vídeos de asociaciones</label><input id="afAssociationVideosSearch" type="search" placeholder="Buscar por título o actividad…" style="width:100%;border:1px solid #d9e3ea;border-radius:10px;padding:12px 14px;font:inherit;background:#fff"></div>
-    <div id="afAssociationVideosList" class="af-manual-grid" aria-live="polite"></div>
-    <p id="afAssociationVideosEmpty" class="af-manual-empty" hidden>Todavía no hay vídeos publicados por asociaciones.</p>
   </div>
     <button class="af-manual-tab active" type="button" data-af-tab="associations">Asociaciones</button>
     <button class="af-manual-tab" type="button" data-af-tab="grants">Subvenciones y ayudas</button>
@@ -544,50 +538,36 @@ body{overflow-x:hidden}
     <div class="af-map-heading"><div><div class="label">DIRECTORIO LOCALIZABLE</div><h3>Asociaciones en el mapa</h3><p>Las asociaciones con una dirección en el panel aparecerán aquí. Al añadir una nueva, publícala para actualizar el mapa.</p></div></div>
     <div id="afAssociationMap" role="region" aria-label="Mapa de asociaciones" style="width:100%;height:360px;border-radius:11px;background:#edf5f5"></div><p id="afMapStatus" class="af-manual-note">Cargando ubicaciones de asociaciones…</p>
   </div>
+  <div id="afAssociationVideosSection" style="margin:30px 0 10px">
+    <div class="af-map-heading"><div><div class="label">ACTIVIDADES Y EVENTOS</div><h3>Vídeos de las asociaciones</h3><p>Conoce las actividades, talleres y eventos que organizan las asociaciones.</p></div></div>
+    <div id="afAssociationVideosList" class="af-manual-grid" aria-live="polite"></div>
+    <p id="afAssociationVideosEmpty" class="af-manual-empty" hidden>Todavía no hay vídeos publicados por las asociaciones.</p>
+  </div>
   <p id="afManualEmpty" class="af-manual-empty">Todavía no se han añadido recursos. Cuando se recopile información verificada, aparecerá aquí.</p>
   <p class="af-manual-note">La información se añade y revisa manualmente; comprueba siempre los plazos, requisitos y datos de contacto con la entidad u organismo responsable.</p>
 </section>
 
+
 <script>
 (function(){
- const tab=document.getElementById('afAssociationVideosTab'),panel=document.getElementById('afAssociationVideosPanel');
- if(!tab||!panel)return;
- const regularTabs=[...document.querySelectorAll('[data-af-tab]')];
- const search=document.getElementById('afAssociationVideosSearch'),list=document.getElementById('afAssociationVideosList'),empty=document.getElementById('afAssociationVideosEmpty');
- let videos=[];
+ const list=document.getElementById('afAssociationVideosList'),empty=document.getElementById('afAssociationVideosEmpty');
+ if(!list||!empty)return;
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const safe=s=>{try{const u=new URL(s,location.origin);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
- function draw(){
-  const q=(search.value||'').trim().toLocaleLowerCase('es');
-  const found=videos.filter(v=>(v.videoAudience==='associations')&&[v.title,v.name,v.summary,v.description].join(' ').toLocaleLowerCase('es').includes(q));
-  list.innerHTML=found.map(v=>{
-   const url=safe(v.videoFileUrl)||safe(v.videoFile)||safe(v.video)||safe(v.videoUrl)||safe(v.videoLink);
+ async function load(){try{
+  const r=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error();const d=await r.json();
+  const associations=(d.associations||[]).filter(x=>!x.isDemo&&(x.videoFile||x.video||x.videoLink||x.videoUrl));
+  list.innerHTML=associations.map(x=>{
+   const url=safe(x.videoFile)||safe(x.video)||safe(x.videoUrl)||safe(x.videoLink);
    const yt=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([a-zA-Z0-9_-]{11})/);
    const vm=url.match(/vimeo\.com\/(\d+)/);
    const embed=yt?'https://www.youtube-nocookie.com/embed/'+yt[1]:vm?'https://player.vimeo.com/video/'+vm[1]:'';
-   const player=embed?'<iframe src="'+esc(embed)+'" title="Vídeo de asociación" loading="lazy" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px"></iframe>':url?'<video controls playsinline preload="metadata" style="width:100%;max-height:340px;border-radius:10px;background:#102e38" src="'+esc(url)+'"></video>':'';
-   return '<article class="af-manual-card">'+player+'<div class="af-manual-meta">VÍDEO DE ASOCIACIÓN</div><h3>'+esc(v.title||v.name||'Actividad de asociación')+'</h3><p>'+esc(v.summary||v.description||'')+'</p></article>';
+   const player=embed?'<iframe src="'+esc(embed)+'" title="Vídeo de '+esc(x.title||'asociación')+'" loading="lazy" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px"></iframe>':url?'<video controls playsinline preload="metadata" style="width:100%;max-height:340px;border-radius:10px;background:#102e38" src="'+esc(url)+'"></video>':'';
+   return '<article class="af-manual-card">'+player+'<div class="af-manual-meta">ASOCIACIÓN</div><h3>'+esc(x.title||x.name||'Asociación')+'</h3><p>'+esc(x.summary||x.description||'')+'</p></article>';
   }).join('');
-  list.hidden=!found.length;empty.hidden=!!found.length;
- }
- async function load(){try{const r=await fetch('content.json?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error();const d=await r.json();videos=(d.videos||[]).filter(v=>!v.isDemo);draw()}catch(e){empty.hidden=false;empty.textContent='No se pudieron cargar los vídeos en este momento.'}}
- tab.addEventListener('click',()=>{
-  regularTabs.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});
-  tab.classList.add('active');tab.setAttribute('aria-selected','true');
-  document.getElementById('afManualSearch').closest('.af-manual-search').hidden=true;
-  document.getElementById('afAssociationsDropdown').hidden=true;
-  document.getElementById('afAssociationMapWrap').hidden=true;
-  document.getElementById('afManualEmpty').hidden=true;
-  panel.hidden=false;load();
- });
- regularTabs.forEach(b=>b.addEventListener('click',()=>{
-  panel.hidden=true;
-  document.getElementById('afManualSearch').closest('.af-manual-search').hidden=false;
-  document.getElementById('afAssociationsDropdown').hidden=false;
-  document.getElementById('afAssociationMapWrap').hidden=false;
-  tab.classList.remove('active');tab.setAttribute('aria-selected','false');
- }));
- search.addEventListener('input',draw);
+  list.hidden=!associations.length;empty.hidden=!!associations.length;
+ }catch(e){empty.hidden=false;empty.textContent='No se pudieron cargar los vídeos en este momento.'}}
+ load();
 })();
 </script>
 <section class="section directory" id="profesionales">
