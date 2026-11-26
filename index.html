@@ -1944,3 +1944,27 @@ function afNavigateResource(id){
   }).catch(()=>{target.innerHTML='<p class="muted">No se pudieron cargar los documentos. Inténtalo de nuevo.</p>';});
 }
 </script>
+<script id="af-articles-click-repair">
+(function(){
+ let publishedArticles=[];
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function open(item){
+  if(!item)return;
+  const modal=document.getElementById('articleModal'),title=document.getElementById('articleTitle'),content=document.getElementById('articleContent');
+  if(!modal||!title||!content)return;
+  title.textContent=item.title||item.name||'Artículo';
+  content.innerHTML=typeof window.afRenderContentBody==='function'?window.afRenderContentBody(item,'<p>'+esc(item.summary||item.description||'')+'</p>'):(item.body||item.content||'<p>'+esc(item.summary||item.description||'Este artículo todavía no tiene contenido publicado.')+'</p>');
+  modal.style.display='flex';modal.classList.add('on');document.body.style.overflow='hidden';
+ }
+ window.afOpenPublishedArticle=open;
+ fetch('content.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('content.json');return r.json()}).then(d=>{publishedArticles=Array.isArray(d.articles)?d.articles.filter(a=>a&&!a.isDemo):[]}).catch(e=>console.warn('No se pudieron cargar los artículos',e));
+ document.addEventListener('click',function(e){
+  const card=e.target.closest('#articulos [data-af-final-article],#articulos [data-content-article],#app-articles [data-app-article],#app-articles [data-af-article-index]');
+  const search=e.target.closest('[data-search-article]'),weekly=e.target.closest('.af-week-read-more');
+  if(!card&&!search&&!weekly)return;
+  const index=card?Number(card.dataset.afFinalArticle??card.dataset.contentArticle??card.dataset.appArticle??card.dataset.afArticleIndex):search?Number(search.dataset.searchArticle):0;
+  const article=publishedArticles[index];if(!article)return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open(article);
+ },true);
+})();
+</script>
